@@ -10,6 +10,24 @@ button,a,input,select,textarea{font:inherit}
 button,a{tap-highlight-color:transparent;-webkit-tap-highlight-color:transparent}
 :focus-visible{outline:3px solid rgba(249,103,20,.35)!important;outline-offset:3px!important}
 
+/* Calm workspace mode: keep the canvas and the primary task in charge. */
+.sw-tool .sw-version,.sw-legacy .sw-version{display:none}
+.sw-tool .sw-power-trigger.in-header,.sw-legacy .sw-power-trigger.in-header{display:none}
+.sw-tool header,.sw-legacy .top-bar{min-height:60px}
+.sw-tool header{box-shadow:0 1px 0 rgba(148,163,184,.12)!important}
+.sw-shortcuts{display:none!important}
+.sw-focus-btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;height:40px;padding:0 12px;border:1px solid rgba(148,163,184,.22);border-radius:12px;background:#f1f5f9;color:#475569;cursor:pointer;font:800 11px LamaSans,Cairo,sans-serif;transition:.18s}
+.sw-focus-btn:hover{border-color:#fdba74;color:#ea580c}.sw-focus-btn.active{background:#171717;color:#fff;border-color:#171717}.dark .sw-focus-btn{background:#1e293b;color:#cbd5e1;border-color:#334155}.dark .sw-focus-btn.active{background:#fff;color:#171717;border-color:#fff}
+.sw-focus-btn .sw-focus-exit{display:none}.sw-focus-btn.active .sw-focus-enter{display:none}.sw-focus-btn.active .sw-focus-exit{display:inline}
+.sw-focus-mode .sw-workspace-root>aside,.sw-focus-mode .sw-workspace-root .left-panel,.sw-focus-mode .sw-workspace-root .controls-panel-menu,.sw-focus-mode .sw-workspace-root .text-controls-panel{display:none!important}
+.sw-focus-mode .sw-workspace-root .quotation-preview-wrapper,.sw-focus-mode .sw-workspace-root .design-area{width:100%!important;max-width:none!important;grid-column:1/-1!important}
+.sw-focus-mode .sw-workspace-root{grid-template-columns:1fr!important}
+.sw-focus-mode .sw-workspace-root #centerPanel,.sw-focus-mode .sw-workspace-root main{max-width:none!important}
+.sw-focus-mode .sw-workspace-root .design-area{min-height:calc(100vh - 96px)}
+.sw-focus-mode.sw-designer .studio-shell{display:block!important}
+.sw-focus-mode.sw-designer .tool-rail,.sw-focus-mode.sw-designer .tool-drawer,.sw-focus-mode.sw-designer .inspector{display:none!important}
+.sw-focus-mode.sw-designer .design-workspace{display:flex!important;width:100%!important;height:calc(100vh - 64px)!important}
+
 /* Consistent product chrome across old and new tools */
 .sw-version{display:inline-flex;align-items:center;gap:7px;padding:6px 10px;border-radius:999px;background:#fff7ed;color:#c2410c;border:1px solid #fed7aa;font:700 11px/1 LamaSans,Cairo,sans-serif;white-space:nowrap}
 .sw-version::before{content:"";width:7px;height:7px;border-radius:50%;background:#f96714;box-shadow:0 0 0 4px rgba(249,103,20,.12)}
@@ -43,6 +61,12 @@ body.sw-dashboard{background:#f6f6f3!important}
 .sw-dashboard [href$=".html"].card-hover-fx{box-shadow:0 8px 30px rgba(15,23,42,.05);border-color:#e7e5e4!important}
 .sw-dashboard [href$=".html"].card-hover-fx:hover{box-shadow:0 24px 60px rgba(15,23,42,.11)!important}
 .sw-dashboard .empty-tools{display:none;padding:48px 20px;text-align:center;color:#64748b;font-weight:700}
+.sw-dashboard main>section:first-child{padding-top:46px!important;padding-bottom:38px!important;justify-content:flex-start!important}
+.sw-dashboard main>section:first-child>div:first-child{max-width:760px!important}
+.sw-dashboard main>section:first-child>div:last-child{display:none!important}
+.sw-dashboard main>section:nth-of-type(2){padding-top:38px!important}
+.sw-dashboard h1{font-size:clamp(2.4rem,5vw,4.4rem)!important;line-height:1.08!important;margin-bottom:18px!important}
+.sw-dashboard .search-wrap{margin-top:22px!important}
 
 @media(max-width:700px){
   .sw-shortcuts{display:none}.sw-version{display:none}
@@ -70,7 +94,7 @@ body.sw-dashboard{background:#f6f6f3!important}
 .sw-save-state{position:fixed;right:18px;bottom:18px;z-index:89;display:flex;align-items:center;gap:8px;padding:9px 12px;border:1px solid rgba(148,163,184,.22);border-radius:12px;background:rgba(255,255,255,.86);box-shadow:0 10px 24px rgba(15,23,42,.08);backdrop-filter:blur(16px);color:#64748b;font:700 11px LamaSans,Cairo,sans-serif;opacity:0;transform:translateY(8px);transition:.25s;pointer-events:none}
 .sw-save-state.show{opacity:1;transform:none}.sw-save-state i{color:#22c55e}.dark .sw-save-state{background:rgba(15,23,42,.86);color:#cbd5e1}
 .sw-drop-active::after{content:"أفلت الملفات هنا";position:fixed;inset:12px;z-index:9998;display:grid;place-items:center;border:3px dashed #fb923c;border-radius:26px;background:rgba(255,247,237,.94);color:#c2410c;font:900 28px LamaSans,Cairo,sans-serif;pointer-events:none}.dark .sw-drop-active::after{background:rgba(15,23,42,.94);color:#fdba74}
-@media(max-width:700px){.sw-power-trigger{left:12px;top:auto;bottom:12px}.sw-save-state{right:12px;bottom:12px}.sw-power{padding-top:5vh}.sw-power-card{max-height:88vh}}
+@media(max-width:700px){.sw-power-trigger{left:12px;top:auto;bottom:12px}.sw-save-state{right:12px;bottom:12px}.sw-power{padding-top:5vh}.sw-power-card{max-height:88vh}.sw-focus-btn{width:40px;padding:0}.sw-focus-btn span{display:none!important}.sw-dashboard main>section:first-child{padding-top:34px!important;padding-bottom:28px!important}.sw-dashboard main>section:nth-of-type(2){padding-top:28px!important}.sw-tool header .font-black.text-lg{font-size:14px!important;white-space:nowrap;max-width:125px;overflow:hidden;text-overflow:ellipsis}}
 
 /* Quotation workspace: controls remain visible beside the document on desktop. */
 .sw-quotation .main-layout{display:grid!important;grid-template-columns:minmax(270px,340px) minmax(0,1fr)!important;gap:18px!important;align-items:start!important;padding:18px!important;direction:ltr}
@@ -78,3 +102,5 @@ body.sw-dashboard{background:#f6f6f3!important}
 .sw-quotation .quotation-preview-wrapper{grid-column:2!important;grid-row:1!important;order:initial!important;width:100%!important;min-width:0!important;padding:0!important;overflow:visible!important}
 .sw-quotation .quotation-page{direction:ltr}
 @media(max-width:900px){.sw-quotation .main-layout{display:flex!important;flex-direction:column!important}.sw-quotation .left-panel{position:static!important;max-height:none!important;order:1!important}.sw-quotation .quotation-preview-wrapper{order:2!important;overflow-x:auto!important}.sw-quotation .quotation-page{min-width:760px}}
+.sw-focus-mode.sw-quotation .main-layout{grid-template-columns:1fr!important}
+.sw-focus-mode.sw-quotation .quotation-preview-wrapper{grid-column:1!important;width:100%!important}

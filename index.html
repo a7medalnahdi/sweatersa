@@ -4,10 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>لوحة الأدوات — SWEATER</title>
-<meta name="description" content="منصة SWEATER الداخلية — خمس أدوات احترافية للتصميم والكوبونات وعروض الأسعار والإطارات والشراكات."/>
+<meta name="description" content="منصة SWEATER الداخلية المتجددة — أدوات العمل، مراجع الشركة، وأهم الأرقام في مكان واحد."/>
 <meta name="theme-color" content="#f96714"/>
-<link rel="stylesheet" href="./sweater-ui.css?v=4"/>
-<link rel="stylesheet" href="./local-studio.css?v=4"/>
+<link rel="stylesheet" href="./sweater-ui.css?v=7"/>
+<link rel="stylesheet" href="./local-studio.css?v=6"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 <!-- FontAwesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
@@ -79,6 +79,34 @@
   .card-hover-fx {
     @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_40px_-15px_rgba(249,103,20,0.15)];
   }
+  .tools-grid {
+    align-items: stretch;
+  }
+  .tool-card {
+    min-height: 100%;
+  }
+  .tool-card .tool-visual {
+    transition: height .3s ease;
+  }
+  .tool-card-compact .tool-visual {
+    height: 9rem;
+  }
+  .tool-card-compact .tool-card-copy {
+    padding-top: 1.25rem;
+  }
+  .tool-card-featured {
+    background: linear-gradient(145deg, #fff 0%, #fff 62%, #fff8f3 100%);
+  }
+  .dark .tool-card-featured {
+    background: linear-gradient(145deg, #1e293b 0%, #1e293b 62%, rgba(124,45,18,.24) 100%);
+  }
+  .tool-card-design .tool-visual::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 35%, rgba(16,185,129,.22));
+    pointer-events: none;
+  }
 
   /* For staggering animations */
   .stagger-1 { animation-delay: 100ms; opacity: 0; }
@@ -92,18 +120,49 @@
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-700 rounded-full; }
   ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-600; }
+
+  .reference-card {
+    position: relative;
+    isolation: isolate;
+  }
+  .reference-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: radial-gradient(circle at 85% 10%, color-mix(in srgb, var(--ref-color) 14%, transparent), transparent 43%);
+    z-index: -1;
+    opacity: .8;
+  }
+  .reference-card:hover .reference-icon {
+    transform: rotate(-5deg) scale(1.08);
+  }
+  .stat-card {
+    position: relative;
+    overflow: hidden;
+  }
+  .stat-card::after {
+    content: "";
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    left: -34px;
+    bottom: -45px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.08);
+  }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=1"></script><script src="./auth-gateway.js?v=2"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-sweater-500 selection:text-white transition-colors duration-300 min-h-screen flex flex-col">
 
 <!-- Background Effects -->
-<div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+<div class="fixed inset-0 overflow-hidden pointer-events-none z-0 opacity-60">
   <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-sweater-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob dark:mix-blend-lighten dark:bg-sweater-600/10"></div>
-  <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 dark:mix-blend-lighten dark:bg-purple-900/20"></div>
 </div>
 
 <!-- ===== HEADER ===== -->
-<header class="sticky top-0 z-50 glass-header">
+<header class="relative z-40 glass-header">
   <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
     <div class="flex items-center gap-3">
       <div class="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
@@ -115,7 +174,7 @@
     <div class="flex items-center gap-4">
       <div class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-sweater-50 dark:bg-sweater-500/10 text-sweater-600 dark:text-sweater-400 text-sm font-bold border border-sweater-100 dark:border-sweater-500/20">
         <i class="fa-solid fa-layer-group"></i>
-        <span>5 أدوات مفعلة</span>
+        <span>منصة تتوسع باستمرار</span>
       </div>
       <button id="themeBtn" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-sweater-500" title="تبديل المظهر">
         <i class="fa-solid fa-moon text-lg" id="themeIco"></i>
@@ -128,13 +187,6 @@
   <!-- ===== HERO ===== -->
   <section class="max-w-7xl mx-auto px-6 pt-20 pb-16 lg:pt-28 lg:pb-24 flex flex-col lg:flex-row items-center justify-between gap-12">
     <div class="max-w-2xl animate-fade-in-up">
-      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sweater-100 dark:bg-sweater-500/20 text-sweater-600 dark:text-sweater-400 text-xs font-bold mb-6 border border-sweater-200 dark:border-sweater-500/30">
-        <span class="relative flex h-2.5 w-2.5">
-          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sweater-500 opacity-75"></span>
-          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-sweater-500"></span>
-        </span>
-        نظام التشغيل الداخلي
-      </div>
       <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.2] mb-6">
         أدواتك في <br class="hidden sm:block"> 
         <span class="text-transparent bg-clip-text bg-gradient-to-l from-sweater-400 to-sweater-600">منصة واحدة</span> متكاملة
@@ -149,8 +201,8 @@
         <!-- Decoration -->
         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sweater-100 to-transparent dark:from-sweater-900/40 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
         
-        <div class="text-6xl font-black text-sweater-500 dark:text-sweater-400 mb-2 font-sans tracking-tighter">5</div>
-        <div class="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-wider">أدوات نشطة</div>
+        <div class="text-6xl font-black text-sweater-500 dark:text-sweater-400 mb-2 font-sans tracking-tighter">5+</div>
+        <div class="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-wider">أدوات اليوم، والمزيد قادم</div>
         
         <div class="mt-6 flex justify-center -space-x-3 space-x-reverse">
           <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-white dark:border-slate-800 flex items-center justify-center text-purple-500 text-xs shadow-sm"><i class="fa-solid fa-images"></i></div>
@@ -169,22 +221,29 @@
 
   <!-- ===== TOOLS GRID ===== -->
   <section class="max-w-7xl mx-auto px-6 py-16">
-    <div class="flex items-center justify-between mb-10 animate-fade-in-up stagger-1">
-      <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-3">
-        <i class="fa-solid fa-grid-2 text-sweater-500"></i>
-        الأدوات المتاحة
-      </h2>
+    <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 animate-fade-in-up stagger-1">
+      <div>
+        <h2 class="text-2xl font-black text-slate-900 dark:text-white flex items-center gap-3">
+          <i class="fa-solid fa-grid-2 text-sweater-500"></i>
+          أدوات العمل
+        </h2>
+        <p class="mt-2 text-sm text-slate-500 dark:text-slate-400 font-medium">مجموعة متجددة تتوسع كلما أضيفت أداة جديدة للفريق.</p>
+      </div>
+      <span class="inline-flex items-center gap-2 w-max px-3 py-2 rounded-full bg-sweater-50 dark:bg-sweater-500/10 text-sweater-600 dark:text-sweater-400 text-xs font-black border border-sweater-100 dark:border-sweater-500/20">
+        <i class="fa-solid fa-plus"></i>
+        أدوات جديدة مستقبلًا
+      </span>
     </div>
 
     <!-- Grid Container -->
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+    <div class="tools-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 lg:gap-6">
 
       <!-- 1. إطارات -->
-      <a href="./framing-tool.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-2" style="--c: #7c3aed; --c-bg: #f3e8ff; --c-dark: #581c87;">
+      <a href="./framing-tool.html" class="tool-card tool-card-compact group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-2" style="--c: #7c3aed; --c-bg: #f3e8ff; --c-dark: #581c87;">
         <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
         
         <!-- Image Section -->
-        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+        <div class="tool-visual h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
           <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/FbHvLZwd/444.png')"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
           <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
@@ -193,7 +252,7 @@
         </div>
 
         <!-- Content -->
-        <div class="p-6 flex-1 flex flex-col">
+        <div class="tool-card-copy p-6 flex-1 flex flex-col">
           <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">أداة تركيب الإطارات</h3>
           <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
             ارفع صورك وأضف إطاراً من اختيارك، مع دعم التصدير الفردي أو الجماعي دفعةً واحدة.
@@ -211,7 +270,7 @@
       </a>
 
       <!-- 2. كوبونات (Wide on large screens) -->
-      <a href="./coupon-tool.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative md:col-span-2 lg:col-span-2 animate-fade-in-up stagger-3" style="--c: #f96714; --c-bg: #ffedd5; --c-dark: #7c2d12;">
+      <a href="./coupon-tool.html" class="tool-card tool-card-featured group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative md:col-span-2 lg:col-span-2 animate-fade-in-up stagger-3" style="--c: #f96714; --c-bg: #ffedd5; --c-dark: #7c2d12;">
         <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
         
         <div class="flex flex-col md:flex-row h-full">
@@ -248,10 +307,10 @@
       </a>
 
       <!-- 3. عروض الأسعار -->
-      <a href="./Quotation Generator.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-4" style="--c: #0ea5e9; --c-bg: #e0f2fe; --c-dark: #0c4a6e;">
+      <a href="./Quotation Generator.html" class="tool-card tool-card-compact group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-4" style="--c: #0ea5e9; --c-bg: #e0f2fe; --c-dark: #0c4a6e;">
         <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
         
-        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+        <div class="tool-visual h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
           <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/k20tnLpN/112.png')"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
           <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
@@ -259,7 +318,7 @@
           </div>
         </div>
 
-        <div class="p-6 flex-1 flex flex-col">
+        <div class="tool-card-copy p-6 flex-1 flex flex-col">
           <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">مولّد عروض الأسعار</h3>
           <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
             أنشئ عروض أسعار احترافية لعملائك، عدّلها، احفظها، وصدّرها كملفات PDF رسمية جاهزة للإرسال فوراً.
@@ -276,10 +335,10 @@
       </a>
 
       <!-- 4. تصميم -->
-      <a href="./n_icons.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-5" style="--c: #10b981; --c-bg: #d1fae5; --c-dark: #064e3b;">
+      <a href="./n_icons.html" class="tool-card tool-card-design group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-5" style="--c: #10b981; --c-bg: #d1fae5; --c-dark: #064e3b;">
         <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
         
-        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+        <div class="tool-visual h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
           <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/F4J0bMRW/image.png')"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
           <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
@@ -304,10 +363,10 @@
       </a>
 
       <!-- 5. شراكات -->
-      <a href="./logo-framer-tool.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-5" style="--c: #e11d48; --c-bg: #ffe4e6; --c-dark: #881337;">
+      <a href="./logo-framer-tool.html" class="tool-card tool-card-compact group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-5" style="--c: #e11d48; --c-bg: #ffe4e6; --c-dark: #881337;">
         <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
         
-        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+        <div class="tool-visual h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
           <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/nMRr1xgn/image.png')"></div>
           <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
           <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
@@ -315,7 +374,7 @@
           </div>
         </div>
 
-        <div class="p-6 flex-1 flex flex-col">
+        <div class="tool-card-copy p-6 flex-1 flex flex-col">
           <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">قوالب الشراكات</h3>
           <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
             أداة متخصصة لتركيب شعارات الشركاء على قوالب الشراكة الجاهزة بشكل أوتوماتيكي وموزون، وتصديرها بأعلى جودة للمنصات.
@@ -332,6 +391,100 @@
         </div>
       </a>
 
+    </div>
+  </section>
+
+  <!-- ===== COMPANY REFERENCES ===== -->
+  <section class="max-w-7xl mx-auto px-6 py-16" id="company-references">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-5 mb-10">
+      <div>
+        <div class="inline-flex items-center gap-2 text-sweater-600 dark:text-sweater-400 text-xs font-black mb-3">
+          <span class="w-8 h-px bg-sweater-500"></span>
+          مركز الموارد
+        </div>
+        <h2 class="text-2xl md:text-3xl font-black text-slate-900 dark:text-white">مراجع الشركة</h2>
+        <p class="mt-3 text-sm md:text-base text-slate-500 dark:text-slate-400 font-medium max-w-xl leading-relaxed">
+          وصول سريع إلى الملفات الرسمية والمواد المعتمدة التي يحتاجها الفريق في أعماله اليومية.
+        </p>
+      </div>
+      <span class="inline-flex items-center gap-2 w-max px-4 py-2 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 text-xs font-bold">
+        <i class="fa-solid fa-link"></i>
+        جاهز لربط الملفات
+      </span>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <article class="reference-card group rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="--ref-color:#f96714">
+        <div class="flex items-start justify-between mb-8">
+          <div class="reference-icon w-13 h-13 size-14 rounded-2xl bg-orange-100 dark:bg-orange-500/15 text-sweater-500 flex items-center justify-center text-xl transition-transform duration-300"><i class="fa-solid fa-building"></i></div>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 text-[10px] font-black">قريبًا</span>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white">الملف التعريفي</h3>
+        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">نبذة الشركة، الخدمات، الانتشار وأبرز الإنجازات.</p>
+      </article>
+
+      <article class="reference-card group rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="--ref-color:#7c3aed">
+        <div class="flex items-start justify-between mb-8">
+          <div class="reference-icon size-14 rounded-2xl bg-purple-100 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center text-xl transition-transform duration-300"><i class="fa-solid fa-swatchbook"></i></div>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 text-[10px] font-black">قريبًا</span>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white">الهوية البصرية</h3>
+        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">الألوان، الخطوط، أسلوب الصور وقواعد الاستخدام.</p>
+      </article>
+
+      <article class="reference-card group rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="--ref-color:#0ea5e9">
+        <div class="flex items-start justify-between mb-8">
+          <div class="reference-icon size-14 rounded-2xl bg-sky-100 dark:bg-sky-500/15 text-sky-600 dark:text-sky-400 flex items-center justify-center text-xl transition-transform duration-300"><i class="fa-solid fa-signature"></i></div>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 text-[10px] font-black">قريبًا</span>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white">الشعار</h3>
+        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">نسخ الشعار المعتمدة للاستخدام الرقمي والمطبوع.</p>
+      </article>
+
+      <article class="reference-card group rounded-3xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-6 transition-all duration-300 hover:-translate-y-1 hover:shadow-xl" style="--ref-color:#10b981">
+        <div class="flex items-start justify-between mb-8">
+          <div class="reference-icon size-14 rounded-2xl bg-emerald-100 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl transition-transform duration-300"><i class="fa-solid fa-images"></i></div>
+          <span class="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-700 text-slate-400 text-[10px] font-black">قريبًا</span>
+        </div>
+        <h3 class="text-lg font-black text-slate-900 dark:text-white">مكتبة الصور</h3>
+        <p class="mt-2 text-xs text-slate-500 dark:text-slate-400 font-medium leading-relaxed">صور الخدمات، الفرق، السيارات والحملات المعتمدة.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ===== COMPANY NUMBERS ===== -->
+  <section class="max-w-7xl mx-auto px-6 pb-24" id="company-numbers">
+    <div class="rounded-[2rem] bg-slate-950 dark:bg-black border border-slate-800 p-6 md:p-10 overflow-hidden relative">
+      <div class="absolute -top-24 -left-24 size-72 rounded-full bg-sweater-500/20 blur-3xl pointer-events-none"></div>
+      <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
+        <div class="lg:max-w-xs">
+          <span class="inline-flex items-center gap-2 text-sweater-400 text-xs font-black mb-3"><i class="fa-solid fa-chart-line"></i> أثرنا بالأرقام</span>
+          <h2 class="text-2xl md:text-3xl font-black text-white leading-tight">أرقام تكبر معنا كل يوم</h2>
+          <p class="mt-3 text-sm text-slate-400 font-medium leading-relaxed">محطات تعكس ثقة عملائنا واتساع شبكة خدمات SWEATER.</p>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3 flex-1">
+          <div class="stat-card rounded-2xl bg-white/5 border border-white/10 p-5 min-h-32 flex flex-col justify-between">
+            <i class="fa-solid fa-spray-can-sparkles text-sweater-400"></i>
+            <div><strong class="block text-2xl md:text-3xl font-black text-white tracking-tight" dir="ltr">3M</strong><span class="text-xs text-slate-400 font-bold">غسلة</span></div>
+          </div>
+          <div class="stat-card rounded-2xl bg-white/5 border border-white/10 p-5 min-h-32 flex flex-col justify-between">
+            <i class="fa-solid fa-users text-sky-400"></i>
+            <div><strong class="block text-2xl md:text-3xl font-black text-white tracking-tight" dir="ltr">600K</strong><span class="text-xs text-slate-400 font-bold">عميل</span></div>
+          </div>
+          <div class="stat-card rounded-2xl bg-white/5 border border-white/10 p-5 min-h-32 flex flex-col justify-between">
+            <i class="fa-solid fa-location-dot text-purple-400"></i>
+            <div><strong class="block text-2xl md:text-3xl font-black text-white tracking-tight" dir="ltr">12</strong><span class="text-xs text-slate-400 font-bold">مدينة</span></div>
+          </div>
+          <div class="stat-card rounded-2xl bg-white/5 border border-white/10 p-5 min-h-32 flex flex-col justify-between">
+            <i class="fa-solid fa-face-smile-beam text-emerald-400"></i>
+            <div><strong class="block text-2xl md:text-3xl font-black text-white tracking-tight" dir="ltr">96%</strong><span class="text-xs text-slate-400 font-bold">رضا العملاء</span></div>
+          </div>
+          <div class="stat-card col-span-2 md:col-span-1 rounded-2xl bg-sweater-500 border border-sweater-400 p-5 min-h-32 flex flex-col justify-between">
+            <i class="fa-solid fa-handshake text-white"></i>
+            <div><strong class="block text-2xl md:text-3xl font-black text-white tracking-tight" dir="ltr">500</strong><span class="text-xs text-orange-100 font-bold">شراكة</span></div>
+          </div>
+        </div>
+      </div>
     </div>
   </section>
 </main>
@@ -380,7 +533,8 @@
     localStorage.setItem('swDark', isDark ? '1' : '0');
   });
 </script>
-<script src="./sweater-ui.js?v=5"></script>
-<script src="./local-studio.js?v=4"></script>
+<script src="./site-config.js?v=1"></script>
+<script src="./sweater-ui.js?v=6"></script>
+<script src="./local-studio.js?v=6"></script>
 </body>
 </html>

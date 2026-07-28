@@ -6,8 +6,8 @@
 <title>صانع الكوبونات الاحترافي — SWEATER</title>
 <meta name="description" content="تصميم وتصدير كوبونات احترافية بشكل فردي أو جماعي — SWEATER."/>
 <meta name="theme-color" content="#f96714"/>
-<link rel="stylesheet" href="./sweater-ui.css?v=4"/>
-<link rel="stylesheet" href="./local-studio.css?v=4"/>
+<link rel="stylesheet" href="./sweater-ui.css?v=7"/>
+<link rel="stylesheet" href="./local-studio.css?v=6"/>
 <link rel="manifest" href="./manifest.webmanifest"/>
 
 <!-- FontAwesome -->
@@ -142,6 +142,7 @@
   .toast-show { opacity: 1; transform: translateY(0) scale(1); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
   .toast-hide { opacity: 0; transform: translateY(20px) scale(0.95); transition: all 0.3s ease; }
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=1"></script><script src="./auth-gateway.js?v=2"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-sweater-500 selection:text-white transition-colors duration-300 h-screen flex flex-col overflow-hidden">
 
@@ -1335,7 +1336,8 @@ setTimeout(() => Hist.push(), 300);
 
 })();
 </script>
-<script src="./sweater-ui.js?v=5"></script>
-<script src="./local-studio.js?v=4"></script>
+<script src="./site-config.js?v=1"></script>
+<script src="./sweater-ui.js?v=6"></script>
+<script src="./local-studio.js?v=6"></script>
 </body>
 </html>

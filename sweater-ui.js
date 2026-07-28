@@ -19,11 +19,10 @@
   }
 
   if (!isDashboard) {
-    const quick = document.createElement('nav');
-    quick.className = 'sw-shortcuts';
-    quick.setAttribute('aria-label', 'روابط سريعة');
-    quick.innerHTML = '<a class="sw-shortcut" href="./index.html"><i class="fa-solid fa-grid-2"></i> كل الأدوات</a>';
-    document.body.appendChild(quick);
+    const workspaceRoot = page === 'Quotation Generator.html'
+      ? document.querySelector('.main-layout')
+      : document.querySelector('.main-container') || header?.nextElementSibling;
+    workspaceRoot?.classList.add('sw-workspace-root');
   }
 
   if (isDashboard) {
@@ -129,6 +128,29 @@
   const headerActions = header?.querySelector('.controls-container') || header?.querySelector(':scope > div > div:last-child') || header?.lastElementChild;
   if (headerActions) { trigger.classList.add('in-header'); headerActions.prepend(trigger); }
   else document.body.appendChild(trigger);
+
+  if (!isDashboard && headerActions) {
+    const focusButton = document.createElement('button');
+    focusButton.className = 'sw-focus-btn';
+    focusButton.title = 'إخفاء اللوحات وتكبير مساحة العمل (Shift+F)';
+    focusButton.setAttribute('aria-label', 'تبديل وضع التركيز');
+    focusButton.innerHTML = '<i class="fa-solid fa-expand"></i><span class="sw-focus-enter">وضع التركيز</span><span class="sw-focus-exit">إظهار الأدوات</span>';
+    const setFocus = enabled => {
+      document.body.classList.toggle('sw-focus-mode', enabled);
+      focusButton.classList.toggle('active', enabled);
+      focusButton.querySelector('i').className = enabled ? 'fa-solid fa-compress' : 'fa-solid fa-expand';
+      focusButton.setAttribute('aria-pressed', String(enabled));
+      sessionStorage.setItem(`sw:focus:${page}`, enabled ? '1' : '0');
+    };
+    setFocus(sessionStorage.getItem(`sw:focus:${page}`) === '1');
+    focusButton.addEventListener('click', () => setFocus(!document.body.classList.contains('sw-focus-mode')));
+    headerActions.prepend(focusButton);
+    document.addEventListener('keydown', event => {
+      if (event.shiftKey && event.key.toLowerCase() === 'f' && !event.target.matches('input,textarea,[contenteditable="true"]')) {
+        event.preventDefault(); focusButton.click();
+      }
+    });
+  }
   const powerSearch = overlay.querySelector('.sw-power-search');
   const powerBody = overlay.querySelector('.sw-power-body');
 
