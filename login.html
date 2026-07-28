@@ -27,7 +27,7 @@
         <div class="field"><label>كلمة المرور</label><div class="input-wrap"><i class="fa-solid fa-key"></i><input id="password" name="password" type="password" autocomplete="current-password" required><button type="button" class="pass-toggle" id="togglePass" aria-label="إظهار كلمة المرور"><i class="fa-regular fa-eye"></i></button></div></div>
         <div class="form-row"><label class="remember"><input type="checkbox" name="remember" checked> تذكر تسجيل الدخول</label><a href="./forgot-password.html">نسيت كلمة المرور؟</a></div>
         <button class="submit" id="submitBtn"><i class="fa-solid fa-arrow-right-to-bracket"></i> تسجيل الدخول</button>
-        <div class="demo"><b id="modeTitle">ليس لديك حساب بعد؟</b><br><span id="modeText">أنشئ الحساب الأول للمشروع، وسيُمنح صلاحية المدير تلقائيًا.</span><br><button type="button" id="modeToggle" style="border:0;background:transparent;color:#c2410c;padding:4px 0;font-weight:900">إنشاء حساب جديد</button></div>
+        <div class="demo"><b>الدخول مخصص لفريق العمل</b><br><span>تُنشأ حسابات الموظفين وتُدار من خلال لوحة تحكم المدير فقط.</span></div>
       </form>
       <div class="future"><i class="fa-solid fa-shield-halved"></i> الحسابات والملفات مرتبطة الآن بقاعدة بيانات Supabase.</div>
     </div>
@@ -37,18 +37,16 @@
 <script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=1"></script>
 <script>
 (()=>{
-  const $=s=>document.querySelector(s),client=window.SweaterCloud.client;let signup=false;
+  const $=s=>document.querySelector(s),client=window.SweaterCloud.client;
   client.auth.getSession().then(({data})=>{if(data.session){const next=new URLSearchParams(location.search).get('next');location.replace(next?`./${next}`:'./index.html')}});
   const queryError=new URLSearchParams(location.search).get('error');if(queryError){$('#errorBox').textContent=queryError==='suspended'?'هذا الحساب موقوف. تواصل مع مدير النظام.':'تعذر تحميل ملف الحساب.';$('#errorBox').classList.add('show')}
   $('#togglePass').onclick=()=>{const p=$('#password'),show=p.type==='password';p.type=show?'text':'password';$('#togglePass i').className=show?'fa-regular fa-eye-slash':'fa-regular fa-eye'};
-  $('#modeToggle').onclick=()=>{signup=!signup;$('#modeTitle').textContent=signup?'إنشاء حساب جديد':'لديك حساب بالفعل؟';$('#modeText').textContent=signup?'الحساب الأول فقط يصبح مديرًا تلقائيًا.':'عد إلى تسجيل الدخول بحسابك الحالي.';$('#modeToggle').textContent=signup?'العودة لتسجيل الدخول':'إنشاء حساب جديد';$('#submitBtn').innerHTML=signup?'<i class="fa-solid fa-user-plus"></i> إنشاء الحساب':'<i class="fa-solid fa-arrow-right-to-bracket"></i> تسجيل الدخول'};
   $('#loginForm').onsubmit=async e=>{
     e.preventDefault();const f=Object.fromEntries(new FormData(e.currentTarget)),email=f.identity.trim().toLowerCase(),box=$('#errorBox'),button=$('#submitBtn');
     button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> جارٍ التحقق';
     box.classList.remove('show');
-    const result=signup?await client.auth.signUp({email,password:f.password,options:{data:{full_name:email.split('@')[0],username:email.split('@')[0]}}}):await client.auth.signInWithPassword({email,password:f.password});
-    if(result.error){box.textContent=result.error.message==='Invalid login credentials'?'البريد الإلكتروني أو كلمة المرور غير صحيحة.':result.error.message;box.classList.add('show');button.disabled=false;button.innerHTML=signup?'<i class="fa-solid fa-user-plus"></i> إنشاء الحساب':'<i class="fa-solid fa-arrow-right-to-bracket"></i> تسجيل الدخول';return}
-    if(signup&&!result.data.session){box.textContent='تم إنشاء الحساب. افحص بريدك لتأكيده ثم سجّل الدخول.';box.style.background='#f0fdf4';box.style.color='#047857';box.classList.add('show');button.disabled=false;button.innerHTML='<i class="fa-solid fa-user-plus"></i> إنشاء الحساب';return}
+    const result=await client.auth.signInWithPassword({email,password:f.password});
+    if(result.error){box.textContent=result.error.message==='Invalid login credentials'?'البريد الإلكتروني أو كلمة المرور غير صحيحة.':result.error.message;box.classList.add('show');button.disabled=false;button.innerHTML='<i class="fa-solid fa-arrow-right-to-bracket"></i> تسجيل الدخول';return}
     const next=new URLSearchParams(location.search).get('next');location.replace(next?`./${next}`:'./index.html');
   };
 })();
