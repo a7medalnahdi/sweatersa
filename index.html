@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>لوحة الأدوات — SWEATER</title>
+<meta name="description" content="منصة SWEATER الداخلية — خمس أدوات احترافية للتصميم والكوبونات وعروض الأسعار والإطارات والشراكات."/>
+<meta name="theme-color" content="#f96714"/>
+<link rel="stylesheet" href="./sweater-ui.css?v=4"/>
+<link rel="stylesheet" href="./local-studio.css?v=4"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<!-- Google Fonts Fallback (Cairo) -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: {
+          sans: ['LamaSans', 'Cairo', 'sans-serif'],
+        },
+        colors: {
+          sweater: {
+            50: '#fff5f0',
+            100: '#ffe8d9',
+            200: '#ffccb0',
+            300: '#ffa77d',
+            400: '#ff7842',
+            500: '#f96714', // Primary Accent
+            600: '#eb4d0b',
+            700: '#c2370a',
+            800: '#992c0f',
+            900: '#7a2610',
+            950: '#421006',
+          }
+        },
+        animation: {
+          'blob': 'blob 7s infinite',
+          'fade-in-up': 'fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        },
+        keyframes: {
+          blob: {
+            '0%': { transform: 'translate(0px, 0px) scale(1)' },
+            '33%': { transform: 'translate(30px, -50px) scale(1.1)' },
+            '66%': { transform: 'translate(-20px, 20px) scale(0.9)' },
+            '100%': { transform: 'translate(0px, 0px) scale(1)' },
+          },
+          fadeInUp: {
+            '0%': { opacity: 0, transform: 'translateY(20px)' },
+            '100%': { opacity: 1, transform: 'translateY(0)' },
+          }
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  /* ===== FONTS (Local Fallback) ===== */
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Regular.woff2')format('woff2');font-weight:400}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Medium.woff2')format('woff2');font-weight:500}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-SemiBold.woff2')format('woff2');font-weight:600}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Bold.woff2')format('woff2');font-weight:700}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-ExtraBold.woff2')format('woff2');font-weight:800}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Black.woff2')format('woff2');font-weight:900}
+
+  /* Custom Utilities */
+  .glass-header {
+    @apply bg-white/70 dark:bg-slate-900/70 backdrop-blur-lg border-b border-slate-200 dark:border-slate-800;
+  }
+  
+  .card-hover-fx {
+    @apply transition-all duration-500 ease-out hover:-translate-y-2 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_40px_-15px_rgba(249,103,20,0.15)];
+  }
+
+  /* For staggering animations */
+  .stagger-1 { animation-delay: 100ms; opacity: 0; }
+  .stagger-2 { animation-delay: 200ms; opacity: 0; }
+  .stagger-3 { animation-delay: 300ms; opacity: 0; }
+  .stagger-4 { animation-delay: 400ms; opacity: 0; }
+  .stagger-5 { animation-delay: 500ms; opacity: 0; }
+
+  /* Hide scrollbar for a cleaner look if needed, though default is fine */
+  ::-webkit-scrollbar { width: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-600; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-sweater-500 selection:text-white transition-colors duration-300 min-h-screen flex flex-col">
+
+<!-- Background Effects -->
+<div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+  <div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-sweater-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob dark:mix-blend-lighten dark:bg-sweater-600/10"></div>
+  <div class="absolute top-[20%] right-[-10%] w-96 h-96 bg-purple-400/20 rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 dark:mix-blend-lighten dark:bg-purple-900/20"></div>
+</div>
+
+<!-- ===== HEADER ===== -->
+<header class="sticky top-0 z-50 glass-header">
+  <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="bg-white dark:bg-slate-800 p-2 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700">
+        <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-6 w-auto object-contain hidden dark:block brightness-200"/>
+        <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-6 w-auto object-contain block dark:hidden"/>
+      </div>
+    </div>
+    
+    <div class="flex items-center gap-4">
+      <div class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-full bg-sweater-50 dark:bg-sweater-500/10 text-sweater-600 dark:text-sweater-400 text-sm font-bold border border-sweater-100 dark:border-sweater-500/20">
+        <i class="fa-solid fa-layer-group"></i>
+        <span>5 أدوات مفعلة</span>
+      </div>
+      <button id="themeBtn" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-sweater-500" title="تبديل المظهر">
+        <i class="fa-solid fa-moon text-lg" id="themeIco"></i>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="flex-grow relative z-10">
+  <!-- ===== HERO ===== -->
+  <section class="max-w-7xl mx-auto px-6 pt-20 pb-16 lg:pt-28 lg:pb-24 flex flex-col lg:flex-row items-center justify-between gap-12">
+    <div class="max-w-2xl animate-fade-in-up">
+      <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sweater-100 dark:bg-sweater-500/20 text-sweater-600 dark:text-sweater-400 text-xs font-bold mb-6 border border-sweater-200 dark:border-sweater-500/30">
+        <span class="relative flex h-2.5 w-2.5">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-sweater-500 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-sweater-500"></span>
+        </span>
+        نظام التشغيل الداخلي
+      </div>
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-black text-slate-900 dark:text-white leading-[1.2] mb-6">
+        أدواتك في <br class="hidden sm:block"> 
+        <span class="text-transparent bg-clip-text bg-gradient-to-l from-sweater-400 to-sweater-600">منصة واحدة</span> متكاملة
+      </h1>
+      <p class="text-lg text-slate-600 dark:text-slate-400 font-medium leading-relaxed max-w-lg">
+        مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.
+      </p>
+    </div>
+    
+    <div class="w-full lg:w-auto animate-fade-in-up stagger-1">
+      <div class="relative bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 text-center lg:min-w-[280px] overflow-hidden group">
+        <!-- Decoration -->
+        <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sweater-100 to-transparent dark:from-sweater-900/40 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
+        
+        <div class="text-6xl font-black text-sweater-500 dark:text-sweater-400 mb-2 font-sans tracking-tighter">5</div>
+        <div class="text-slate-500 dark:text-slate-400 font-bold text-sm uppercase tracking-wider">أدوات نشطة</div>
+        
+        <div class="mt-6 flex justify-center -space-x-3 space-x-reverse">
+          <div class="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/50 border-2 border-white dark:border-slate-800 flex items-center justify-center text-purple-500 text-xs shadow-sm"><i class="fa-solid fa-images"></i></div>
+          <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 border-2 border-white dark:border-slate-800 flex items-center justify-center text-orange-500 text-xs shadow-sm"><i class="fa-solid fa-ticket"></i></div>
+          <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 border-2 border-white dark:border-slate-800 flex items-center justify-center text-blue-500 text-xs shadow-sm"><i class="fa-solid fa-file-invoice"></i></div>
+          <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 border-2 border-white dark:border-slate-800 flex items-center justify-center text-slate-500 text-xs shadow-sm font-bold">+2</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Divider -->
+  <div class="max-w-7xl mx-auto px-6">
+    <div class="h-px w-full bg-gradient-to-r from-transparent via-slate-200 dark:via-slate-800 to-transparent"></div>
+  </div>
+
+  <!-- ===== TOOLS GRID ===== -->
+  <section class="max-w-7xl mx-auto px-6 py-16">
+    <div class="flex items-center justify-between mb-10 animate-fade-in-up stagger-1">
+      <h2 class="text-xl font-bold text-slate-800 dark:text-slate-200 flex items-center gap-3">
+        <i class="fa-solid fa-grid-2 text-sweater-500"></i>
+        الأدوات المتاحة
+      </h2>
+    </div>
+
+    <!-- Grid Container -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
+
+      <!-- 1. إطارات -->
+      <a href="./framing-tool.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-2" style="--c: #7c3aed; --c-bg: #f3e8ff; --c-dark: #581c87;">
+        <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
+        
+        <!-- Image Section -->
+        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+          <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/FbHvLZwd/444.png')"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-images"></i>
+          </div>
+        </div>
+
+        <!-- Content -->
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">أداة تركيب الإطارات</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
+            ارفع صورك وأضف إطاراً من اختيارك، مع دعم التصدير الفردي أو الجماعي دفعةً واحدة.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-[var(--c-bg)] dark:bg-[var(--c-dark)] text-[var(--c)] dark:text-purple-300">PNG</span>
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">تصدير جماعي</span>
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">إطارات</span>
+          </div>
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 text-[var(--c)] dark:text-purple-400">
+            <span class="text-sm font-bold">فتح الأداة</span>
+            <i class="fa-solid fa-arrow-left transform group-hover:-translate-x-2 transition-transform"></i>
+          </div>
+        </div>
+      </a>
+
+      <!-- 2. كوبونات (Wide on large screens) -->
+      <a href="./coupon-tool.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative md:col-span-2 lg:col-span-2 animate-fade-in-up stagger-3" style="--c: #f96714; --c-bg: #ffedd5; --c-dark: #7c2d12;">
+        <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
+        
+        <div class="flex flex-col md:flex-row h-full">
+          <!-- Image Section -->
+          <div class="h-48 md:h-auto md:w-5/12 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/jPLhFFf5/333.png')"></div>
+            <div class="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-l from-black/60 via-black/10 to-transparent"></div>
+            <div class="absolute bottom-4 right-4 md:top-4 md:right-4 md:bottom-auto w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
+              <i class="fa-solid fa-ticket"></i>
+            </div>
+          </div>
+
+          <!-- Content -->
+          <div class="p-6 md:p-8 flex-1 flex flex-col justify-center">
+            <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[0.7rem] font-bold w-max mb-4">
+              <i class="fa-solid fa-fire text-[0.6rem]"></i> الأداة المميزة
+            </div>
+            <h3 class="text-xl md:text-2xl font-black text-slate-900 dark:text-white mb-3">أداة تصدير الكوبونات</h3>
+            <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
+              صمّم كوبونات الخصم بشكل احترافي، عدّل النصوص وحركها، واستورد ملف Excel لإنتاج مئات الكوبونات دفعة واحدة بضغطة زر.
+            </p>
+            <div class="flex flex-wrap gap-2 mb-6">
+              <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-[var(--c-bg)] dark:bg-[var(--c-dark)] text-[var(--c)] dark:text-orange-300">PDF / PNG</span>
+              <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400">Excel Data</span>
+              <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">تصدير جماعي</span>
+              <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">A6</span>
+            </div>
+            <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 text-[var(--c)] dark:text-orange-400">
+              <span class="text-sm font-bold">فتح الأداة</span>
+              <i class="fa-solid fa-arrow-left transform group-hover:-translate-x-2 transition-transform"></i>
+            </div>
+          </div>
+        </div>
+      </a>
+
+      <!-- 3. عروض الأسعار -->
+      <a href="./Quotation Generator.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-4" style="--c: #0ea5e9; --c-bg: #e0f2fe; --c-dark: #0c4a6e;">
+        <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
+        
+        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+          <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/k20tnLpN/112.png')"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-file-invoice-dollar"></i>
+          </div>
+        </div>
+
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">مولّد عروض الأسعار</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
+            أنشئ عروض أسعار احترافية لعملائك، عدّلها، احفظها، وصدّرها كملفات PDF رسمية جاهزة للإرسال فوراً.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-[var(--c-bg)] dark:bg-[var(--c-dark)] text-[var(--c)] dark:text-sky-300">PDF</span>
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">حفظ تلقائي</span>
+          </div>
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 text-[var(--c)] dark:text-sky-400">
+            <span class="text-sm font-bold">فتح الأداة</span>
+            <i class="fa-solid fa-arrow-left transform group-hover:-translate-x-2 transition-transform"></i>
+          </div>
+        </div>
+      </a>
+
+      <!-- 4. تصميم -->
+      <a href="./n_icons.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-5" style="--c: #10b981; --c-bg: #d1fae5; --c-dark: #064e3b;">
+        <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
+        
+        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+          <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/F4J0bMRW/image.png')"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-pen-nib"></i>
+          </div>
+        </div>
+
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">أداة التصميم</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
+            استوديو تصميم مبسط ومتعدد الإمكانات لإنشاء وتعديل تصاميم احترافية باستخدام النصوص والصور والأشكال بمرونة.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-[var(--c-bg)] dark:bg-[var(--c-dark)] text-[var(--c)] dark:text-emerald-300">PNG / SVG</span>
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">طبقات (Layers)</span>
+          </div>
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 text-[var(--c)] dark:text-emerald-400">
+            <span class="text-sm font-bold">فتح الأداة</span>
+            <i class="fa-solid fa-arrow-left transform group-hover:-translate-x-2 transition-transform"></i>
+          </div>
+        </div>
+      </a>
+
+      <!-- 5. شراكات -->
+      <a href="./logo-framer-tool.html" class="group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-5" style="--c: #e11d48; --c-bg: #ffe4e6; --c-dark: #881337;">
+        <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
+        
+        <div class="h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+          <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('https://i.ibb.co/nMRr1xgn/image.png')"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent"></div>
+          <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform">
+            <i class="fa-solid fa-handshake"></i>
+          </div>
+        </div>
+
+        <div class="p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">قوالب الشراكات</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">
+            أداة متخصصة لتركيب شعارات الشركاء على قوالب الشراكة الجاهزة بشكل أوتوماتيكي وموزون، وتصديرها بأعلى جودة للمنصات.
+          </p>
+          <div class="flex flex-wrap gap-2 mb-6">
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-[var(--c-bg)] dark:bg-[var(--c-dark)] text-[var(--c)] dark:text-rose-300">PNG</span>
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">شعارات</span>
+            <span class="px-3 py-1 rounded-lg text-[0.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">قوالب تسويقية</span>
+          </div>
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 text-[var(--c)] dark:text-rose-400">
+            <span class="text-sm font-bold">فتح الأداة</span>
+            <i class="fa-solid fa-arrow-left transform group-hover:-translate-x-2 transition-transform"></i>
+          </div>
+        </div>
+      </a>
+
+    </div>
+  </section>
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer class="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 mt-auto relative z-10">
+  <div class="max-w-7xl mx-auto px-6 py-8 flex flex-col md:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-2 opacity-80 filter grayscale hover:grayscale-0 transition-all">
+      <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-5 object-contain hidden dark:block brightness-200"/>
+      <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-5 object-contain block dark:hidden"/>
+    </div>
+    <div class="text-sm font-semibold text-slate-500 dark:text-slate-400">
+      جميع الحقوق محفوظة &copy; <script>document.write(new Date().getFullYear())</script> — SWEATER
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Theme Toggler Logic
+  const btn = document.getElementById('themeBtn');
+  const ico = document.getElementById('themeIco');
+  
+  // Set initial state from localStorage or system preference
+  if (localStorage.getItem('swDark') === '1' || (!('swDark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+    document.documentElement.classList.add('dark');
+    ico.className = 'fa-solid fa-sun text-lg text-amber-500';
+  } else {
+    document.documentElement.classList.remove('dark');
+    ico.className = 'fa-solid fa-moon text-lg';
+  }
+
+  // Toggle Action
+  btn.addEventListener('click', () => {
+    document.documentElement.classList.toggle('dark');
+    const isDark = document.documentElement.classList.contains('dark');
+    
+    // Icon animation
+    ico.style.transform = 'rotate(360deg) scale(0)';
+    setTimeout(() => {
+      ico.className = isDark ? 'fa-solid fa-sun text-lg text-amber-500' : 'fa-solid fa-moon text-lg';
+      ico.style.transform = 'rotate(0deg) scale(1)';
+    }, 150);
+    ico.style.transition = 'transform 0.3s ease';
+
+    // Save preference
+    localStorage.setItem('swDark', isDark ? '1' : '0');
+  });
+</script>
+<script src="./sweater-ui.js?v=5"></script>
+<script src="./local-studio.js?v=4"></script>
+</body>
+</html>

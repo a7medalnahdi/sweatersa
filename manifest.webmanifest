@@ -1,0 +1,12 @@
+{
+  "name": "SWEATER Tools",
+  "short_name": "SWEATER",
+  "description": "منصة أدوات SWEATER الداخلية للتصميم والتصدير وإدارة المخرجات.",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#f6f6f3",
+  "theme_color": "#f96714",
+  "categories": ["productivity", "design", "business"]
+}

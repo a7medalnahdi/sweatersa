@@ -1,0 +1,1341 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>صانع الكوبونات الاحترافي — SWEATER</title>
+<meta name="description" content="تصميم وتصدير كوبونات احترافية بشكل فردي أو جماعي — SWEATER."/>
+<meta name="theme-color" content="#f96714"/>
+<link rel="stylesheet" href="./sweater-ui.css?v=4"/>
+<link rel="stylesheet" href="./local-studio.css?v=4"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<!-- SheetJS (Excel) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<!-- QRCode.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { sans: ['LamaSans', 'Cairo', 'sans-serif'] },
+        colors: {
+          sweater: {
+            50: '#fff5f0', 100: '#ffe8d9', 200: '#ffccb0', 300: '#ffa77d',
+            400: '#ff7842', 500: '#f96714', 600: '#eb4d0b', 700: '#c2370a',
+            800: '#992c0f', 900: '#7a2610', 950: '#421006',
+          }
+        },
+        boxShadow: {
+          'glass': '0 8px 32px rgba(0, 0, 0, 0.08)',
+          'float': '0 12px 30px -8px rgba(249, 103, 20, 0.4)',
+        }
+      }
+    }
+  }
+</script>
+
+<style type="text/tailwindcss">
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Regular.woff2')format('woff2');font-weight:400}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Medium.woff2')format('woff2');font-weight:500}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-SemiBold.woff2')format('woff2');font-weight:600}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Bold.woff2')format('woff2');font-weight:700}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-ExtraBold.woff2')format('woff2');font-weight:800}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Black.woff2')format('woff2');font-weight:900}
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-600; }
+
+  /* ===== UI UTILITIES ===== */
+  .glass-header { @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border-b border-slate-200 dark:border-slate-800 shadow-sm; }
+  .panel-glass { @apply bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 shadow-[0_0_40px_rgba(0,0,0,0.03)] dark:shadow-[0_0_40px_rgba(0,0,0,0.2)]; }
+  
+  /* ===== CUSTOM SLIDERS ===== */
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 6px; border-radius: 999px;
+    @apply bg-slate-200 dark:bg-slate-700 outline-none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%;
+    @apply bg-white dark:bg-slate-800 border-[3.5px] border-sweater-500 shadow-md cursor-pointer transition-transform hover:scale-125;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 18px; height: 18px; border-radius: 50%; border: none;
+    @apply bg-white dark:bg-slate-800 border-[3.5px] border-sweater-500 shadow-md cursor-pointer transition-transform hover:scale-125;
+  }
+
+  /* ===== BUTTONS & SEGMENTS ===== */
+  .seg-btn { @apply flex-1 flex items-center justify-center gap-2 py-2 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200; }
+  .seg-btn.active { @apply bg-white dark:bg-slate-800 text-sweater-600 dark:text-sweater-400 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10; }
+  
+  .swatch { @apply w-7 h-7 rounded-full border-2 border-transparent cursor-pointer transition-transform hover:scale-110 shrink-0 relative; }
+  .swatch.active { @apply ring-2 ring-offset-2 ring-sweater-500 ring-offset-white dark:ring-offset-slate-900; }
+  .sw-small { @apply relative w-10 h-5 bg-slate-200 dark:bg-slate-700 rounded-full cursor-pointer transition-colors; }
+  .sw-small.on { @apply bg-sweater-500; }
+  .sw-small::after { content:''; @apply absolute top-0.5 right-0.5 w-4 h-4 bg-white rounded-full transition-transform shadow-sm; }
+  .sw-small.on::after { transform: translateX(-20px); }
+  
+  .tpl-thumb { @apply w-full border-2 border-transparent rounded-xl cursor-pointer transition-all duration-300 object-cover; }
+  .tpl-thumb:hover { @apply border-slate-300 dark:border-slate-600 scale-105; }
+  .tpl-thumb.active { @apply border-sweater-500 ring-4 ring-sweater-500/20 shadow-lg scale-105; }
+  
+  /* ===== CANVAS ===== */
+  #canvas-container {
+    @apply relative w-full bg-slate-200 dark:bg-slate-800 overflow-hidden shadow-inner transition-all duration-500 mx-auto origin-center;
+    aspect-ratio: 1.48 / 1.05;
+  }
+  #canvas-container.portrait { aspect-ratio: 1.05 / 1.48; }
+  
+  /* Grid Overlay */
+  .grid-overlay {
+    @apply absolute inset-0 pointer-events-none opacity-0 transition-opacity duration-300 z-50;
+    background-image: 
+      linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
+    background-size: 5% 5%;
+  }
+  .dark .grid-overlay {
+    background-image: 
+      linear-gradient(to right, rgba(255,255,255,0.07) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255,255,255,0.07) 1px, transparent 1px);
+  }
+  .grid-overlay.show { @apply opacity-100; }
+
+  /* Movable Elements */
+  .movable {
+    @apply absolute cursor-grab select-none px-2 py-1 rounded-lg border-2 border-transparent transition-colors duration-150 outline-none;
+    will-change: left, top; /* GPU Acceleration for smooth drag */
+    min-width: 20px; min-height: 20px;
+    transform: translate(-50%, -50%); /* Center origin for precise positioning */
+  }
+  .movable[data-type="text"] {
+    white-space: nowrap; /* يمنع تكسر النص أو تراكمه عند الأطراف */
+    width: max-content; /* يجبر الحاوية على أخذ حجم النص الفعلي */
+  }
+  .movable:hover:not(.locked-el) { @apply border-sweater-500/40; }
+  .movable.selected { @apply border-sweater-500 cursor-grabbing shadow-lg bg-white/5 backdrop-blur-[2px] z-[60]; }
+  .movable.locked-el { @apply cursor-not-allowed; }
+  .movable.locked-el:hover { @apply border-amber-500/50; }
+  
+  .qr-wrapper { @apply bg-white p-1 rounded border-none; }
+  .qr-wrapper img, .qr-wrapper canvas { display: block; width: 100%; height: 100%; }
+
+  /* Animations */
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-slide-up { animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  
+  /* Toasts */
+  .toast-enter { opacity: 0; transform: translateY(100%) scale(0.95); }
+  .toast-show { opacity: 1; transform: translateY(0) scale(1); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .toast-hide { opacity: 0; transform: translateY(20px) scale(0.95); transition: all 0.3s ease; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-sweater-500 selection:text-white transition-colors duration-300 h-screen flex flex-col overflow-hidden">
+
+<!-- ===== TOPBAR ===== -->
+<header class="h-16 glass-header flex items-center justify-between px-4 sm:px-6 z-[100] shrink-0">
+  <div class="flex items-center gap-4">
+    <a href="./index.html" class="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-bold transition-colors bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-2 rounded-xl">
+      <i class="fa-solid fa-arrow-right"></i>
+      <span class="hidden sm:block">العودة للوحة</span>
+    </a>
+    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+    
+    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
+      <button class="w-8 h-8 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none flex items-center justify-center transition-all" id="btnUndo" title="تراجع (Ctrl+Z)" disabled>
+        <i class="fa-solid fa-rotate-left"></i>
+      </button>
+      <button class="w-8 h-8 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none flex items-center justify-center transition-all" id="btnRedo" title="إعادة (Ctrl+Y)" disabled>
+        <i class="fa-solid fa-rotate-right"></i>
+      </button>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-2 text-sweater-600 dark:text-sweater-400 font-black text-lg tracking-tight absolute left-1/2 -translate-x-1/2">
+    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sweater-400 to-sweater-600 text-white flex items-center justify-center shadow-inner-glow">
+      <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+    </div>
+    <span class="hidden sm:inline">صانع الكوبونات <span class="text-xs text-sweater-500/70 font-bold tracking-widest align-top">PRO</span></span>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <button id="themeToggle" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-sweater-500" title="تبديل المظهر">
+      <i class="fa-solid fa-moon text-lg" id="themeIco"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">
+
+  <!-- ====== RIGHT PANEL (INSPECTOR) ====== -->
+  <aside class="w-full lg:w-[22rem] border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20">
+    
+    <!-- Empty State -->
+    <div id="propsPlaceholder" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400 min-h-[300px]">
+      <div class="w-20 h-20 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center mb-4 border-2 border-dashed border-slate-200 dark:border-slate-700">
+        <i class="fa-solid fa-hand-pointer text-3xl opacity-40 text-sweater-500"></i>
+      </div>
+      <h3 class="font-black text-slate-700 dark:text-slate-300 mb-2">لوحة الخصائص</h3>
+      <p class="font-medium text-xs leading-relaxed max-w-[200px]">انقر على أي نص، شعار، أو باركود في مساحة العمل لتعديل خصائصه هنا.</p>
+    </div>
+
+    <!-- DYNAMIC INSPECTOR PANEL -->
+    <div id="dynamicPanel" class="hidden flex-col h-full animate-slide-up pb-10">
+      
+      <!-- Panel Header -->
+      <div class="p-5 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 sticky top-0 backdrop-blur-md z-30 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-3">
+          <div id="panelIconWrap" class="w-10 h-10 rounded-xl bg-sweater-50 dark:bg-sweater-900/30 text-sweater-600 dark:text-sweater-400 flex items-center justify-center border border-sweater-100 dark:border-sweater-800/50">
+            <i class="fa-solid fa-font text-lg" id="panelIcon"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-slate-900 dark:text-white text-sm" id="propName">العنصر المحدد</h3>
+            <div class="flex gap-2 text-[10px] font-bold text-slate-400 mt-1">
+              <button class="hover:text-sweater-500 transition-colors" id="btnLayerUp" title="إحضار للأمام"><i class="fa-solid fa-layer-group"></i> للأمام</button>
+              <span>•</span>
+              <button class="hover:text-sweater-500 transition-colors" id="btnLayerDown" title="إرسال للخلف">للخلف</button>
+            </div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button id="lockBtn" class="w-9 h-9 rounded-lg bg-slate-50 dark:bg-slate-800 text-slate-500 hover:bg-slate-100 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-700 dark:hover:text-white transition-all flex items-center justify-center border border-transparent" title="قفل الموضع">
+            <i class="fa-solid fa-lock-open" id="lockIco"></i>
+          </button>
+          <button id="deleteBtn" class="w-9 h-9 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-500 hover:bg-red-100 hover:text-red-600 dark:hover:bg-red-900/40 transition-all flex items-center justify-center" title="حذف العنصر">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+
+      <div class="p-5 flex flex-col gap-7">
+        
+        <!-- Section: Content -->
+        <section id="contentSection" class="hidden">
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">المحتوى</label>
+            <div class="group relative">
+              <i class="fa-solid fa-circle-info text-slate-400 text-[10px] cursor-help"></i>
+              <div class="absolute bottom-full right-0 mb-2 w-48 p-2 bg-slate-800 text-white text-[10px] rounded-lg opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50">
+                يمكنك كتابة متغيرات مثل <b>{{الاسم}}</b> ليتم استبدالها تلقائياً عند استيراد ملف Excel.
+              </div>
+            </div>
+          </div>
+          <textarea id="textInput" rows="2" class="w-full bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 rounded-xl p-3 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-sweater-500 focus:border-transparent outline-none transition-all resize-y font-sans shadow-sm" placeholder="المحتوى..."></textarea>
+        </section>
+
+        <!-- Section: Size -->
+        <section id="sizeSection">
+          <div class="flex justify-between mb-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300" id="sizeLabel">حجم الخط</label>
+            <span class="bg-sweater-50 dark:bg-sweater-900/30 text-sweater-600 dark:text-sweater-400 border border-sweater-100 dark:border-sweater-800/50 text-[10px] font-black px-2 py-0.5 rounded-md" id="sizeVal">24</span>
+          </div>
+          <input type="range" id="sizeSl" min="8" max="400" value="24">
+        </section>
+
+        <!-- Section: Typography -->
+        <section id="typoSection" class="hidden flex-col gap-5 border-t border-slate-100 dark:border-slate-800 pt-6">
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 block">وزن الخط</label>
+            <div class="flex bg-slate-50 dark:bg-slate-800/50 p-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <button class="fw-btn flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400" data-fw="400">عادي</button>
+              <button class="fw-btn flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400" data-fw="600">عريض</button>
+              <button class="fw-btn flex-1 py-1.5 rounded-lg text-xs font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400" data-fw="900">أثقل</button>
+            </div>
+          </div>
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 block">المحاذاة</label>
+            <div class="flex bg-slate-50 dark:bg-slate-800/50 p-1 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+              <button class="align-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all" data-align="right"><i class="fa-solid fa-align-right"></i></button>
+              <button class="align-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all" data-align="center"><i class="fa-solid fa-align-center"></i></button>
+              <button class="align-btn flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all" data-align="left"><i class="fa-solid fa-align-left"></i></button>
+            </div>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <div class="flex justify-between mb-2">
+                <label class="text-[10px] font-bold text-slate-700 dark:text-slate-300">تباعد الأحرف</label>
+                <span class="text-[10px] font-black text-sweater-500" id="lspaceVal">0</span>
+              </div>
+              <input type="range" id="lspaceSl" min="-5" max="30" step="0.5" value="0">
+            </div>
+            <div>
+              <div class="flex justify-between mb-2">
+                <label class="text-[10px] font-bold text-slate-700 dark:text-slate-300">تباعد السطور</label>
+                <span class="text-[10px] font-black text-sweater-500" id="lhVal">1.3</span>
+              </div>
+              <input type="range" id="lhSl" min="0.5" max="4" step="0.1" value="1.3">
+            </div>
+          </div>
+        </section>
+
+        <!-- Section: Opacity (Logo) -->
+        <section id="opacitySection" class="hidden border-t border-slate-100 dark:border-slate-800 pt-6">
+          <div class="flex justify-between mb-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">الشفافية</label>
+            <span class="bg-sweater-50 dark:bg-sweater-900/30 text-sweater-600 dark:text-sweater-400 border border-sweater-100 dark:border-sweater-800/50 text-[10px] font-black px-2 py-0.5 rounded-md" id="opacityVal">100%</span>
+          </div>
+          <input type="range" id="opacitySl" min="5" max="100" value="100">
+        </section>
+
+        <!-- Section: Colors -->
+        <section id="colorSection" class="hidden flex-col gap-5 border-t border-slate-100 dark:border-slate-800 pt-6">
+          <div>
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 block" id="colorLabel">لون العنصر</label>
+            <div class="flex flex-wrap gap-2 items-center" id="fgColSwatches">
+              <button class="swatch fg-swatch bg-slate-900 border-slate-200" data-color="#111827" title="أسود"></button>
+              <button class="swatch fg-swatch bg-white border-slate-200" data-color="#ffffff" title="أبيض"></button>
+              <button class="swatch fg-swatch bg-sweater-500 border-transparent" data-color="#f96714" title="أساسي"></button>
+              <button class="swatch fg-swatch bg-blue-600 border-transparent" data-color="#2563eb" title="أزرق"></button>
+              <button class="swatch fg-swatch bg-green-600 border-transparent" data-color="#16a34a" title="أخضر"></button>
+              <div class="relative w-7 h-7 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer hover:border-sweater-500 hover:text-sweater-500 transition-colors group shrink-0 bg-slate-50 dark:bg-slate-800">
+                <i class="fa-solid fa-palette text-[10px] text-slate-400 group-hover:text-sweater-500"></i>
+                <input type="color" id="fgColPicker" value="#f96714" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer p-0 border-0">
+              </div>
+            </div>
+          </div>
+
+          <div id="bgColorWrap">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2 block">خلفية العنصر</label>
+            <div class="flex flex-wrap gap-2 items-center" id="bgColSwatches">
+              <button class="swatch bg-swatch active border-slate-200 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-slate-400 text-[10px]" data-bg="transparent" title="بدون خلفية"><i class="fa-solid fa-ban"></i></button>
+              <button class="swatch bg-swatch bg-black border-transparent" data-bg="rgba(0,0,0,0.6)" title="أسود شفاف"></button>
+              <button class="swatch bg-swatch bg-white border-slate-200" data-bg="rgba(255,255,255,0.8)" title="أبيض شفاف"></button>
+              <button class="swatch bg-swatch bg-sweater-500 border-transparent" data-bg="rgba(249,103,20,0.2)" title="برتقالي شفاف"></button>
+              <div class="relative w-7 h-7 rounded-full border-2 border-dashed border-slate-300 dark:border-slate-600 flex items-center justify-center cursor-pointer hover:border-sweater-500 hover:text-sweater-500 transition-colors group shrink-0 bg-slate-50 dark:bg-slate-800">
+                <i class="fa-solid fa-fill-drip text-[10px] text-slate-400 group-hover:text-sweater-500"></i>
+                <input type="color" id="bgColPicker" value="#ffffff" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer p-0 border-0">
+              </div>
+            </div>
+          </div>
+
+          <div id="shadowWrap" class="border p-3 rounded-xl border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/30">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-slate-700 dark:text-slate-300"><i class="fa-solid fa-cloud text-slate-400 mr-1"></i> ظل النص</span>
+              <button class="sw-small" id="shadowSw"></button>
+            </div>
+            <div id="shadowIntWrap" class="hidden mt-3 pt-3 border-t border-slate-200 dark:border-slate-700">
+              <div class="flex justify-between mb-2">
+                <label class="text-[10px] font-bold text-slate-500">حدة الظل</label>
+                <span class="text-[10px] font-black text-sweater-500" id="shadowIntVal">6</span>
+              </div>
+              <input type="range" id="shadowIntSl" min="1" max="25" value="6" step="1">
+            </div>
+          </div>
+        </section>
+
+        <!-- Section: Position -->
+        <section class="flex flex-col gap-4 border-t border-slate-100 dark:border-slate-800 pt-6 mb-4">
+          <div class="flex items-center justify-between mb-1">
+            <h4 class="text-[0.65rem] font-black uppercase tracking-wider text-slate-400">الإحداثيات والمحاذاة</h4>
+            <span class="text-[9px] text-slate-400 font-medium px-2 py-0.5 bg-slate-100 dark:bg-slate-800 rounded"><i class="fa-solid fa-keyboard"></i> الأسهم للتحريك</span>
+          </div>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex items-center justify-between shadow-sm">
+              <span class="text-[10px] font-bold text-slate-400 pl-2 border-l border-slate-100 dark:border-slate-800">X</span>
+              <input type="number" id="posX" min="-10" max="110" step="0.1" class="w-16 bg-transparent text-left font-black text-sm outline-none text-slate-800 dark:text-white" dir="ltr">
+              <span class="text-[10px] text-slate-400">%</span>
+            </div>
+            <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-2 flex items-center justify-between shadow-sm">
+              <span class="text-[10px] font-bold text-slate-400 pl-2 border-l border-slate-100 dark:border-slate-800">Y</span>
+              <input type="number" id="posY" min="-10" max="110" step="0.1" class="w-16 bg-transparent text-left font-black text-sm outline-none text-slate-800 dark:text-white" dir="ltr">
+              <span class="text-[10px] text-slate-400">%</span>
+            </div>
+          </div>
+          <div class="grid grid-cols-3 gap-2">
+            <button class="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg py-2.5 text-[10px] font-bold transition-all shadow-sm flex flex-col items-center gap-1" id="ctrH" title="توسيط أفقي">
+              <i class="fa-solid fa-arrows-left-right text-slate-400"></i> أفقي
+            </button>
+            <button class="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg py-2.5 text-[10px] font-bold transition-all shadow-sm flex flex-col items-center gap-1" id="ctrBoth" title="توسيط بالمنتصف">
+              <i class="fa-solid fa-crosshairs text-sweater-500"></i> بالمنتصف
+            </button>
+            <button class="bg-slate-50 hover:bg-slate-100 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 rounded-lg py-2.5 text-[10px] font-bold transition-all shadow-sm flex flex-col items-center gap-1" id="ctrV" title="توسيط عمودي">
+              <i class="fa-solid fa-arrows-up-down text-slate-400"></i> عمودي
+            </button>
+          </div>
+        </section>
+
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ====== CENTER (CANVAS) ====== -->
+  <main class="flex-1 bg-slate-100/50 dark:bg-slate-950/50 flex flex-col overflow-hidden relative">
+    
+    <!-- Workspace Toolbar -->
+    <div class="h-12 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm flex items-center justify-between px-4 z-20">
+      <div class="flex items-center gap-2">
+        <button id="addTextBtn" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-sweater-500 hover:border-sweater-500 transition-all shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-t"></i> إضافة نص
+        </button>
+        <button id="addQRBtn" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-sweater-500 hover:border-sweater-500 transition-all shadow-sm flex items-center gap-2">
+          <i class="fa-solid fa-qrcode"></i> باركود QR
+        </button>
+      </div>
+      <div class="flex items-center gap-3">
+        <label class="flex items-center gap-2 text-xs font-bold text-slate-500 cursor-pointer hover:text-slate-800 dark:hover:text-white transition-colors">
+          <input type="checkbox" id="gridToggle" class="w-4 h-4 rounded text-sweater-500 focus:ring-sweater-500 bg-slate-100 border-slate-300 cursor-pointer">
+          شبكة التصميم
+        </label>
+      </div>
+    </div>
+
+    <!-- Canvas Area -->
+    <div class="flex-1 overflow-auto p-4 sm:p-8 flex items-center justify-center relative" id="workspace">
+      <!-- Decoration -->
+      <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40">
+        <div class="absolute top-[20%] left-[20%] w-96 h-96 bg-sweater-500/10 rounded-full mix-blend-multiply filter blur-3xl dark:bg-sweater-500/5 dark:mix-blend-lighten"></div>
+      </div>
+
+      <!-- Main Canvas -->
+      <div class="w-full max-w-4xl relative z-10 mx-auto transition-all duration-300" id="canvasOuter">
+        <div id="canvas-container" class="ring-1 ring-black/5 dark:ring-white/10 shadow-2xl rounded-2xl">
+          
+          <!-- Grid Overlay -->
+          <div class="grid-overlay" id="gridOverlay"></div>
+
+          <!-- Base Image -->
+          <img class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" id="bgImg" src="https://i.ibb.co/dG0G2pB/coupon-bg-1.png" crossorigin="anonymous" draggable="false"/>
+          
+          <!-- Elements Container (Used for event delegation of drag & drop) -->
+          <div id="elementsContainer" class="absolute inset-0 z-10">
+            <!-- Default Elements -->
+            <div id="el_main" data-type="text" data-name="النص الأساسي" class="movable" style="top:33.9%;left:54.7%;font-size:48px;color:#f96714;font-weight:900;text-align:center;direction:rtl;z-index:10;font-family:'LamaSans','Cairo',sans-serif">النص الأساسي</div>
+            <div id="el_sub" data-type="text" data-name="النص الفرعي" class="movable" style="top:47%;left:78.4%;font-size:23px;color:#374151;font-weight:400;text-align:center;direction:rtl;z-index:11;font-family:'LamaSans','Cairo',sans-serif">النص الفرعي</div>
+            <div id="el_code" data-type="text" data-name="كود الخصم" class="movable" style="top:63.4%;left:58.3%;font-size:50px;color:#ffffff;font-weight:900;text-align:center;direction:ltr;z-index:12;font-family:'LamaSans','Cairo',sans-serif">CODE-123</div>
+            <div id="el_terms" data-type="text" data-name="الشروط والأحكام" class="movable" style="top:81.7%;left:63.8%;font-size:14px;color:#6b7280;font-weight:400;text-align:center;direction:rtl;z-index:13;font-family:'LamaSans','Cairo',sans-serif">الشروط والأحكام • تنتهي الصلاحية قريباً</div>
+            
+            <img id="logoPreview" data-type="logo" data-name="الشعار" class="movable hidden" src="" alt="" style="z-index:14;width:90px;top:15%;left:15%" draggable="false"/>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ====== LEFT PANEL (TOOLS) ====== -->
+  <aside class="w-full lg:w-[22rem] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20 bg-slate-50/50 dark:bg-slate-900/50">
+    <div class="p-5 flex flex-col gap-6">
+
+      <!-- Mode Switch -->
+      <section>
+        <div class="flex bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+          <button id="btnModeDesign" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all bg-sweater-50 dark:bg-sweater-900/40 text-sweater-600 dark:text-sweater-400 shadow-sm ring-1 ring-sweater-500/20">
+            <i class="fa-solid fa-pen-ruler"></i> التصميم
+          </button>
+          <button id="btnModeBatch" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white">
+            <i class="fa-solid fa-bolt"></i> توليد الدفعات
+          </button>
+        </div>
+      </section>
+
+      <!-- DESIGN PANEL -->
+      <div id="panelDesign" class="flex flex-col gap-6 animate-slide-up">
+        
+        <!-- Uploads -->
+        <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-cloud-arrow-up"></i> إدراج الموارد
+          </h3>
+          <div class="grid grid-cols-2 gap-3">
+            <label class="flex flex-col items-center justify-center gap-2 py-4 rounded-xl bg-slate-50 hover:bg-sweater-50 dark:bg-slate-900 dark:hover:bg-sweater-900/20 border border-slate-200 dark:border-slate-700 hover:border-sweater-300 cursor-pointer transition-all text-slate-600 dark:text-slate-300 hover:text-sweater-600">
+              <input type="file" id="bgUpload" accept="image/*" class="hidden">
+              <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center mb-1"><i class="fa-solid fa-image"></i></div>
+              <span class="text-[11px] font-bold">خلفية جديدة</span>
+            </label>
+            <label class="flex flex-col items-center justify-center gap-2 py-4 rounded-xl bg-slate-50 hover:bg-sweater-50 dark:bg-slate-900 dark:hover:bg-sweater-900/20 border border-slate-200 dark:border-slate-700 hover:border-sweater-300 cursor-pointer transition-all text-slate-600 dark:text-slate-300 hover:text-sweater-600">
+              <input type="file" id="logoUpload" accept="image/*" class="hidden">
+              <div class="w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center mb-1"><i class="fa-solid fa-crown"></i></div>
+              <span class="text-[11px] font-bold">إضافة شعار</span>
+            </label>
+          </div>
+        </section>
+
+        <!-- Templates -->
+        <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div class="flex items-center justify-between mb-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
+              <i class="fa-solid fa-border-all"></i> القوالب الجاهزة
+            </h3>
+            <div class="flex bg-slate-100 dark:bg-slate-900 p-0.5 rounded-lg border border-slate-200 dark:border-slate-700">
+              <button id="btnLandscape" class="px-3 py-1 rounded-md text-[10px] font-bold transition-all bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm"><i class="fa-solid fa-panorama"></i> عرضي</button>
+              <button id="btnPortrait" class="px-3 py-1 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400"><i class="fa-solid fa-mobile-screen"></i> طولي</button>
+            </div>
+          </div>
+          
+          <div class="grid grid-cols-3 gap-2" id="lsTpls"></div>
+          <div class="grid grid-cols-3 gap-2 hidden" id="ptTpls"></div>
+        </section>
+
+        <!-- Export -->
+        <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+            <i class="fa-solid fa-download"></i> تصدير مفرد
+          </h3>
+          <div class="grid grid-cols-2 gap-3">
+            <button id="btnPng" class="py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-700 text-slate-700 dark:text-white font-bold text-xs border border-slate-200 dark:border-slate-600 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-image text-emerald-500"></i> حفظ PNG
+            </button>
+            <button id="btnPdf" class="py-2.5 rounded-xl bg-slate-50 hover:bg-slate-100 dark:bg-slate-900 dark:hover:bg-slate-700 text-slate-700 dark:text-white font-bold text-xs border border-slate-200 dark:border-slate-600 transition-all flex items-center justify-center gap-2">
+              <i class="fa-solid fa-file-pdf text-red-500"></i> حفظ PDF
+            </button>
+          </div>
+        </section>
+
+      </div>
+
+      <!-- BATCH PANEL -->
+      <div id="panelBatch" class="hidden flex-col gap-6 animate-slide-up">
+        
+        <section class="bg-white dark:bg-slate-800 rounded-2xl p-5 border border-slate-200 dark:border-slate-700 shadow-sm">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-lg">
+              <i class="fa-solid fa-bolt-lightning"></i>
+            </div>
+            <div>
+              <h3 class="text-sm font-black text-slate-900 dark:text-white">توليد الدفعات (المتغيرات)</h3>
+              <p class="text-[10px] text-slate-500 mt-0.5">أنشئ مئات الكوبونات المخصصة بضغطة زر</p>
+            </div>
+          </div>
+          
+          <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-5">
+            <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> كيف تعمل؟</h4>
+            <ol class="text-[10px] text-slate-600 dark:text-slate-400 list-decimal list-inside space-y-1.5 pr-2">
+              <li>اكتب اسم العمود بين قوسين بالتصميم: <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded text-sweater-600">{{الاسم}}</code> أو <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded text-sweater-600">{{Code}}</code></li>
+              <li>ارفع ملف Excel يحتوي على أعمدة بنفس الأسماء.</li>
+              <li>سيقوم النظام تلقائياً باستبدالها وتصديرها كملف PDF مجمع!</li>
+            </ol>
+          </div>
+          
+          <label id="dropZone" class="group relative flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-slate-600 border-dashed rounded-xl cursor-pointer bg-slate-50 hover:bg-emerald-50 dark:bg-slate-900 dark:hover:bg-emerald-900/10 transition-all duration-300">
+            <input type="file" id="batchFile" accept=".xlsx,.xls,.csv" class="hidden">
+            <div class="flex flex-col items-center justify-center relative z-10 transition-transform group-hover:-translate-y-1">
+              <i class="fa-solid fa-file-excel text-3xl text-slate-400 group-hover:text-emerald-500 mb-2 transition-colors" id="batchIcon"></i>
+              <p class="text-xs font-bold text-slate-600 dark:text-slate-300" id="batchFName">اسحب ملف Excel أو انقر هنا</p>
+            </div>
+          </label>
+          
+          <div id="batchBadgeWrap" class="hidden text-center mt-4">
+            <div class="inline-flex flex-col items-center p-3 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-200 dark:border-emerald-800/50 w-full">
+              <span class="text-emerald-600 dark:text-emerald-400 text-lg font-black" id="batchBadgeNum">0</span>
+              <span class="text-[10px] font-bold text-emerald-700 dark:text-emerald-500">صف جاهز للمعالجة</span>
+            </div>
+          </div>
+        </section>
+
+        <section class="mt-auto">
+          <button id="btnGenBatch" class="w-full py-4 rounded-xl bg-gradient-to-l from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-black text-sm shadow-[0_10px_20px_-10px_rgba(16,185,129,0.5)] transition-all transform hover:-translate-y-1 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
+            <i class="fa-solid fa-rocket"></i> بدء التوليد والتصدير (PDF)
+          </button>
+        </section>
+
+      </div>
+
+    </div>
+  </aside>
+
+</div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loading" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] hidden items-center justify-center flex-col gap-5 transition-opacity opacity-0">
+  <div class="relative w-20 h-20">
+    <div class="absolute inset-0 border-4 border-white/10 border-t-sweater-500 rounded-full animate-spin"></div>
+    <div class="absolute inset-2 border-4 border-transparent border-b-emerald-400 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+    <div class="absolute inset-0 flex items-center justify-center text-white text-xs font-black" id="loadingPct"></div>
+  </div>
+  <div class="text-center">
+    <h3 class="text-white font-black text-lg tracking-wide drop-shadow-md mb-1" id="loadingMsg">جاري المعالجة...</h3>
+    <p class="text-slate-400 text-xs font-medium">يرجى الانتظار وعدم إغلاق الصفحة.</p>
+  </div>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toasts" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+<script>
+(() => {
+'use strict';
+
+const TEMPLATES = {
+  landscape: [
+    {id:'l1',url:'https://i.ibb.co/MkCmHfJT/fdsfsd.png'},
+    {id:'l2',url:'https://i.ibb.co/Xz9tGxB/c1.png'},
+    {id:'l3',url:'https://i.ibb.co/7jXkH2B/c2.png'},
+  ],
+  portrait: [
+    {id:'p1',url:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png'},
+    {id:'p2',url:'https://i.ibb.co/dG0G2pB/coupon-bg-1.png'},
+    {id:'p3',url:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png'}, // Fallback
+  ]
+};
+
+const $ = id => document.getElementById(id);
+const $$ = s => document.querySelectorAll(s);
+
+const D = {
+  themeToggle: $('themeToggle'), themeIco: $('themeIco'),
+  btnUndo: $('btnUndo'), btnRedo: $('btnRedo'),
+  inspector: $('inspector'), propsPlaceholder: $('propsPlaceholder'),
+  dynamicPanel: $('dynamicPanel'), panelIcon: $('panelIcon'), panelIconWrap: $('panelIconWrap'), propName: $('propName'),
+  lockBtn: $('lockBtn'), lockIco: $('lockIco'), deleteBtn: $('deleteBtn'),
+  btnLayerUp: $('btnLayerUp'), btnLayerDown: $('btnLayerDown'),
+  contentSection: $('contentSection'), textInput: $('textInput'),
+  sizeSection: $('sizeSection'), sizeLabel: $('sizeLabel'), sizeSl: $('sizeSl'), sizeVal: $('sizeVal'),
+  typoSection: $('typoSection'), lspaceSl: $('lspaceSl'), lspaceVal: $('lspaceVal'), lhSl: $('lhSl'), lhVal: $('lhVal'),
+  opacitySection: $('opacitySection'), opacitySl: $('opacitySl'), opacityVal: $('opacityVal'),
+  colorSection: $('colorSection'), colorLabel: $('colorLabel'), fgColSwatches: $('fgColSwatches'), fgColPicker: $('fgColPicker'),
+  bgColorWrap: $('bgColorWrap'), bgColSwatches: $('bgColSwatches'), bgColPicker: $('bgColPicker'),
+  shadowWrap: $('shadowWrap'), shadowSw: $('shadowSw'), shadowIntWrap: $('shadowIntWrap'), shadowIntSl: $('shadowIntSl'), shadowIntVal: $('shadowIntVal'),
+  posX: $('posX'), posY: $('posY'), ctrH: $('ctrH'), ctrV: $('ctrV'), ctrBoth: $('ctrBoth'),
+  canvasContainer: $('canvas-container'), elementsContainer: $('elementsContainer'), bgImg: $('bgImg'),
+  gridToggle: $('gridToggle'), gridOverlay: $('gridOverlay'),
+  addTextBtn: $('addTextBtn'), addQRBtn: $('addQRBtn'), logoPreview: $('logoPreview'),
+  btnModeDesign: $('btnModeDesign'), btnModeBatch: $('btnModeBatch'),
+  panelDesign: $('panelDesign'), panelBatch: $('panelBatch'),
+  bgUpload: $('bgUpload'), logoUpload: $('logoUpload'),
+  btnLandscape: $('btnLandscape'), btnPortrait: $('btnPortrait'),
+  lsTpls: $('lsTpls'), ptTpls: $('ptTpls'), btnPng: $('btnPng'), btnPdf: $('btnPdf'),
+  batchFile: $('batchFile'), batchFName: $('batchFName'), batchIcon: $('batchIcon'),
+  batchBadgeWrap: $('batchBadgeWrap'), batchBadgeNum: $('batchBadgeNum'), btnGenBatch: $('btnGenBatch'),
+  loading: $('loading'), loadingMsg: $('loadingMsg'), loadingPct: $('loadingPct'), toasts: $('toasts'),
+};
+
+let activeEl = null;
+let batchData = [];
+let batchHeaders = [];
+let orientation = 'landscape';
+const locks = {};
+let suppressSync = false;
+let idCounter = 100;
+
+D.themeToggle.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  const dk = document.documentElement.classList.contains('dark');
+  D.themeIco.style.transform = 'rotate(360deg) scale(0)';
+  setTimeout(() => {
+    D.themeIco.className = dk ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon';
+    D.themeIco.style.transform = 'rotate(0deg) scale(1)';
+  }, 150);
+  localStorage.setItem('swDark', dk ? '1' : '0');
+});
+if (localStorage.getItem('swDark') === '1' || (!('swDark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
+  D.themeIco.className = 'fa-solid fa-sun text-amber-500';
+}
+
+function toast(type, title, msg) {
+  const cfg = {
+    ok: { icon: 'fa-check', bg: 'bg-emerald-100 dark:bg-emerald-900/30', color: 'text-emerald-600 dark:text-emerald-400' },
+    err: { icon: 'fa-xmark', bg: 'bg-red-100 dark:bg-red-900/30', color: 'text-red-600 dark:text-red-400' },
+    wrn: { icon: 'fa-exclamation', bg: 'bg-amber-100 dark:bg-amber-900/30', color: 'text-amber-600 dark:text-amber-400' }
+  }[type];
+
+  const el = document.createElement('div');
+  el.className = `flex items-start gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-[0_10px_40px_-10px_rgba(0,0,0,0.2)] border border-slate-200 dark:border-slate-700 pointer-events-auto toast-enter`;
+  el.innerHTML = `
+    <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm ${cfg.bg} ${cfg.color}"><i class="fa-solid ${cfg.icon}"></i></div>
+    <div class="flex-1 pt-0.5">
+      <div class="font-bold text-sm text-slate-900 dark:text-white">${title}</div>
+      ${msg ? `<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${msg}</div>` : ''}
+    </div>
+    <button class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors p-1" onclick="this.parentElement.remove()"><i class="fa-solid fa-xmark"></i></button>
+  `;
+  D.toasts.appendChild(el);
+  requestAnimationFrame(() => requestAnimationFrame(() => { el.classList.remove('toast-enter'); el.classList.add('toast-show'); }));
+  setTimeout(() => { el.classList.replace('toast-show', 'toast-hide'); setTimeout(() => el.remove(), 300); }, 4000);
+}
+
+function showLoading(msg='جاري المعالجة...', pct='') { 
+  D.loadingMsg.textContent = msg; 
+  D.loadingPct.textContent = pct;
+  D.loading.classList.replace('hidden', 'flex'); 
+  setTimeout(() => D.loading.classList.replace('opacity-0', 'opacity-100'), 10);
+}
+function hideLoading() { 
+  D.loading.classList.replace('opacity-100', 'opacity-0');
+  setTimeout(() => { D.loading.classList.replace('flex', 'hidden'); D.loadingPct.textContent=''; }, 300);
+}
+
+function rgbToHex(rgb) {
+  if (!rgb || !rgb.startsWith('rgb')) return '#000000';
+  const match = rgb.match(/\d+/g);
+  if(!match) return '#000000';
+  const [r,g,b] = match.map(Number);
+  return '#'+[r,g,b].map(v=>v.toString(16).padStart(2,'0')).join('');
+}
+
+const Hist = (() => {
+  const MAX = 50;
+  let stack = [], idx = -1, timer = null;
+
+  function capture() {
+    return {
+      bg: D.bgImg.src,
+      orientation,
+      html: D.elementsContainer.innerHTML
+    };
+  }
+
+  function restore(state) {
+    suppressSync = true;
+    D.bgImg.src = state.bg;
+    if (state.orientation !== orientation) setOrientation(state.orientation, false);
+    
+    // Restore elements HTML
+    D.elementsContainer.innerHTML = state.html;
+    
+    // Re-bind specific inner instances like QR codes if necessary (Usually HTML capture holds the img src of generated QR, which works fine visually).
+    
+    // Try to re-select
+    if (activeEl) {
+      const restoredEl = $(activeEl.id);
+      if (restoredEl) selectEl(restoredEl);
+      else selectEl(null);
+    } else {
+      selectEl(null);
+    }
+    suppressSync = false;
+  }
+
+  function push() {
+    const s = capture();
+    stack = stack.slice(0, idx + 1);
+    stack.push(s);
+    if (stack.length > MAX) stack.shift(); else idx++;
+    updateUI();
+    try { localStorage.setItem('sweaterCouponAutosaveV2', JSON.stringify(s)); } catch (_) {}
+  }
+
+  function pushLazy(delay = 500) { clearTimeout(timer); timer = setTimeout(push, delay); }
+  function undo() { if (idx > 0) { idx--; restore(stack[idx]); updateUI(); } }
+  function redo() { if (idx < stack.length-1) { idx++; restore(stack[idx]); updateUI(); } }
+  function updateUI() {
+    D.btnUndo.disabled = idx <= 0;
+    D.btnRedo.disabled = idx >= stack.length - 1;
+  }
+
+  return { push, pushLazy, undo, redo };
+})();
+
+D.btnUndo.addEventListener('click', Hist.undo);
+D.btnRedo.addEventListener('click', Hist.redo);
+
+let isDragging = false;
+let dragEl = null;
+let dragOffsetX = 0, dragOffsetY = 0;
+let dragHasMoved = false;
+
+// Event delegation on the container handles all movable elements dynamically
+D.elementsContainer.addEventListener('mousedown', dragStart);
+D.elementsContainer.addEventListener('touchstart', dragStart, {passive: false});
+
+function dragStart(e) {
+  const target = e.target.closest('.movable');
+  if (!target || locks[target.id]) return;
+  // Ignore if clicking on inputs (though they shouldn't be here)
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  if (e.type === 'touchstart') e.preventDefault();
+  
+  dragEl = target;
+  isDragging = true;
+  dragHasMoved = false;
+  selectEl(dragEl);
+
+  // Calculate mouse offset relative to the element's top-left corner
+  const p = e.touches ? e.touches[0] : e;
+  const rect = dragEl.getBoundingClientRect();
+  const contRect = D.canvasContainer.getBoundingClientRect();
+
+  // We need the offset from the click to the element's actual position
+  // Since element uses transform: translate(-50%, -50%), its left/top is its CENTER.
+  // So rect.left + rect.width/2 is the visual center.
+  dragOffsetX = p.clientX - (rect.left + rect.width/2);
+  dragOffsetY = p.clientY - (rect.top + rect.height/2);
+
+  document.addEventListener('mousemove', dragMove);
+  document.addEventListener('touchmove', dragMove, {passive: false});
+  document.addEventListener('mouseup', dragEnd);
+  document.addEventListener('touchend', dragEnd);
+}
+
+function dragMove(e) {
+  if (!isDragging || !dragEl) return;
+  if (e.type === 'touchmove') e.preventDefault();
+  dragHasMoved = true;
+
+  const p = e.touches ? e.touches[0] : e;
+  const contRect = D.canvasContainer.getBoundingClientRect();
+
+  // Calculate new center point relative to the container
+  let x = p.clientX - contRect.left - dragOffsetX;
+  let y = p.clientY - contRect.top - dragOffsetY;
+
+  // Convert to percentages
+  let pctX = (x / contRect.width) * 100;
+  let pctY = (y / contRect.height) * 100;
+
+  // Bound it slightly so it doesn't disappear completely
+  pctX = Math.max(-20, Math.min(pctX, 120));
+  pctY = Math.max(-20, Math.min(pctY, 120));
+
+  dragEl.style.left = `${pctX.toFixed(2)}%`;
+  dragEl.style.top = `${pctY.toFixed(2)}%`;
+
+  // Live update Inspector
+  if (!suppressSync) {
+    D.posX.value = pctX.toFixed(1);
+    D.posY.value = pctY.toFixed(1);
+  }
+}
+
+function dragEnd() {
+  if (!isDragging) return;
+  isDragging = false;
+  if (dragHasMoved) Hist.push();
+  dragEl = null;
+  document.removeEventListener('mousemove', dragMove);
+  document.removeEventListener('touchmove', dragMove);
+  document.removeEventListener('mouseup', dragEnd);
+  document.removeEventListener('touchend', dragEnd);
+}
+
+// Center Helpers
+function centerEl(axis) {
+  if(!activeEl) return;
+  if (axis === 'x' || axis === 'both') activeEl.style.left = '50%';
+  if (axis === 'y' || axis === 'both') activeEl.style.top = '50%';
+  if (!suppressSync) {
+      if (axis === 'x' || axis === 'both') D.posX.value = '50';
+      if (axis === 'y' || axis === 'both') D.posY.value = '50';
+  }
+  Hist.push();
+}
+D.ctrH.addEventListener('click', () => centerEl('x'));
+D.ctrV.addEventListener('click', () => centerEl('y'));
+D.ctrBoth.addEventListener('click', () => centerEl('both'));
+
+// Nudging
+document.addEventListener('keydown', e => {
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return; 
+  if (!activeEl || locks[activeEl.id]) return;
+
+  const step = e.shiftKey ? 2 : 0.2; // Percentage step
+  
+  let currentLeft = parseFloat(activeEl.style.left) || 50;
+  let currentTop = parseFloat(activeEl.style.top) || 50;
+
+  let moved = false;
+  if (e.key === 'ArrowUp') { currentTop -= step; moved = true; }
+  else if (e.key === 'ArrowDown') { currentTop += step; moved = true; }
+  else if (e.key === 'ArrowLeft') { currentLeft -= step; moved = true; }
+  else if (e.key === 'ArrowRight') { currentLeft += step; moved = true; }
+  else if (e.key === 'Delete' || e.key === 'Backspace') {
+     D.deleteBtn.click();
+     return;
+  }
+  
+  if (moved) {
+      e.preventDefault();
+      activeEl.style.left = `${currentLeft}%`;
+      activeEl.style.top = `${currentTop}%`;
+      D.posX.value = currentLeft.toFixed(1);
+      D.posY.value = currentTop.toFixed(1);
+      Hist.pushLazy(300);
+  }
+});
+
+// Z-Index
+function getZ(el) { return parseInt(window.getComputedStyle(el).zIndex) || 10; }
+D.btnLayerUp.addEventListener('click', () => { if(activeEl) { activeEl.style.zIndex = getZ(activeEl) + 1; Hist.push(); } });
+D.btnLayerDown.addEventListener('click', () => { if(activeEl) { activeEl.style.zIndex = Math.max(1, getZ(activeEl) - 1); Hist.push(); } });
+
+function selectEl(el) {
+  $$('.movable').forEach(e => e.classList.remove('selected'));
+  D.propsPlaceholder.style.display = 'none';
+  D.dynamicPanel.style.display = 'none';
+
+  if (!el) {
+    D.propsPlaceholder.style.display = 'flex';
+    activeEl = null;
+    return;
+  }
+  
+  activeEl = el;
+  el.classList.add('selected');
+  D.dynamicPanel.style.display = 'flex';
+  
+  syncInspector();
+}
+
+function syncInspector() {
+  if (!activeEl) return;
+  suppressSync = true;
+  const type = activeEl.dataset.type; // 'text', 'logo', 'qr'
+  const cs = window.getComputedStyle(activeEl);
+
+  D.propName.textContent = activeEl.dataset.name || 'عنصر';
+  
+  D.panelIcon.className = type==='text' ? 'fa-solid fa-font' : (type==='qr' ? 'fa-solid fa-qrcode' : 'fa-solid fa-image');
+  D.panelIconWrap.className = `w-10 h-10 rounded-xl flex items-center justify-center border shadow-sm ${
+    type==='qr' ? 'bg-purple-50 dark:bg-purple-900/30 text-purple-600 dark:text-purple-400 border-purple-100' :
+    type==='logo' ? 'bg-amber-50 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400 border-amber-100' :
+    'bg-sweater-50 dark:bg-sweater-900/30 text-sweater-600 dark:text-sweater-400 border-sweater-100'
+  }`;
+
+  D.contentSection.style.display = 'none'; D.sizeSection.style.display = 'none'; D.typoSection.style.display = 'none';
+  D.opacitySection.style.display = 'none'; D.colorSection.style.display = 'none'; D.shadowWrap.style.display = 'none'; D.bgColorWrap.style.display = 'none';
+
+  if (type === 'text') {
+    D.contentSection.style.display = 'block'; D.sizeSection.style.display = 'block'; D.typoSection.style.display = 'flex';
+    D.colorSection.style.display = 'flex'; D.shadowWrap.style.display = 'block'; D.bgColorWrap.style.display = 'block';
+    
+    D.textInput.value = activeEl.innerHTML.replace(/<br\s*\/?>/gi, '\n');
+    D.sizeLabel.textContent = 'حجم الخط';
+    D.sizeSl.max = 200; D.sizeSl.value = parseInt(cs.fontSize, 10); D.sizeVal.textContent = D.sizeSl.value + 'px';
+    
+    const fw = cs.fontWeight;
+    $$('.fw-btn').forEach(b => b.classList.toggle('active', b.dataset.fw === fw || (b.dataset.fw === '400' && parseInt(fw)<500) || (b.dataset.fw === '600' && parseInt(fw)>=500 && parseInt(fw)<750) || (b.dataset.fw === '900' && parseInt(fw)>=750)));
+    const align = cs.textAlign;
+    $$('.align-btn').forEach(b => b.classList.toggle('active', b.dataset.align === align));
+    D.lspaceSl.value = parseFloat(cs.letterSpacing) || 0; D.lspaceVal.textContent = parseFloat(D.lspaceSl.value).toFixed(1);
+    let lh = parseFloat(cs.lineHeight); lh = isNaN(lh) ? 1.3 : lh / parseInt(cs.fontSize, 10);
+    D.lhSl.value = isNaN(lh) ? 1.3 : +lh.toFixed(1); D.lhVal.textContent = D.lhSl.value;
+    
+    const hex = rgbToHex(cs.color);
+    $$('.fg-swatch').forEach(s => s.classList.toggle('active', s.dataset.color && s.dataset.color.toLowerCase() === hex));
+    D.fgColPicker.value = hex;
+    
+    const bg = cs.backgroundColor;
+    const isBgNone = bg === 'rgba(0, 0, 0, 0)' || bg === 'transparent';
+    $$('.bg-swatch').forEach(s => {
+      if (s.dataset.bg === 'transparent') s.classList.toggle('active', isBgNone);
+      else s.classList.remove('active');
+    });
+    
+    const hasShadow = cs.textShadow && cs.textShadow !== 'none';
+    D.shadowSw.classList.toggle('on', hasShadow);
+    D.shadowIntWrap.style.display = hasShadow ? 'block' : 'none';
+
+  } else if (type === 'logo') {
+    D.sizeSection.style.display = 'block'; D.opacitySection.style.display = 'block';
+    D.sizeLabel.textContent = 'العرض';
+    D.sizeSl.max = 400; D.sizeSl.value = parseInt(activeEl.style.width, 10) || 90; D.sizeVal.textContent = D.sizeSl.value + 'px';
+    D.opacitySl.value = Math.round((parseFloat(activeEl.style.opacity) || 1) * 100); D.opacityVal.textContent = D.opacitySl.value + '%';
+    
+  } else if (type === 'qr') {
+    D.contentSection.style.display = 'block'; D.sizeSection.style.display = 'block'; D.colorSection.style.display = 'flex'; D.bgColorWrap.style.display = 'block';
+    D.textInput.value = activeEl.dataset.val || '';
+    D.sizeLabel.textContent = 'حجم الرمز';
+    D.sizeSl.max = 300; D.sizeSl.value = parseInt(activeEl.style.width, 10) || 100; D.sizeVal.textContent = D.sizeSl.value + 'px';
+    
+    D.colorLabel.textContent = 'لون الرمز';
+    const fg = activeEl.dataset.color || '#000000';
+    $$('.fg-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === fg));
+    D.fgColPicker.value = fg;
+  }
+
+  const locked = locks[activeEl.id] || false;
+  D.lockBtn.classList.toggle('locked', locked);
+  D.lockIco.className = locked ? 'fa-solid fa-lock' : 'fa-solid fa-lock-open';
+  
+  D.posX.value = parseFloat(activeEl.style.left).toFixed(1); 
+  D.posY.value = parseFloat(activeEl.style.top).toFixed(1);
+
+  suppressSync = false;
+}
+
+D.textInput.addEventListener('input', () => {
+  if (!activeEl || suppressSync) return;
+  if(activeEl.dataset.type === 'text') {
+    activeEl.innerHTML = D.textInput.value.replace(/\n/g, '<br>');
+  } else if (activeEl.dataset.type === 'qr') {
+    activeEl.dataset.val = D.textInput.value;
+    renderQR(activeEl);
+  }
+  Hist.pushLazy(600);
+});
+
+D.sizeSl.addEventListener('input', () => {
+  if (!activeEl) return;
+  const v = D.sizeSl.value;
+  D.sizeVal.textContent = v + 'px';
+  if(activeEl.dataset.type === 'text') activeEl.style.fontSize = v + 'px';
+  else { activeEl.style.width = v + 'px'; activeEl.style.height = activeEl.dataset.type==='qr' ? v + 'px' : 'auto'; }
+  Hist.pushLazy(300);
+});
+
+$$('.fw-btn').forEach(btn => btn.addEventListener('click', () => {
+  if (!activeEl || activeEl.dataset.type !== 'text') return;
+  activeEl.style.fontWeight = btn.dataset.fw;
+  syncInspector(); Hist.push();
+}));
+
+$$('.align-btn').forEach(btn => btn.addEventListener('click', () => {
+  if (!activeEl || activeEl.dataset.type !== 'text') return;
+  activeEl.style.textAlign = btn.dataset.align;
+  activeEl.style.direction = btn.dataset.align === 'right' ? 'rtl' : 'ltr';
+  syncInspector(); Hist.push();
+}));
+
+D.lspaceSl.addEventListener('input', () => { if (!activeEl) return; activeEl.style.letterSpacing = D.lspaceSl.value + 'px'; D.lspaceVal.textContent = parseFloat(D.lspaceSl.value).toFixed(1); Hist.pushLazy(300); });
+D.lhSl.addEventListener('input', () => { if (!activeEl) return; activeEl.style.lineHeight = D.lhSl.value; D.lhVal.textContent = parseFloat(D.lhSl.value).toFixed(1); Hist.pushLazy(300); });
+D.opacitySl.addEventListener('input', () => { if (!activeEl) return; activeEl.style.opacity = D.opacitySl.value / 100; D.opacityVal.textContent = D.opacitySl.value + '%'; Hist.pushLazy(300); });
+
+$$('.fg-swatch').forEach(sw => sw.addEventListener('click', () => {
+  if (!activeEl) return;
+  const col = sw.dataset.color;
+  if(activeEl.dataset.type === 'text') activeEl.style.color = col;
+  else if (activeEl.dataset.type === 'qr') { activeEl.dataset.color = col; renderQR(activeEl); }
+  syncInspector(); Hist.push();
+}));
+D.fgColPicker.addEventListener('input', () => {
+  if (!activeEl) return;
+  if(activeEl.dataset.type === 'text') activeEl.style.color = D.fgColPicker.value;
+  else if (activeEl.dataset.type === 'qr') { activeEl.dataset.color = D.fgColPicker.value; renderQR(activeEl); }
+  Hist.pushLazy(300);
+});
+
+$$('.bg-swatch').forEach(sw => sw.addEventListener('click', () => {
+  if (!activeEl) return;
+  const bg = sw.dataset.bg;
+  if(activeEl.dataset.type === 'text') {
+    if (bg === 'transparent') { activeEl.style.backgroundColor = ''; activeEl.style.padding = ''; activeEl.style.borderRadius = ''; }
+    else { activeEl.style.backgroundColor = bg; activeEl.style.padding = '4px 10px'; activeEl.style.borderRadius = '5px'; }
+  } else if (activeEl.dataset.type === 'qr') {
+    if (bg !== 'transparent') { activeEl.dataset.bg = bg; renderQR(activeEl); }
+  }
+  syncInspector(); Hist.push();
+}));
+D.bgColPicker.addEventListener('input', () => {
+  if (!activeEl) return;
+  if(activeEl.dataset.type === 'text') { activeEl.style.backgroundColor = D.bgColPicker.value; activeEl.style.padding = '4px 10px'; activeEl.style.borderRadius = '5px'; }
+  else if (activeEl.dataset.type === 'qr') { activeEl.dataset.bg = D.bgColPicker.value; renderQR(activeEl); }
+  Hist.pushLazy(300);
+});
+
+D.shadowSw.addEventListener('click', () => {
+  if (!activeEl || activeEl.dataset.type !== 'text') return;
+  const on = !D.shadowSw.classList.contains('on');
+  D.shadowSw.classList.toggle('on', on);
+  D.shadowIntWrap.style.display = on ? 'block' : 'none';
+  applyShadow(on); Hist.push();
+});
+D.shadowIntSl.addEventListener('input', () => {
+  if (!activeEl || activeEl.dataset.type !== 'text' || !D.shadowSw.classList.contains('on')) return;
+  applyShadow(true); D.shadowIntVal.textContent = D.shadowIntSl.value; Hist.pushLazy(300);
+});
+function applyShadow(on) {
+  if (!activeEl) return;
+  const v = D.shadowIntSl.value;
+  activeEl.style.textShadow = on ? `1px 1px ${v}px rgba(0,0,0,0.65), 0 0 ${Math.round(v*1.5)}px rgba(0,0,0,0.3)` : 'none';
+}
+
+D.posX.addEventListener('input', () => { if(!activeEl||suppressSync)return; activeEl.style.left = D.posX.value+'%'; Hist.pushLazy(400); });
+D.posY.addEventListener('input', () => { if(!activeEl||suppressSync)return; activeEl.style.top = D.posY.value+'%'; Hist.pushLazy(400); });
+
+D.lockBtn.addEventListener('click', () => { 
+  if(activeEl) { 
+    locks[activeEl.id] = !locks[activeEl.id]; 
+    activeEl.classList.toggle('locked-el', locks[activeEl.id]);
+    syncInspector(); 
+  }
+});
+
+D.gridToggle.addEventListener('change', e => D.gridOverlay.classList.toggle('show', e.target.checked));
+
+D.addTextBtn.addEventListener('click', () => {
+  const el = document.createElement('div');
+  el.id = 'el_' + Date.now();
+  el.className = 'movable';
+  el.dataset.type = 'text';
+  el.dataset.name = 'نص مخصص';
+  el.style.top = '50%'; el.style.left = '50%'; el.style.zIndex = '20';
+  el.style.fontSize = '30px'; el.style.color = '#111827'; el.style.fontWeight = '700';
+  el.style.textAlign = 'center'; el.style.direction = 'rtl'; el.style.fontFamily = "'LamaSans','Cairo',sans-serif";
+  el.innerHTML = 'نص جديد';
+  
+  D.elementsContainer.appendChild(el);
+  selectEl(el);
+  Hist.push();
+});
+
+D.addQRBtn.addEventListener('click', () => {
+  const el = document.createElement('div');
+  el.id = 'el_' + Date.now();
+  el.className = 'movable qr-wrapper';
+  el.dataset.type = 'qr';
+  el.dataset.name = 'باركود QR';
+  el.dataset.val = 'https://sweater.sa';
+  el.dataset.color = '#000000';
+  el.dataset.bg = '#ffffff';
+  el.style.top = '50%'; el.style.left = '50%'; el.style.zIndex = '20';
+  el.style.width = '100px'; el.style.height = '100px';
+  
+  D.elementsContainer.appendChild(el);
+  renderQR(el);
+  selectEl(el);
+  Hist.push();
+});
+
+D.deleteBtn.addEventListener('click', () => {
+  if(!activeEl || activeEl.id === 'bgImg') return;
+  if(activeEl.id === 'logoPreview') {
+    activeEl.style.display = 'none'; 
+    activeEl.src = '';
+  } else {
+    activeEl.remove();
+  }
+  delete locks[activeEl.id];
+  selectEl(null);
+  Hist.push();
+});
+
+function renderQR(el) {
+  el.innerHTML = ''; 
+  new QRCode(el, {
+    text: el.dataset.val || "https://sweater.sa",
+    width: 256,
+    height: 256,
+    colorDark : el.dataset.color || "#000000",
+    colorLight : el.dataset.bg || "#ffffff",
+    correctLevel : QRCode.CorrectLevel.M
+  });
+  setTimeout(() => {
+    const child = el.querySelector('img') || el.querySelector('canvas');
+    if(child) { child.style.width = '100%'; child.style.height = '100%'; child.style.display = 'block'; }
+  }, 10);
+}
+
+D.bgUpload.addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => { D.bgImg.src = ev.target.result; $$('.tpl-thumb').forEach(t => t.classList.remove('active')); Hist.push(); };
+  reader.readAsDataURL(file);
+});
+
+D.logoUpload.addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    D.logoPreview.src = ev.target.result; D.logoPreview.style.display = 'block';
+    D.logoPreview.classList.remove('hidden');
+    selectEl(D.logoPreview); Hist.push();
+  };
+  reader.readAsDataURL(file);
+});
+
+function setOrientation(o, saveHist = true) {
+  orientation = o;
+  const isLs = o === 'landscape';
+  D.canvasContainer.classList.toggle('portrait', !isLs);
+  
+  D.btnLandscape.className = isLs ? "px-3 py-1 rounded-md text-[10px] font-bold transition-all bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm" : "px-3 py-1 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400";
+  D.btnPortrait.className = !isLs ? "px-3 py-1 rounded-md text-[10px] font-bold transition-all bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm" : "px-3 py-1 rounded-md text-[10px] font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400";
+  
+  D.lsTpls.style.display = isLs ? 'grid' : 'none';
+  D.ptTpls.style.display = isLs ? 'none' : 'grid';
+
+  const cont = isLs ? D.lsTpls : D.ptTpls;
+  if (!cont.querySelector('.tpl-thumb.active')) {
+    const t = isLs ? TEMPLATES.landscape[0] : TEMPLATES.portrait[0];
+    applyTemplate(t.url, t.id, false);
+  }
+  if (saveHist) Hist.push();
+}
+D.btnLandscape.addEventListener('click', () => setOrientation('landscape'));
+D.btnPortrait.addEventListener('click', () => setOrientation('portrait'));
+
+function applyTemplate(url, id, saveHist = true) {
+  D.bgImg.src = url;
+  $$('.tpl-thumb').forEach(t => t.classList.remove('active'));
+  const target = document.querySelector(`[data-tid="${id}"]`);
+  if (target) target.classList.add('active');
+  if (saveHist) Hist.push();
+}
+
+function renderTemplates() {
+  ['landscape','portrait'].forEach(type => {
+    const cont = type === 'landscape' ? D.lsTpls : D.ptTpls;
+    cont.innerHTML = '';
+    TEMPLATES[type].forEach(t => {
+      const img = document.createElement('img');
+      img.src = t.url; img.dataset.tid = t.id;
+      img.className = `tpl-thumb aspect-[${type==='landscape'?'3/2':'2/3'}]`;
+      img.addEventListener('click', () => applyTemplate(t.url, t.id));
+      cont.appendChild(img);
+    });
+  });
+  applyTemplate(TEMPLATES.landscape[0].url, TEMPLATES.landscape[0].id, false);
+}
+
+D.btnModeDesign.addEventListener('click', () => {
+  D.panelDesign.style.display='flex'; D.panelBatch.style.display='none';
+  D.btnModeDesign.className = "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all bg-sweater-50 dark:bg-sweater-900/40 text-sweater-600 dark:text-sweater-400 shadow-sm ring-1 ring-sweater-500/20";
+  D.btnModeBatch.className = "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white";
+});
+D.btnModeBatch.addEventListener('click', () => {
+  D.panelDesign.style.display='none'; D.panelBatch.style.display='flex';
+  D.btnModeBatch.className = "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all bg-sweater-50 dark:bg-sweater-900/40 text-sweater-600 dark:text-sweater-400 shadow-sm ring-1 ring-sweater-500/20";
+  D.btnModeDesign.className = "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-white";
+});
+
+async function doExport(fn, msg='جاري التصدير...') {
+  selectEl(null);
+  await new Promise(r => setTimeout(r, 70));
+  showLoading(msg);
+  const origR = D.canvasContainer.style.borderRadius;
+  D.canvasContainer.style.borderRadius = '0'; // prevent rounded corners in export
+  try {
+    await fn();
+    toast('ok', 'تم التصدير بنجاح', 'تم حفظ الملف في جهازك.');
+  } catch (err) {
+    console.error(err);
+    toast('err', 'خطأ في التصدير', 'حدث خطأ، الرجاء المحاولة مرة أخرى.');
+  } finally { 
+    hideLoading(); 
+    D.canvasContainer.style.borderRadius = origR;
+  }
+}
+
+D.btnPng.addEventListener('click', () => doExport(async () => {
+  const cv = await html2canvas(D.canvasContainer, {scale:4,useCORS:true,backgroundColor:null,allowTaint:true});
+  const a = document.createElement('a');
+  a.download = `sweater-coupon-${Date.now()}.png`; a.href = cv.toDataURL('image/png'); a.click();
+}));
+
+D.btnPdf.addEventListener('click', () => doExport(async () => {
+  const {jsPDF} = window.jspdf;
+  const isP = D.canvasContainer.classList.contains('portrait');
+  const w = D.canvasContainer.offsetWidth, h = D.canvasContainer.offsetHeight;
+  const pdf = new jsPDF({orientation:isP?'p':'l',unit:'px',format:[w,h]});
+  const cv = await html2canvas(D.canvasContainer, {scale:4,useCORS:true,backgroundColor:null,allowTaint:true});
+  pdf.addImage(cv.toDataURL('image/jpeg',0.96),'JPEG',0,0,w,h);
+  pdf.save(`sweater-coupon-${Date.now()}.pdf`);
+}));
+
+D.batchFile.addEventListener('change', e => {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:""}); 
+      
+      if (!rows.length || rows.length < 2) { toast('err','الملف فارغ أو لا يحتوي على بيانات',''); return; }
+
+      batchHeaders = rows[0].map(h => String(h).trim());
+      batchData = [];
+      for(let i=1; i<rows.length; i++) {
+        let rowObj = {};
+        batchHeaders.forEach((h, colIdx) => { rowObj[h] = String(rows[i][colIdx]).trim(); });
+        if(Object.values(rowObj).some(val => val !== '')) batchData.push(rowObj);
+      }
+
+      if (batchData.length > 0) {
+        D.batchFName.textContent = file.name;
+        D.dropZone.classList.add('border-emerald-500', 'bg-emerald-50', 'dark:bg-emerald-900/10');
+        D.batchIcon.className = 'fa-solid fa-file-check text-3xl text-emerald-500 mb-2 transition-colors';
+        D.batchBadgeWrap.style.display = 'block';
+        D.batchBadgeNum.textContent = batchData.length;
+        D.btnGenBatch.disabled = false;
+        toast('ok', 'تم الاستيراد بنجاح', `تم استيراد ${batchData.length} صف للبيانات.`);
+      } else {
+        toast('err','لا توجد بيانات صالحة','');
+      }
+    } catch(err) { console.error(err); toast('err','خطأ في الملف','تأكد من أنه ملف Excel صالح.'); }
+  };
+  reader.readAsArrayBuffer(file);
+});
+
+D.btnGenBatch.addEventListener('click', () => {
+  if (!batchData.length) { toast('wrn','ارفع ملف البيانات أولاً','ارفع ملف Excel لتبدأ التوليد.'); return; }
+  
+  doExport(async () => {
+    const {jsPDF} = window.jspdf;
+    const isP = D.canvasContainer.classList.contains('portrait');
+    const w = D.canvasContainer.offsetWidth, h = D.canvasContainer.offsetHeight;
+    const pdf = new jsPDF({orientation:isP?'p':'l',unit:'px',format:[w,h]});
+    
+    const elements = D.elementsContainer.querySelectorAll('.movable');
+    const originals = {};
+    elements.forEach(el => {
+      originals[el.id] = el.dataset.type === 'qr' ? el.dataset.val : el.innerHTML;
+    });
+
+    for (let i = 0; i < batchData.length; i++) {
+      const row = batchData[i];
+      showLoading('جاري إنشاء الملفات...', `${Math.round(((i)/batchData.length)*100)}%`);
+      
+      elements.forEach(el => {
+        if(el.dataset.type === 'logo') return;
+        let textTemplate = originals[el.id];
+        batchHeaders.forEach(header => {
+          const val = row[header] || '';
+          const regex = new RegExp(`{{\\s*${header}\\s*}}`, 'gi');
+          textTemplate = textTemplate.replace(regex, val);
+        });
+        
+        if (el.dataset.type === 'qr') {
+          if (el.dataset.val !== textTemplate) { el.dataset.val = textTemplate; renderQR(el); }
+        } else if (el.dataset.type === 'text') {
+          el.innerHTML = textTemplate;
+        }
+      });
+
+      await new Promise(r=>setTimeout(r, 60)); 
+      const cv = await html2canvas(D.canvasContainer, {scale:4,useCORS:true,backgroundColor:null,allowTaint:true});
+      if (i > 0) pdf.addPage([w,h], isP?'p':'l');
+      pdf.addImage(cv.toDataURL('image/jpeg', 0.96), 'JPEG', 0, 0, w, h);
+    }
+    
+    // Restore originals
+    elements.forEach(el => {
+      if (el.dataset.type === 'qr') {
+        el.dataset.val = originals[el.id]; renderQR(el);
+      } else if (el.dataset.type === 'text') {
+        el.innerHTML = originals[el.id];
+      }
+    });
+
+    pdf.save(`sweater-batch-${Date.now()}.pdf`);
+  }, '');
+});
+
+// Initialization
+renderTemplates();
+setOrientation('landscape', false);
+selectEl(null);
+try {
+  const savedCoupon = JSON.parse(localStorage.getItem('sweaterCouponAutosaveV2') || 'null');
+  if (savedCoupon?.html) {
+    D.bgImg.src = savedCoupon.bg || '';
+    setOrientation(savedCoupon.orientation || 'landscape', false);
+    D.elementsContainer.innerHTML = savedCoupon.html;
+    toast('ok', 'تمت استعادة المسودة', 'يمكنك متابعة آخر كوبون من حيث توقفت.');
+  }
+} catch (_) { localStorage.removeItem('sweaterCouponAutosaveV2'); }
+setTimeout(() => Hist.push(), 300);
+
+})();
+</script>
+<script src="./sweater-ui.js?v=5"></script>
+<script src="./local-studio.js?v=4"></script>
+</body>
+</html>

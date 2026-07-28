@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>قوالب الشراكات — SWEATER</title>
+<meta name="description" content="تركيب شعارات الشركاء على قوالب SWEATER وتصديرها بجودة عالية."/>
+<meta name="theme-color" content="#f96714"/>
+<link rel="stylesheet" href="./sweater-ui.css?v=4"/>
+<link rel="stylesheet" href="./local-studio.css?v=4"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { sans: ['LamaSans', 'Cairo', 'sans-serif'] },
+        colors: {
+          sweater: {
+            50: '#fff5f0', 100: '#ffe8d9', 200: '#ffccb0', 300: '#ffa77d',
+            400: '#ff7842', 500: '#f96714', 600: '#eb4d0b', 700: '#c2370a',
+            800: '#992c0f', 900: '#7a2610', 950: '#421006',
+          }
+        },
+        boxShadow: {
+          'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+          'float': '0 10px 25px -5px rgba(249, 103, 20, 0.3)',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  /* ===== FONTS ===== */
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Regular.woff2')format('woff2');font-weight:400}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Medium.woff2')format('woff2');font-weight:500}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-SemiBold.woff2')format('woff2');font-weight:600}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Bold.woff2')format('woff2');font-weight:700}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-ExtraBold.woff2')format('woff2');font-weight:800}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Black.woff2')format('woff2');font-weight:900}
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-600; }
+
+  /* ===== CUSTOM SLIDERS ===== */
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 6px; border-radius: 999px;
+    @apply bg-slate-200 dark:bg-slate-700 outline-none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 22px; height: 22px; border-radius: 50%;
+    @apply bg-white dark:bg-slate-800 border-4 border-sweater-500 shadow-md cursor-pointer transition-transform hover:scale-110;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 22px; height: 22px; border-radius: 50%; border: none;
+    @apply bg-white dark:bg-slate-800 border-4 border-sweater-500 shadow-md cursor-pointer transition-transform hover:scale-110;
+  }
+
+  /* ===== UI UTILITIES ===== */
+  .glass-header { @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800; }
+  .panel-glass { @apply bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200 dark:border-slate-800 shadow-xl; }
+  
+  /* Animations */
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-slide-up { animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  
+  /* Toast */
+  .toast-enter { opacity: 0; transform: translateY(100%) scale(0.95); }
+  .toast-active { opacity: 1; transform: translateY(0) scale(1); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .toast-exit { opacity: 0; transform: translateY(20px) scale(0.95); transition: all 0.3s ease; }
+
+  /* Canvas specific */
+  #logo-image {
+    cursor: grab;
+    transform: translate3d(-50%, -50%, 0); /* Center origin & force GPU acceleration for smooth dragging */
+    will-change: left, top, width;
+    backface-visibility: hidden; /* Prevent flickering during drag */
+  }
+  #logo-image:active {
+    cursor: grabbing;
+  }
+  #preview-area {
+    /* For precise positioning boundaries */
+    touch-action: none; 
+  }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-sweater-500 selection:text-white transition-colors duration-300 h-screen flex flex-col overflow-hidden">
+
+<!-- ===== TOPBAR ===== -->
+<header class="h-16 glass-header flex items-center justify-between px-4 sm:px-6 z-50 shrink-0">
+  <div class="flex items-center gap-4">
+    <a href="./index.html" class="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-bold transition-colors bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-2 rounded-xl">
+      <i class="fa-solid fa-arrow-right"></i>
+      <span class="hidden sm:block">العودة للوحة</span>
+    </a>
+    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+    <div class="flex items-center gap-2 text-sweater-600 dark:text-sweater-400 font-black text-lg tracking-tight">
+      <i class="fa-solid fa-handshake text-xl"></i>
+      قوالب الشراكات
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 text-xs font-bold border border-emerald-200 dark:border-emerald-800/50">
+      <i class="fa-solid fa-bolt"></i>
+      <span>تصدير فائق الجودة</span>
+    </div>
+    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+    <div class="hidden sm:flex items-center">
+      <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-5 w-auto object-contain hidden dark:block brightness-200"/>
+      <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-5 w-auto object-contain block dark:hidden"/>
+    </div>
+    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+    <button id="themeBtn" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-sweater-500" title="تبديل المظهر">
+      <i class="fa-solid fa-moon text-lg" id="themeIco"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">
+
+  <!-- ====== RIGHT PANEL (CONTROLS) ====== -->
+  <!-- Note: in RTL, first flex item is on the right visually -->
+  <aside class="w-full lg:w-96 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20">
+    <div class="p-5 flex flex-col gap-6">
+
+      <!-- Templates -->
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 flex items-center gap-2">
+            <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-600 dark:text-slate-300">1</span>
+            اختر القالب
+          </h3>
+        </div>
+        <div class="grid grid-cols-2 gap-3" id="templatesWrap">
+          
+          <!-- Template 1 -->
+          <div class="group relative cursor-pointer template-thumb active" data-src="https://i.ibb.co/nqcpnVM4/Artboard-2.png" data-x="50" data-y="50" data-size="30">
+            <div class="aspect-[3/2] rounded-xl overflow-hidden border-2 border-sweater-500 ring-2 ring-sweater-500/20 shadow-md transition-all relative bg-slate-100 dark:bg-slate-800">
+              <img src="https://i.ibb.co/nqcpnVM4/Artboard-2.png" alt="قالب عصري" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+              <div class="check-icon absolute top-2 right-2 w-6 h-6 bg-sweater-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg transform scale-100 transition-transform">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <div class="text-[0.7rem] font-bold text-center mt-2 text-slate-700 dark:text-slate-300">عصري</div>
+          </div>
+
+          <!-- Template 2 -->
+          <div class="group relative cursor-pointer template-thumb" data-src="https://i.ibb.co/gL64tpnH/Artboard-3.png" data-x="50" data-y="35" data-size="25">
+            <div class="aspect-[3/2] rounded-xl overflow-hidden border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative bg-slate-100 dark:bg-slate-800">
+              <img src="https://i.ibb.co/gL64tpnH/Artboard-3.png" alt="قالب الحد الأدنى" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"/>
+              <div class="check-icon absolute top-2 right-2 w-6 h-6 bg-sweater-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg transform scale-0 transition-transform">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <div class="text-[0.7rem] font-bold text-center mt-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300">الحد الأدنى</div>
+          </div>
+
+          <!-- Template 3 -->
+          <div class="group relative cursor-pointer template-thumb" data-src="https://i.ibb.co/Df4Z9Khx/LINK-30-7.png" data-x="50" data-y="70" data-size="35">
+            <div class="aspect-[3/2] rounded-xl overflow-hidden border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative bg-slate-100 dark:bg-slate-800">
+              <img src="https://i.ibb.co/Df4Z9Khx/LINK-30-7.png" alt="قالب مستقبلي" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"/>
+              <div class="check-icon absolute top-2 right-2 w-6 h-6 bg-sweater-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg transform scale-0 transition-transform">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <div class="text-[0.7rem] font-bold text-center mt-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300">مستقبلي</div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- Upload Logo -->
+      <section>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-600 dark:text-slate-300">2</span>
+          ارفع الشعار
+        </h3>
+        <label id="uploadZone" class="group relative flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-2xl cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-sweater-50 dark:hover:bg-sweater-500/10 hover:border-sweater-400 transition-all duration-300 overflow-hidden">
+          <div class="absolute inset-0 bg-gradient-to-br from-sweater-500/5 to-transparent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+          <input type="file" id="logoUpload" accept="image/png, image/jpeg, image/svg+xml" class="hidden" />
+          <div class="flex flex-col items-center justify-center relative z-10">
+            <div class="w-12 h-12 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-400 group-hover:bg-sweater-100 dark:group-hover:bg-sweater-900/50 group-hover:text-sweater-500 flex items-center justify-center mb-2 transition-colors">
+              <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
+            </div>
+            <p class="text-sm font-bold text-slate-600 dark:text-slate-300">اسحب الشعار أو انقر هنا</p>
+            <p class="text-xs text-slate-400 mt-1">يُفضل بخلفية شفافة (PNG, SVG)</p>
+          </div>
+        </label>
+      </section>
+
+      <!-- Properties -->
+      <section id="propertiesSection" class="opacity-50 pointer-events-none transition-opacity duration-300">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2">
+          <span class="w-5 h-5 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center text-[10px] text-slate-600 dark:text-slate-300">3</span>
+          الضبط والتعديل
+        </h3>
+        <div class="bg-slate-50 dark:bg-slate-800/50 rounded-2xl p-4 border border-slate-200 dark:border-slate-700">
+          
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">حجم الشعار</label>
+            <span class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-sweater-600 dark:text-sweater-400 text-[10px] font-black px-2 py-1 rounded-md min-w-[3rem] text-center shadow-sm" id="logoSizeValue">30%</span>
+          </div>
+          <input type="range" id="logoSizeSlider" min="5" max="100" value="30" step="1" class="w-full mb-4">
+          
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-xl p-3 flex gap-3 mt-4">
+            <i class="fa-solid fa-arrows-up-down-left-right text-blue-500 mt-0.5 text-sm"></i>
+            <p class="text-[0.7rem] text-blue-700 dark:text-blue-300 font-medium leading-relaxed">
+              يمكنك سحب الشعار مباشرة بالماوس أو اللمس داخل مساحة المعاينة لتغيير موضعه بحرية.
+            </p>
+          </div>
+          
+          <button id="btnReset" class="w-full mt-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm">
+            <i class="fa-solid fa-arrow-rotate-left"></i> إعادة لموضع القالب الافتراضي
+          </button>
+        </div>
+      </section>
+
+      <!-- Download Action -->
+      <section class="mt-auto pt-4 border-t border-slate-200 dark:border-slate-800">
+        <button id="downloadBtn" disabled class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sweater-500 to-sweater-600 hover:from-sweater-600 hover:to-sweater-700 text-white font-bold text-sm shadow-float transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none disabled:shadow-none flex items-center justify-center gap-2">
+          <i class="fa-solid fa-download"></i> تصدير التصميم
+        </button>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- ====== LEFT PANEL (CANVAS PREVIEW) ====== -->
+  <main class="flex-1 bg-slate-100/50 dark:bg-slate-950/50 flex flex-col items-center justify-center overflow-hidden p-4 sm:p-8 relative" id="centerPanel">
+    
+    <!-- Background Decoration -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40">
+      <div class="absolute top-[10%] right-[20%] w-96 h-96 bg-sweater-500/10 rounded-full mix-blend-multiply filter blur-3xl dark:bg-sweater-500/5 dark:mix-blend-lighten"></div>
+    </div>
+
+    <div class="w-full max-w-5xl relative z-10 flex-1 flex flex-col items-center justify-center">
+      <!-- Outer Card -->
+      <div class="w-full bg-white dark:bg-slate-900 rounded-[2rem] p-4 shadow-2xl border border-slate-200 dark:border-slate-800 ring-1 ring-black/5 animate-slide-up">
+        
+        <!-- Interactive Preview Area (3:2 Ratio) -->
+        <div id="preview-area" class="relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 aspect-[3/2] shadow-inner flex items-center justify-center mx-auto select-none" style="max-width: 100%;">
+          
+          <!-- Background Template -->
+          <img id="template-image" src="" alt="القالب" crossorigin="anonymous" class="absolute inset-0 w-full h-full object-fill z-0 pointer-events-none"/>
+          
+          <!-- Draggable Logo -->
+          <img id="logo-image" src="" alt="الشعار" crossorigin="anonymous" class="absolute z-10 hidden" draggable="false"/>
+          
+          <!-- Empty State Overlay -->
+          <div id="placeholder-text" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-slate-900/60 backdrop-blur-sm text-white p-6 text-center transition-opacity duration-300">
+            <div class="w-16 h-16 mb-4 rounded-full bg-white/10 flex items-center justify-center">
+              <i class="fa-solid fa-wand-magic-sparkles text-2xl"></i>
+            </div>
+            <p class="font-bold text-lg mb-1">جاهز للإبداع</p>
+            <p class="text-sm text-slate-300">ارفع الشعار الخاص بك للبدء</p>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </main>
+
+</div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loading" class="fixed inset-0 bg-slate-900/80 backdrop-blur-md z-[100] hidden items-center justify-center flex-col gap-5 transition-opacity">
+  <div class="relative w-16 h-16">
+    <div class="absolute inset-0 border-4 border-white/20 border-t-sweater-500 rounded-full animate-spin"></div>
+    <div class="absolute inset-2 border-4 border-transparent border-b-emerald-400 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1s;"></div>
+  </div>
+  <div class="text-center">
+    <h3 class="text-white font-black text-lg tracking-wide drop-shadow-md mb-1">جاري تصدير التصميم</h3>
+    <p class="text-slate-300 text-sm font-medium">نطبق إعدادات الجودة الفائقة (Scale 4x)...</p>
+  </div>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toastsWrap" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+
+<script>
+(() => {
+'use strict';
+
+// ─── DOM ELEMENTS & STATE ───────────────────────────────────────────────
+const D = {
+  themeBtn: document.getElementById('themeBtn'),
+  themeIco: document.getElementById('themeIco'),
+  templatesWrap: document.getElementById('templatesWrap'),
+  templateThumbs: document.querySelectorAll('.template-thumb'),
+  logoUpload: document.getElementById('logoUpload'),
+  downloadBtn: document.getElementById('downloadBtn'),
+  previewArea: document.getElementById('preview-area'),
+  templateImage: document.getElementById('template-image'),
+  logoImage: document.getElementById('logo-image'),
+  placeholderText: document.getElementById('placeholder-text'),
+  logoSizeSlider: document.getElementById('logoSizeSlider'),
+  logoSizeValue: document.getElementById('logoSizeValue'),
+  btnReset: document.getElementById('btnReset'),
+  propertiesSection: document.getElementById('propertiesSection'),
+  loading: document.getElementById('loading'),
+  toastsWrap: document.getElementById('toastsWrap'),
+};
+
+const EXPORT_WIDTH = 1952.64; // Base calculation
+const EXPORT_SCALE = 4;       // High Quality
+
+let activeTemplate = null;
+let hasLogo = false;
+let isDragging = false;
+let dragOffset = { x: 0, y: 0 };
+let dragFrame = null; // Animation frame tracker for smooth dragging
+
+// ─── THEME HANDLING ─────────────────────────────────────────────
+D.themeBtn.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  const dk = document.documentElement.classList.contains('dark');
+  
+  D.themeIco.style.transform = 'rotate(360deg) scale(0)';
+  setTimeout(() => {
+    D.themeIco.className = dk ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon';
+    D.themeIco.style.transform = 'rotate(0deg) scale(1)';
+  }, 150);
+  D.themeIco.style.transition = 'transform 0.3s ease';
+
+  localStorage.setItem('swDark', dk ? '1' : '0');
+});
+
+// Init Theme
+if (localStorage.getItem('swDark') === '1' || (!('swDark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
+  D.themeIco.className = 'fa-solid fa-sun text-amber-500';
+}
+
+// ─── TOAST NOTIFICATIONS ────────────────────────────────────────
+function toast(type, title, msg) {
+  const cfg = {
+    ok: { icon: 'fa-check', bg: 'bg-emerald-100 dark:bg-emerald-900/30', color: 'text-emerald-600 dark:text-emerald-400' },
+    err: { icon: 'fa-xmark', bg: 'bg-red-100 dark:bg-red-900/30', color: 'text-red-600 dark:text-red-400' },
+    wrn: { icon: 'fa-exclamation', bg: 'bg-sweater-100 dark:bg-sweater-900/30', color: 'text-sweater-600 dark:text-sweater-400' }
+  }[type];
+
+  const el = document.createElement('div');
+  el.className = `flex items-start gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-glass border border-slate-200 dark:border-slate-700 pointer-events-auto toast-enter`;
+  el.innerHTML = `
+    <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm ${cfg.bg} ${cfg.color}">
+      <i class="fa-solid ${cfg.icon}"></i>
+    </div>
+    <div class="flex-1 pt-0.5">
+      <div class="font-bold text-sm text-slate-900 dark:text-white">${title}</div>
+      ${msg ? `<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${msg}</div>` : ''}
+    </div>
+    <button class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors p-1" onclick="this.parentElement.remove()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+  D.toastsWrap.appendChild(el);
+  
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    el.classList.remove('toast-enter');
+    el.classList.add('toast-active');
+  }));
+
+  setTimeout(() => {
+    el.classList.replace('toast-active', 'toast-exit');
+    setTimeout(() => el.remove(), 300);
+  }, 4000);
+}
+
+function showLoading() { D.loading.classList.replace('hidden', 'flex'); }
+function hideLoading() { D.loading.classList.replace('flex', 'hidden'); }
+
+// ─── TEMPLATE LOGIC ─────────────────────────────────────────────
+const updateTemplateVisuals = (selectedThumb) => {
+  D.templateThumbs.forEach(t => {
+    t.classList.remove('active', 'border-sweater-500', 'ring-2', 'ring-sweater-500/20');
+    t.classList.add('border-transparent');
+    t.querySelector('.check-icon').classList.replace('scale-100', 'scale-0');
+    t.querySelector('img').classList.replace('opacity-100', 'opacity-80');
+  });
+  
+  selectedThumb.classList.remove('border-transparent');
+  selectedThumb.classList.add('active', 'border-sweater-500', 'ring-2', 'ring-sweater-500/20');
+  selectedThumb.querySelector('.check-icon').classList.replace('scale-0', 'scale-100');
+  selectedThumb.querySelector('img').classList.replace('opacity-80', 'opacity-100');
+};
+
+const applyTemplateSettings = (thumb) => {
+  const x = thumb.dataset.x || '50';
+  const y = thumb.dataset.y || '50';
+  const size = thumb.dataset.size || '30';
+  
+  D.logoImage.style.left = `${x}%`;
+  D.logoImage.style.top = `${y}%`;
+  D.logoImage.style.width = `${size}%`;
+  
+  D.logoSizeSlider.value = size;
+  D.logoSizeValue.textContent = `${size}%`;
+};
+
+const setTemplate = (thumb) => {
+  D.templateImage.src = thumb.dataset.src;
+  activeTemplate = thumb;
+  updateTemplateVisuals(thumb);
+  applyTemplateSettings(thumb);
+};
+
+D.templateThumbs.forEach(thumb => {
+  thumb.addEventListener('click', () => {
+    setTemplate(thumb);
+    toast('ok', 'تم تغيير القالب', 'تم تطبيق الإعدادات الافتراضية للقالب الجديد.');
+  });
+});
+
+D.btnReset.addEventListener('click', () => {
+  if(activeTemplate) {
+    applyTemplateSettings(activeTemplate);
+    toast('ok', 'تم إعادة الضبط', 'تم إرجاع الشعار لمكانه الافتراضي.');
+  }
+});
+
+
+// ─── UPLOAD LOGIC ───────────────────────────────────────────────
+D.logoUpload.addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    D.logoImage.src = ev.target.result;
+    D.logoImage.classList.remove('hidden');
+    D.placeholderText.style.opacity = '0';
+    setTimeout(() => D.placeholderText.style.display = 'none', 300);
+    
+    hasLogo = true;
+    D.downloadBtn.disabled = false;
+    D.propertiesSection.classList.remove('opacity-50', 'pointer-events-none');
+    
+    toast('ok', 'تم رفع الشعار', 'يمكنك الآن تحريكه أو تعديل حجمه بحرية.');
+  };
+  reader.readAsDataURL(file);
+});
+
+document.addEventListener('paste', e => {
+  if (e.target.matches('input, textarea, [contenteditable="true"]')) return;
+  const file = [...(e.clipboardData?.files || [])].find(item => item.type.startsWith('image/'));
+  if (!file) return;
+  e.preventDefault();
+  const transfer = new DataTransfer();
+  transfer.items.add(file);
+  D.logoUpload.files = transfer.files;
+  D.logoUpload.dispatchEvent(new Event('change', { bubbles: true }));
+});
+
+document.addEventListener('keydown', e => {
+  if (!hasLogo || e.target.matches('input, textarea, [contenteditable="true"]')) return;
+  if (!['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) return;
+  e.preventDefault();
+  const step = e.shiftKey ? 2 : .5;
+  let x = parseFloat(D.logoImage.style.left) || 50;
+  let y = parseFloat(D.logoImage.style.top) || 50;
+  if (e.key === 'ArrowUp') y -= step;
+  if (e.key === 'ArrowDown') y += step;
+  if (e.key === 'ArrowLeft') x -= step;
+  if (e.key === 'ArrowRight') x += step;
+  D.logoImage.style.left = `${Math.max(0, Math.min(100, x))}%`;
+  D.logoImage.style.top = `${Math.max(0, Math.min(100, y))}%`;
+});
+
+// ─── SLIDER LOGIC ───────────────────────────────────────────────
+D.logoSizeSlider.addEventListener('input', (e) => {
+  const size = e.target.value;
+  D.logoImage.style.width = `${size}%`;
+  D.logoSizeValue.textContent = `${size}%`;
+});
+
+
+// ─── DRAG AND DROP LOGIC (Mouse + Touch) ────────────────────────
+const getClientCoords = (e) => {
+  if (e.touches && e.touches.length > 0) {
+    return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+  }
+  return { x: e.clientX, y: e.clientY };
+};
+
+const startDrag = (e) => {
+  if (!hasLogo) return;
+  if (e.type === 'touchstart') e.preventDefault(); // Prevent scrolling while dragging on mobile
+  
+  isDragging = true;
+  const coords = getClientCoords(e);
+  const rect = D.previewArea.getBoundingClientRect();
+  const logoRect = D.logoImage.getBoundingClientRect();
+  
+  // Calculate offset of click relative to the center of the logo
+  dragOffset.x = coords.x - (logoRect.left + logoRect.width / 2);
+  dragOffset.y = coords.y - (logoRect.top + logoRect.height / 2);
+
+  document.addEventListener('mousemove', onDrag);
+  document.addEventListener('touchmove', onDrag, { passive: false });
+  document.addEventListener('mouseup', endDrag);
+  document.addEventListener('touchend', endDrag);
+};
+
+const onDrag = (e) => {
+  if (!isDragging) return;
+  if (e.type === 'touchmove') e.preventDefault(); 
+  
+  const coords = getClientCoords(e);
+  const rect = D.previewArea.getBoundingClientRect();
+  
+  // Cancel the previous animation frame to prevent layout thrashing
+  if (dragFrame) cancelAnimationFrame(dragFrame);
+  
+  // Sync visual updates with screen refresh rate for ultra-smooth movement
+  dragFrame = requestAnimationFrame(() => {
+    // Calculate new center position in pixels relative to container
+    let newCenterX = coords.x - rect.left - dragOffset.x;
+    let newCenterY = coords.y - rect.top - dragOffset.y;
+    
+    // Convert to percentages
+    let pctX = (newCenterX / rect.width) * 100;
+    let pctY = (newCenterY / rect.height) * 100;
+    
+    // Add boundaries so center doesn't go outside (0% to 100%)
+    pctX = Math.max(0, Math.min(pctX, 100));
+    pctY = Math.max(0, Math.min(pctY, 100));
+
+    D.logoImage.style.left = `${pctX}%`;
+    D.logoImage.style.top = `${pctY}%`;
+  });
+};
+
+const endDrag = () => {
+  isDragging = false;
+  document.removeEventListener('mousemove', onDrag);
+  document.removeEventListener('touchmove', onDrag);
+  document.removeEventListener('mouseup', endDrag);
+  document.removeEventListener('touchend', endDrag);
+};
+
+D.logoImage.addEventListener('mousedown', startDrag);
+D.logoImage.addEventListener('touchstart', startDrag, { passive: false });
+
+
+// ─── EXPORT LOGIC ───────────────────────────────────────────────
+D.downloadBtn.addEventListener('click', async () => {
+  if (!hasLogo) return;
+  showLoading();
+  
+  // Give UI time to update
+  await new Promise(res => setTimeout(res, 100));
+  
+  try {
+    // Calculate scale to maintain high quality regardless of preview size
+    const scale = Math.max(EXPORT_SCALE, (EXPORT_WIDTH / D.previewArea.clientWidth));
+    
+    const canvas = await html2canvas(D.previewArea, {
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: null,
+      scale: scale,
+    });
+
+    if (canvas.toBlob) {
+      canvas.toBlob((blob) => {
+        const link = document.createElement('a');
+        link.download = `partnership-${Date.now()}.png`;
+        link.href = URL.createObjectURL(blob);
+        document.body.appendChild(link);
+        link.click();
+        URL.revokeObjectURL(link.href);
+        link.remove();
+        finishExport();
+      }, 'image/png');
+    } else {
+      const link = document.createElement('a');
+      link.download = `partnership-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+      finishExport();
+    }
+  } catch (error) {
+    console.error('Export error:', error);
+    hideLoading();
+    toast('err', 'حدث خطأ', 'فشلت عملية التصدير، يرجى المحاولة مرة أخرى.');
+  }
+});
+
+function finishExport() {
+  hideLoading();
+  toast('ok', 'تم التصدير بنجاح!', 'تم حفظ التصميم بجودة فائقة.');
+}
+
+// ─── INITIALIZATION ─────────────────────────────────────────────
+// Load first template on init
+const initialTemplate = document.querySelector('.template-thumb.active');
+if (initialTemplate) setTemplate(initialTemplate);
+
+})();
+</script>
+<script src="./sweater-ui.js?v=5"></script>
+<script src="./local-studio.js?v=4"></script>
+</body>
+</html>

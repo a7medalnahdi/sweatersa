@@ -1,0 +1,1754 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>مولّد عروض الأسعار — SWEATER</title>
+    <meta name="description" content="إنشاء وحفظ وتصدير عروض أسعار احترافية — SWEATER."/>
+    <meta name="theme-color" content="#f96714"/>
+<link rel="stylesheet" href="./sweater-ui.css?v=4"/>
+<link rel="stylesheet" href="./local-studio.css?v=4"/>
+    <link rel="manifest" href="./manifest.webmanifest"/>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* CSS starts here */
+
+        :root {
+            --primary-color: #f96714; /* لون البرتقالي الرئيسي لهويتك */
+            --primary-color-dark: #e05a12; /* درجة أغمق من البرتقالي */
+            --secondary-color: #1a1a1a; /* لون النص الغامق للقراءة (الأسود) */
+            --text-light: #ffffff; /* لون النص الفاتح (للخلفيات الداكنة) */
+            --tertiary-color: #6a7f9a; /* رمادي ناعم للنصوص الثانوية */
+            --success-color: #22c55e;
+            --danger-color: #ef4444;
+            --warning-color: #f59e0b;
+            --bg-color: #f8faff; /* لون الخلفية العامة للموقع */
+            --card-bg: #ffffff; /* لون خلفية البطاقات والأقسام البيضاء */
+            --border-color: #e0eaf3; /* لون الحدود العامة */
+            --border-radius: 12px; /* درجة استدارة الزوايا */
+            --box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08); /* ظل ناعم */
+            --main-font: 'Cairo', sans-serif;
+
+            /* Quotation specific colors - تم التعديل لتطبيق اللون البرتقالي بشكل أوسع */
+            --invoice-header-bg: var(--primary-color); /* خلفية رأس الفاتورة (برتقالي كامل) */
+            --invoice-header-text-color: var(--text-light); /* لون النص في الرأس (أبيض) */
+            --bill-box-bg: #FFF5EC; /* لون خلفية مربعات BILL FROM/TO (برتقالي فاتح جداً) */
+            --table-header-bg: #FFEAD9; /* خلفية رأس الجدول (برتقالي فاتح) */
+            --table-row-border: #FFEDD8; /* خط فاصل بين صفوف الجدول (برتقالي فاتح جداً) */
+            --add-item-bg: #FFF9F3; /* خلفية زر إضافة بند (برتقالي فاتح جداً) */
+            --currency-color: var(--primary-color); /* لون رمز العملة (برتقالي) */
+            --grand-total-bg: var(--primary-color); /* خلفية الإجمالي الكلي (برتقالي رئيسي) */
+            --grand-total-text: var(--text-light); /* لون النص على خلفية الإجمالي الكلي (أبيض) */
+
+            /* Bank Card Colors - Simplified */
+            --bank-card-bg: var(--card-bg); 
+            --bank-card-border-color: var(--primary-color); /* حدود تفاصيل البنك (برتقالي) */
+            --bank-card-header-text: var(--secondary-color); 
+            --bank-card-detail-color: var(--secondary-color);
+            --bank-card-highlight-color: var(--primary-color);
+            --bank-logo-opacity: 0;
+            --bank-logo-height: 0px;
+        }
+        /* لا يوجد وضع ليلي */
+
+        * { 
+            box-sizing: border-box; 
+            margin:0; 
+            padding:0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        body { 
+            font-family: var(--main-font); 
+            background: var(--bg-color); 
+            color: var(--secondary-color); 
+            transition: background-color 0.3s, color 0.3s; 
+        }
+        .container { 
+            width: 100%; 
+            min-height:100vh; /* Changed to min-height for better responsiveness */
+            padding: 0; 
+            margin: 0; 
+            display: flex; 
+            flex-direction: column;
+        }
+        .top-bar { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 15px 30px; 
+            background-color: var(--card-bg); 
+            border-bottom: 1px solid var(--border-color);
+            position: sticky; 
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+        .back-link {
+            font-size: 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .top-bar .title { 
+            flex: 1; 
+            text-align: center; 
+            font-weight: 700; 
+            font-size: 1.3rem; 
+            color: var(--secondary-color); 
+        }
+        .top-bar .controls-container { flex: 1; display: flex; justify-content: flex-end; }
+
+        .main-layout { 
+            display: flex; 
+            flex-direction: row; 
+            padding-top: 20px; 
+            flex-grow: 1; 
+            justify-content: center; 
+            /* NEW: Added flex-wrap for responsiveness */
+            flex-wrap: wrap; 
+            align-items: flex-start; /* Align items to the start */
+        }
+
+        .left-panel {
+            width: 380px; 
+            padding: 25px; 
+            background-color: var(--card-bg);
+            border-left: 1px solid var(--border-color); 
+            display: flex;
+            flex-direction: column;
+            gap: 25px; 
+            overflow-y: auto; 
+            flex-shrink: 0;
+            max-height: 100%; 
+            /* NEW: Added border-right for consistent border when wrapped */
+            border-right: 1px solid var(--border-color);
+            order: 2; /* Default order, will change in media query */
+        }
+        
+        /* === Quotation page specific styles === */
+        .quotation-preview-wrapper {
+            width: calc(100% - 380px); /* Adjust width to make space for left-panel */
+            height: auto; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 25px; 
+            flex-shrink: 1; /* Allow to shrink */
+            overflow-y: auto; 
+            max-height: 100%; 
+            flex-grow: 1; /* Allow to grow */
+            order: 1; /* Default order, will change in media query */
+        }
+        .quotation-page {
+            width: 100%; /* Changed to 100% and added max-width */
+            max-width: 210mm; /* Fixed width only as max-width */
+            background-color: var(--card-bg);
+            box-shadow: var(--box-shadow);
+            border-radius: var(--border-radius);
+            padding: 40px; 
+            display: flex;
+            flex-direction: column;
+            font-size: 15px; 
+            color: var(--secondary-color);
+            box-shadow: 0 0 20px rgba(0,0,0,0.08); 
+        }
+
+        /* Header Section */
+        .header-section {
+            display: flex;
+            flex-direction: row; /* جعل العناصر في صف واحد */
+            align-items: center; /* محاذاة في المنتصف عمودياً */
+            justify-content: space-between; /* توزيع المساحة بين العناصر */
+            padding: 25px; 
+            background-color: var(--invoice-header-bg); /* برتقالي كامل */
+            border-radius: var(--border-radius);
+            margin-bottom: 35px; 
+        }
+        .header-company-logo {
+            width: 180px; /* يمكن تعديل العرض حسب الحاجة */
+            height: auto; 
+            margin-bottom: 0; /* إزالة الهامش السفلي */
+            align-self: center; /* محاذاة ذاتية في المنتصف */
+            order: 2; /* جعل الشعار على اليمين (إذا كان اتجاه الصفحة LTR) */
+        }
+        .header-company-logo img {
+            max-width: 100%;
+            height: auto;
+            object-fit: contain;
+            filter: brightness(0) invert(1); /* لتحويل الشعار إلى أبيض ليظهر على الخلفية البرتقالية */
+        }
+        .logo-and-title {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            width: auto; /* السماح للمحتوى بتحديد العرض */
+            order: 1; /* جعل العنوان على اليسار */
+        }
+        .quotation-title {
+            font-size: 2.8rem; 
+            font-weight: 800;
+            color: var(--invoice-header-text-color); /* أبيض */
+            margin-bottom: 8px; 
+            letter-spacing: 2.5px; 
+            text-transform: uppercase; 
+        }
+        .invoice-info {
+            font-size: 1rem; 
+            color: var(--invoice-header-text-color); /* أبيض */
+            text-align: left;
+            direction: ltr;
+        }
+        .invoice-info .invoice-number-value {
+            font-weight: 700;
+            color: var(--invoice-header-text-color); /* أبيض */
+            margin-left: 8px; 
+        }
+        .invoice-info .invoice-number-prefix {
+            font-weight: 700;
+            color: var(--invoice-header-text-color); /* أبيض */
+        }
+        .invoice-info .invoice-number-suffix {
+            font-weight: 700;
+            color: var(--text-light); /* أبيض */
+            display: inline-block;
+            border: 1px solid transparent;
+            padding: 2px 5px;
+            border-radius: 4px;
+        }
+        .invoice-info .invoice-number-suffix:focus {
+            outline: none;
+            border-color: var(--primary-color-dark);
+            box-shadow: 0 0 0 3px rgba(249, 103, 20, 0.2);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+        .company-logo { display: none; }
+
+        /* NEW: Employee Code Styling in Header */
+        .employee-code-display {
+            font-weight: 700;
+            color: var(--text-light); /* أبيض */
+            display: inline-block;
+            border: 1px solid transparent;
+            padding: 2px 5px;
+            border-radius: 4px;
+            margin-right: 5px; /* Space between code and number */
+        }
+        .employee-code-display:focus {
+            outline: none;
+            border-color: var(--primary-color-dark);
+            box-shadow: 0 0 0 3px rgba(249, 103, 20, 0.2);
+            background-color: rgba(255, 255, 255, 0.95);
+            color: var(--secondary-color); /* Black text when editing */
+        }
+
+
+        /* Bill To/From Section */
+        .bill-section {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 35px;
+            text-align: left;
+            gap: 4%; /* Space between the two boxes */
+            flex-wrap: wrap; /* NEW: Allow wrapping for smaller screens */
+        }
+        .bill-from, .bill-to {
+            width: 48%; /* Adjusted for gap */
+            background-color: var(--bill-box-bg); /* برتقالي فاتح جداً */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--primary-color); /* حدود برتقالية */
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); 
+        }
+        .bill-from .section-heading, .bill-to .section-heading {
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--primary-color); /* عنوان القسم برتقالي */
+            margin-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+        .bill-from p, .bill-to p { /* تم تعديل هذا الجزء ليكون باللون الأسود */
+            font-size: 0.95rem;
+            line-height: 1.6; 
+            white-space: pre-wrap; /* للحفاظ على التنسيق اليدوي إذا استخدم */
+            color: var(--secondary-color); /* نص القسم باللون الأسود */
+            font-weight: 700; /* جعل النص بالخط العريض */
+        }
+
+        /* Items Table */
+        .items-table-header {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1.5fr 1.5fr 40px; 
+            gap: 10px;
+            padding: 15px 20px; 
+            background-color: var(--table-header-bg); /* برتقالي فاتح أكثر قليلاً */
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: var(--tertiary-color);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            text-align: left;
+        }
+        .items-table-header .item-description-header { text-align: left; }
+        .items-table-header .item-qty-header { text-align: center; }
+        .items-table-header .item-price-header { text-align: center; }
+        .items-table-header .item-total-header { text-align: center; }
+        .items-table-header > div:last-child { text-align: center; }
+
+
+        .items-table-body {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid var(--primary-color); /* حدود الجدول باللون البرتقالي الرئيسي */
+            border-top: none; 
+            border-radius: 0 0 var(--border-radius) var(--border-radius);
+            margin-bottom: 0; 
+        }
+        .items-table-row {
+            display: grid;
+            grid-template-columns: 3fr 1fr 1.5fr 1.5fr 40px; 
+            gap: 10px;
+            padding: 15px 20px; 
+            font-size: 0.95rem;
+            color: var(--secondary-color);
+            text-align: left;
+            border-bottom: 1px solid var(--table-row-border); /* خط فاصل بين الصفوف بلون برتقالي فاتح جداً */
+        }
+        .items-table-row:last-of-type {
+            border-bottom: none;
+        }
+        .items-table-row .item-description-cell { 
+            text-align: left; 
+            word-break: break-word; 
+            min-height: 22px; 
+            padding-top: 2px;
+            display: flex; 
+            align-items: center; 
+            flex-wrap: wrap; 
+        }
+        .items-table-row .item-qty-cell, 
+        .items-table-row .item-price-cell, 
+        .items-table-row .item-total-cell {
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .items-table-row > .delete-item-btn { 
+            text-align: center; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Currency Symbol as Image (strict styling) */
+        .currency {
+            display: inline-block; 
+            width: 14px; 
+            height: 14px; 
+            margin-left: 5px; 
+            vertical-align: middle; 
+            line-height: 0; 
+        }
+        .currency img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; 
+            /* فلتر لجعل الأيقونة باللون البرتقالي، يفترض أن الأيقونة الأصلية لونها أسود أو رمادي */
+            filter: invert(44%) sepia(97%) saturate(7402%) hue-rotate(359deg) brightness(95%) contrast(101%); 
+            opacity: 1; /* جعلها واضحة تماماً */
+            transition: filter 0.3s, opacity 0.3s;
+        }
+
+
+        .delete-item-btn:hover {
+            opacity: 1;
+            transform: scale(1.1);
+        }
+
+        /* Add new item button in quotation */
+        .add-item-in-quotation {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px; 
+            padding: 12px 20px;
+            background-color: var(--add-item-bg); /* خلفية برتقالية فاتحة جداً */
+            border: 1px dashed var(--primary-color); /* حدود متقطعة برتقالية */
+            border-radius: var(--border-radius);
+            color: var(--primary-color); /* نص برتقالي */
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .add-item-in-quotation:hover {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        /* Summary Section */
+        .summary-section {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 35px; 
+            margin-bottom: 35px;
+            direction: ltr;
+            gap: 4%; /* Space between bank details and totals */
+            flex-wrap: wrap; /* NEW: Allow wrapping for smaller screens */
+        }
+        .bank-details {
+            width: 55%; /* Adjusted for gap */
+            text-align: left;
+            background: var(--bank-card-bg); /* خلفية تفاصيل البنك (أبيض) */
+            padding: 20px; 
+            border-radius: var(--border-radius);
+            border: 1px solid var(--primary-color); /* حدود تفاصيل البنك برتقالية */
+            box-shadow: var(--box-shadow); 
+            display: flex;
+            flex-direction: column;
+            gap: 10px; 
+            position: relative; 
+            overflow: hidden; 
+            cursor: pointer; 
+            box-sizing: border-box;
+            padding-bottom: 15px; 
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out; 
+        }
+        .bank-details:hover {
+            transform: translateY(-2px); 
+            box-shadow: var(--box-shadow); 
+        }
+
+        .bank-details::before, .bank-details::after {
+            content: none; 
+        }
+
+        .bank-details .section-heading {
+            display: flex;
+            align-items: center;
+            gap: 10px; 
+            font-size: 1rem; 
+            color: var(--bank-card-header-text); 
+            border-bottom: 1px solid var(--primary-color); /* خط برتقالي تحت عنوان تفاصيل البنك */
+            padding-bottom: 8px; 
+            margin-bottom: 10px; 
+            position: relative; 
+            z-index: 1;
+            font-weight: 700; 
+        }
+        .bank-details .section-heading .bank-logo {
+            height: var(--bank-logo-height); 
+            width: auto;
+            object-fit: contain;
+            opacity: var(--bank-logo-opacity);
+            transition: filter 0.3s, opacity 0.3s;
+            pointer-events: none; 
+            user-select: none; 
+            display: none; 
+        }
+
+        .bank-details pre {
+            font-family: var(--main-font); 
+            font-size: 0.95rem; 
+            line-height: 1.6; 
+            white-space: pre-wrap;
+            color: var(--bank-card-detail-color); 
+            position: relative; 
+            z-index: 1;
+        }
+        .bank-details pre strong {
+            color: var(--bank-card-highlight-color); 
+            font-weight: 700;
+        }
+
+        .totals {
+            width: 40%; 
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            padding: 0; 
+        }
+        .total-row {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 8px 0; 
+            font-size: 1rem; 
+            border-bottom: 1px solid var(--table-row-border); /* خط فاصل برتقالي فاتح */
+        }
+        .total-row:last-of-type {
+            border-bottom: none;
+        }
+        .total-row span:first-child { 
+            flex-grow: 1;
+            text-align: left;
+            color: var(--tertiary-color); 
+        }
+        .total-row .value {
+            font-weight: 700;
+            min-width: 90px; 
+            text-align: right;
+            margin-left: 5px; 
+            color: var(--secondary-color); 
+        }
+        /* Styles for Discount Row */
+        .total-row.discount-row {
+            background-color: #FFF8F0; /* Very light orange background */
+            border: 1px solid var(--primary-color); /* Light orange border */
+            border-radius: var(--border-radius);
+            padding: 10px 15px;
+            margin-bottom: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+        .total-row.discount-row span:first-child {
+            color: var(--primary-color); /* Primary color for "Discount" text */
+            font-weight: 700;
+        }
+        .total-row.discount-row .value {
+            color: var(--primary-color-dark); /* Darker primary color for discount value */
+        }
+
+        /* Price Per Wash Note */
+        .price-per-wash-note {
+            margin-top: 15px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: right;
+            width: 100%;
+            padding: 8px 0;
+            border-top: 1px dashed var(--table-row-border); /* Dotted border above it */
+            display: flex; /* Use flexbox for icon and text alignment */
+            align-items: center;
+            justify-content: flex-end; /* Align content to the right */
+            gap: 5px; /* Space between icon and text */
+        }
+        .price-per-wash-note .note-icon {
+            color: var(--primary-color); /* Icon color */
+            font-size: 1.1em; /* Slightly larger icon */
+        }
+        .price-per-wash-note span {
+            color: var(--secondary-color); /* Value itself is dark */
+        }
+
+
+        .grand-total {
+            font-size: 1.2rem; 
+            font-weight: 800;
+            padding: 12px 15px; 
+            background-color: var(--grand-total-bg); /* خلفية الإجمالي الكلي (برتقالي رئيسي) */
+            border-radius: var(--border-radius);
+            margin-top: 15px; 
+            box-shadow: var(--box-shadow); 
+            color: var(--grand-total-text); /* لون النص على الإجمالي الكلي (أبيض) */
+        }
+        /* تعديل لجعل جميع نصوص Grand Total باللون الأبيض */
+        .grand-total span {
+            color: var(--grand-total-text); /* نص Grand Total باللون الأبيض */
+        }
+        .grand-total .value {
+            color: var(--grand-total-text); /* قيمة الإجمالي الكلي باللون الأبيض */
+        }
+        .grand-total .currency img { /* فلتر لجعل شعار العملة أبيض داخل Grand Total */
+            filter: brightness(0) invert(1);
+        }
+
+        /* Notes Section */
+        .notes-section {
+            margin-top: 35px;
+            margin-bottom: 35px;
+            text-align: left; 
+            background-color: var(--card-bg); /* خلفية القسم (أبيض) */
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--primary-color); /* حدود برتقالية */
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.03); 
+        }
+        .notes-section ul {
+            list-style: none;
+            padding-left: 15px; 
+            font-size: 0.95rem;
+            line-height: 1.7; 
+            color: var(--secondary-color);
+        }
+        .notes-section ul li::before {
+            content: "•";
+            color: var(--primary-color); /* نقطة القائمة برتقالية */
+            display: inline-block;
+            width: 1.2em; 
+            margin-left: -1.2em;
+            text-align: center;
+        }
+
+        /* Footer Section */
+        .footer-section {
+            margin-top: auto; 
+            padding-top: 25px; 
+            text-align: left;
+            font-size: 0.9rem; 
+            color: var(--tertiary-color);
+            border-top: 1px solid var(--primary-color); /* خط علوي برتقالي */
+            padding-bottom: 10px;
+            line-height: 1.5;
+        }
+        .footer-section p {
+            margin-bottom: 6px; 
+        }
+
+
+        /* === General Controls Styles === */
+        .section-title { font-size: 1rem; font-weight: 700; color: var(--secondary-color); margin-bottom: 15px; padding-bottom: 10px; border-bottom: 1px solid var(--border-color); }
+        .control-group { margin-bottom: 20px; }
+        .control-group label { display: block; font-size: 0.9rem; font-weight: 600; margin-bottom: 8px; color: var(--secondary-color); }
+        input[type="text"], input[type="number"], input[type="date"], textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border-color); border-radius: var(--border-radius); font-size: 0.9rem; background: var(--bg-color); color: var(--secondary-color); font-family: var(--main-font); transition: all 0.2s; }
+        input:focus, textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(249, 103, 20, 0.2); }
+
+        .btn { cursor: pointer; background: var(--primary-color); color: #fff; border: none; border-radius: var(--border-radius); padding: 12px 16px; font-size:0.95rem; display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: 600; text-align: center; width: 100%; transition: all 0.2s; }
+        .btn:hover { background: var(--primary-color-dark); transform: translateY(-2px); box-shadow: 0 7px 10px -3px rgb(0 0 0 / 0.1); }
+        .btn:active { transform: translateY(0); box-shadow: none; }
+
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(17, 24, 39, 0.6); color: white; display: none; align-items: center; justify-content: center; flex-direction: column; gap: 15px; z-index: 2000; backdrop-filter: blur(4px); }
+        .loader { border: 5px solid #4b5563; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .tool-group { margin-top: 24px; }
+
+        #notification-container { position: fixed; bottom: 20px; left: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; } 
+        .toast { display: flex; align-items: center; padding: 15px 20px; border-radius: var(--border-radius); box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1); color: white; min-width: 320px; opacity: 0; transform: translateX(-120%); transition: all 0.4s cubic-bezier(0.68, -0.55, 0.27, 1.55); } 
+        .toast.show { opacity: 1; transform: translateX(0); }
+        .toast.hide { opacity: 0; visibility: hidden; transform: translateX(-120%);}
+        .toast i.fa-solid { font-size: 1.5rem; margin-right: 15px; margin-left: 0; } 
+        .toast .toast-content { flex-grow: 1; }
+        .toast .toast-title { font-weight: 700; font-size: 1rem; }
+        .toast .toast-message { font-size: 0.9rem; opacity: 0.9; }
+        .toast.success { background-color: var(--success-color); }
+        .toast.error { background-color: var(--danger-color); }
+        .toast.warning { background-color: var(--primary-color); }
+        .toast .close-btn { background: none; border: none; color: white; cursor: pointer; font-size: 1.5rem; padding: 0 5px; opacity: 0.7; transition: opacity 0.2s; }
+        .toast .close-btn:hover { opacity: 1; }
+
+        /* Styles for direct editing - updated border/shadow */
+        [contenteditable="true"] {
+            outline: none; 
+            cursor: text;
+            padding: 2px 5px;
+            min-width: 10px; 
+            display: inline-block;
+            line-height: inherit;
+            box-shadow: 0 0 0 0px transparent; 
+            transition: box-shadow 0.2s ease-in-out, background-color 0.2s ease-in-out;
+        }
+        [contenteditable="true"]:focus {
+            box-shadow: 0 0 0 2px var(--primary-color-dark); 
+            border-radius: 3px; 
+            background-color: rgba(255, 255, 255, 0.95); 
+        }
+
+        [contenteditable="true"]:empty:before {
+            content: attr(data-placeholder); 
+            color: var(--tertiary-color);
+            opacity: 0.7;
+        }
+
+        /* Modal Styles (New) */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh; /* Limit height for scroll */
+            overflow-y: auto; /* Enable scroll if content overflows */
+            position: relative;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.show .modal-content {
+            transform: translateY(0);
+        }
+
+        .modal-content h2 {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--secondary-color);
+            font-size: 1.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .modal-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .modal-list-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .modal-list-item:last-child {
+            border-bottom: none;
+        }
+
+        .modal-item-info {
+            flex-grow: 1;
+            color: var(--secondary-color);
+            font-size: 0.95rem;
+        }
+
+        .modal-item-info strong {
+            color: var(--primary-color);
+        }
+
+        .modal-item-actions {
+            display: flex;
+            gap: 10px;
+            margin-left: 20px;
+        }
+
+        .modal-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .modal-btn.load {
+            background-color: var(--primary-color);
+            color: var(--text-light);
+        }
+
+        .modal-btn.load:hover {
+            background-color: var(--primary-color-dark);
+            transform: translateY(-1px);
+        }
+
+        .modal-btn.delete {
+            background-color: var(--danger-color);
+            color: var(--text-light);
+        }
+
+        .modal-btn.delete:hover {
+            background-color: #c0392b; /* Darker red */
+            transform: translateY(-1px);
+        }
+
+        .modal-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--tertiary-color);
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .modal-close-btn:hover {
+            color: var(--secondary-color);
+        }
+
+        .no-quotations-message {
+            text-align: center;
+            color: var(--tertiary-color);
+            padding: 20px;
+            font-size: 1rem;
+        }
+
+        /* === Media Queries for Responsiveness === */
+
+        /* For screens smaller than 1200px (adjust as needed) */
+        @media (max-width: 1200px) {
+            .main-layout {
+                flex-direction: column; /* Stack main content and controls vertically */
+                align-items: center; /* Center content horizontally */
+                padding: 15px; /* Adjust padding for smaller screens */
+            }
+
+            .left-panel {
+                order: 1; /* Place controls panel ON TOP when stacked */
+                width: 95%; /* Take almost full width */
+                max-width: 500px; /* Limit max width to keep it readable */
+                border-left: none; /* Remove left border when stacked */
+                border-right: none; /* Remove right border when stacked */
+                margin-bottom: 25px; /* Add space below panel when stacked */
+                max-height: none; /* Allow full height */
+                overflow-y: visible; /* Allow content to push height */
+                padding: 20px; /* Adjust padding */
+                border-radius: var(--border-radius); /* Add border-radius to the panel itself */
+                box-shadow: var(--box-shadow); /* Add shadow for separation */
+            }
+
+            .quotation-preview-wrapper {
+                order: 2; /* Place quotation preview BELOW controls when stacked */
+                width: 100%; /* Take full width */
+                padding: 15px; /* Adjust padding */
+                max-height: none; /* Allow full height */
+                overflow-y: visible; /* Allow content to push height */
+            }
+
+            .quotation-page {
+                padding: 25px; /* Reduce padding inside the quotation page */
+                /* max-width: 100%; is already set, ensuring it shrinks */
+            }
+
+            .header-section {
+                flex-direction: column; /* Stack logo and title vertically */
+                align-items: center; /* Center items */
+                text-align: center;
+                padding: 15px;
+            }
+            .header-company-logo {
+                order: 1; /* Keep logo at the top */
+                margin-bottom: 15px; /* Space between logo and title */
+            }
+            .logo-and-title {
+                align-items: center; /* Center title and info */
+                order: 2;
+            }
+            .invoice-info {
+                text-align: center; /* Center info text */
+            }
+
+            .bill-section {
+                flex-direction: column; /* Stack bill-from and bill-to vertically */
+                gap: 20px; /* Adjust gap */
+            }
+            .bill-from, .bill-to {
+                width: 100%; /* Take full width */
+            }
+
+            .summary-section {
+                flex-direction: column; /* Stack bank details and totals vertically */
+                gap: 25px; /* Adjust gap */
+            }
+            .bank-details, .totals {
+                width: 100%; /* Take full width */
+                align-items: flex-start; /* Align totals to start when stacked */
+            }
+            .totals {
+                padding-top: 15px; /* Add some padding if it stacks on bank details */
+            }
+        }
+
+        /* Further adjustments for very small screens (e.g., mobile portrait) */
+        @media (max-width: 480px) {
+            .top-bar {
+                flex-direction: column;
+                padding: 10px 15px;
+                gap: 10px;
+            }
+            .top-bar .title {
+                font-size: 1.1rem;
+            }
+            .back-link {
+                align-self: flex-start;
+            }
+            .top-bar .controls-container {
+                width: 100%;
+                justify-content: center; /* Center controls if space allows */
+            }
+
+            .quotation-page {
+                padding: 15px; /* Even less padding for tiny screens */
+                font-size: 14px;
+            }
+
+            .header-company-logo {
+                width: 150px; /* Smaller logo */
+            }
+            .quotation-title {
+                font-size: 2rem; /* Smaller title */
+            }
+            .invoice-info {
+                font-size: 0.9rem;
+            }
+
+            .items-table-header, .items-table-row {
+                grid-template-columns: 2fr 0.8fr 1fr 1fr 30px; /* Adjust columns for very small screens */
+                padding: 10px 15px;
+                font-size: 0.85rem;
+            }
+            .currency {
+                width: 12px; /* Smaller currency icon */
+                height: 12px;
+            }
+            .delete-item-btn {
+                font-size: 0.8rem; /* Smaller delete button icon */
+            }
+
+            .total-row {
+                font-size: 0.9rem;
+                padding: 6px 0;
+            }
+            .grand-total {
+                font-size: 1.1rem;
+                padding: 10px 12px;
+            }
+            .price-per-wash-note {
+                font-size: 0.85rem;
+            }
+
+            .notes-section {
+                padding: 15px;
+                font-size: 0.85rem;
+            }
+            .notes-section ul {
+                padding-left: 10px;
+            }
+
+            .footer-section {
+                font-size: 0.8rem;
+                padding-top: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <a href="./index.html" class="back-link">العودة للوحة</a>
+        <div class="title">مولّد عروض الأسعار</div>
+        <div class="controls-container">
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-layout">
+            <div class="left-panel">
+                <div class="section-title">إعدادات العرض</div>
+                <p style="font-size:0.85rem; color: var(--tertiary-color); margin-bottom:15px; line-height:1.6;">
+                    انقر مباشرة على أي نص قابل للتعديل داخل الفاتورة لتعديله. اضغط Enter لحفظ التغييرات أو انقر خارج المنطقة.
+                </p>
+                <div class="control-group">
+                    <label for="quotationDateInput">تاريخ عرض السعر:</label>
+                    <input type="date" id="quotationDateInput">
+                </div>
+                <div class="control-group">
+                    <label for="employeeCodeInput">رمز الموظف (حرفان):</label>
+                    <input type="text" id="employeeCodeInput" value="AA" maxlength="2" style="text-transform: uppercase;">
+                </div>
+                <div class="control-group">
+                    <label for="vatRateInput">ضريبة القيمة المضافة (%):</label>
+                    <input type="number" id="vatRateInput" value="15" min="0" max="100" step="1">
+                </div>
+                <div class="control-group">
+                    <label for="discountInput">الخصم (%):</label>
+                    <input type="number" id="discountInput" value="0" min="0" max="100" step="1">
+                </div>
+
+                <div class="control-group">
+                    <label for="notesInput">الملاحظات (كل ملاحظة بسطر):</label>
+                    <textarea id="notesInput" rows="6" placeholder="أدخل الملاحظات هنا، كل ملاحظة على سطر جديد..."></textarea>
+                </div>
+                <div class="tool-group">
+                    <button class="btn" id="exportQuotationPdf" style="background-color: var(--success-color);"><i class="fa-solid fa-file-pdf"></i> تصدير PDF</button>
+                </div>
+                <div class="tool-group">
+                    <button class="btn" id="saveQuotationBtn"><i class="fa-solid fa-floppy-disk"></i> حفظ الفاتورة</button>
+                </div>
+                <div class="tool-group">
+                    <button class="btn" id="loadQuotationBtn" style="background-color: var(--tertiary-color);"><i class="fa-solid fa-folder-open"></i> تحميل فاتورة</button>
+                </div>
+                <div class="tool-group">
+                    <button class="btn" id="resetSequenceBtn" style="background-color: var(--danger-color);"><i class="fa-solid fa-rotate-left"></i> إعادة تعيين تسلسل الفاتورة</button>
+                </div>
+            </div>
+
+            <div class="quotation-preview-wrapper">
+                <div class="quotation-page" id="quotationPage">
+                    <div class="header-section">
+                        <div class="header-company-logo">
+                            <img src="https://i.ibb.co/n84xMCHz/Logo-2.png" alt="Your Company Logo" /> 
+                        </div>
+                        <div class="logo-and-title">
+                            <h1 class="quotation-title">QUOTATION</h1>
+                            <p class="invoice-info">
+                                <span>Quotation Date: <span id="previewQuotationDate">25/06/2025</span></span><br>
+                                <span>
+                                    Quotation Number 
+                                    <span class="employee-code-display" id="employeeCodeDisplay" contenteditable="true" data-field="employeeCode" data-placeholder="AA" maxlength="2">AA</span>-<span class="invoice-number-prefix" id="invoiceNumberPrefix">SW-220625-</span><span class="invoice-number-suffix" id="invoiceNumberSuffix" contenteditable="true" data-field="invoiceNumberSuffix" data-input-type="number">001</span>
+                                </span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="bill-section">
+                        <div class="bill-from">
+                            <p class="section-heading">FROM</p>
+                            <p id="previewBillFrom" contenteditable="true" data-field="billFromText" data-placeholder="معلومات المرسل...">CR: Lamsa Modern Technology Co
+CR NO: 1010638717
+VAT NO: 310585080800003</p> 
+                        </div>
+                        <div class="bill-to">
+                            <p class="section-heading">TO</p>
+                            <p id="previewTo" contenteditable="true" data-field="toText" data-placeholder="اسم العميل">اسم العميل هنا</p>
+                        </div>
+                    </div>
+
+                    <div class="items-table-header">
+                        <div class="item-description-header">ITEM DESCRIPTION</div>
+                        <div class="item-qty-header">QTY</div>
+                        <div class="item-price-header">PRICE/WASH</div>
+                        <div class="item-total-header">TOTAL</div>
+                        <div></div>
+                    </div>
+
+                    <div class="items-table-body" id="itemsTableBody">
+                    </div>
+
+                    <button class="add-item-in-quotation" id="addItemInQuotationBtn">
+                        <i class="fa-solid fa-plus"></i> &nbsp; Add New Item
+                    </button>
+
+                    <div class="summary-section">
+                        <div class="bank-details">
+                            <p class="section-heading">
+                                BANK DETAILS
+                            </p>
+                            <pre id="previewBankDetails" data-field="bankDetailsText"><strong>شركة اللمسة العصرية التقنية</strong><br>
+Ahli Bank IBAN: <strong>SA5110000026100000261004</strong><br>
+AC NO : 26100000261004</pre>
+                        </div>
+                        <div class="totals">
+                            <div class="total-row">
+                                <span>Sub Total</span> <span class="value" id="previewSubTotal">0.00 <span class="currency"></span></span>
+                            </div>
+                            <div class="total-row discount-row">
+                                <span>Discount (<span id="discountRateDisplay">0</span>%)</span> <span class="value" id="previewDiscount">0.00 <span class="currency"></span></span>
+                            </div>
+                            <div class="total-row">
+                                <span>Vat (<span id="vatRateDisplay">15</span>%)</span> <span class="value" id="previewVat">0.00 <span class="currency"></span></span>
+                            </div>
+                            <div class="total-row grand-total">
+                                <span style="color: var(--grand-total-text);">Grand Total</span> <span class="value" id="previewGrandTotal">0.00 <span class="currency"></span></span>
+                            </div>
+                            <div class="price-per-wash-note" id="pricePerWashNote">
+                                <i class="fa-solid fa-circle-info note-icon"></i> ( Price per wash: <span id="calculatedPricePerWash">0.00</span> )
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="notes-section">
+                        <p class="section-heading">NOTES</p>
+                        <ul id="previewNotes">
+                            <li>Quotation for 6 Cars</li>
+                            <li>Wash 3 times per week</li>
+                            <li>Total wash 72 per month</li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-section">
+                        <div class="contact-info">
+                            <p contenteditable="true" data-field="phone" data-placeholder="+966 56 999 0806">+966 56 999 0806</p>
+                            <p contenteditable="true" data-field="email" data-placeholder="Business@sweater.sa">Business@sweater.sa</p>
+                            <p contenteditable="true" data-field="address" data-placeholder="Al Sahafa, Anas bin Malik st">Al Sahafa, Anas bin Malik st</p>
+                            <p contenteditable="true" data-field="website" data-placeholder="www.sweater.sa">www.sweater.sa</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loadingOverlay" class="loading-overlay"><div class="loader"></div><p>جاري إنشاء الفاتورة...</p></div>
+    <div id="notification-container"></div>
+
+    <div id="loadQuotationModal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn" id="closeLoadModal">&times;</button>
+            <h2>الفواتير المحفوظة</h2>
+            <ul id="savedQuotationsList" class="modal-list">
+                </ul>
+            <p id="noQuotationsMessage" class="no-quotations-message" style="display: none;">لا توجد فواتير محفوظة بعد.</p>
+        </div>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    
+    <script>
+        /* JavaScript starts here */
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const elements = {
+                loadingOverlay: document.getElementById('loadingOverlay'),
+                quotationPage: document.getElementById('quotationPage'),
+                exportQuotationPdf: document.getElementById('exportQuotationPdf'),
+                notificationContainer: document.getElementById('notification-container'),
+                addItemInQuotationBtn: document.getElementById('addItemInQuotationBtn'),
+                itemsTableBody: document.getElementById('itemsTableBody'),
+                employeeCodeInput: document.getElementById('employeeCodeInput'), 
+                employeeCodeDisplay: document.getElementById('employeeCodeDisplay'), 
+                invoiceNumberPrefix: document.getElementById('invoiceNumberPrefix'),
+                invoiceNumberSuffix: document.getElementById('invoiceNumberSuffix'),
+                resetSequenceBtn: document.getElementById('resetSequenceBtn'),
+                previewQuotationDate: document.getElementById('previewQuotationDate'), 
+                quotationDateInput: document.getElementById('quotationDateInput'),     
+                vatRateInput: document.getElementById('vatRateInput'),                 
+                vatRateDisplay: document.getElementById('vatRateDisplay'),             
+                discountInput: document.getElementById('discountInput'), 
+                discountRateDisplay: document.getElementById('discountRateDisplay'), 
+                previewDiscount: document.getElementById('previewDiscount'), 
+                previewSubTotal: document.getElementById('previewSubTotal'), 
+                previewVat: document.getElementById('previewVat'),             
+                previewGrandTotal: document.getElementById('previewGrandTotal'), 
+                pricePerWashNote: document.getElementById('pricePerWashNote'), 
+                calculatedPricePerWash: document.getElementById('calculatedPricePerWash'), 
+                saveQuotationBtn: document.getElementById('saveQuotationBtn'),         
+                loadQuotationBtn: document.getElementById('loadQuotationBtn'),         
+                previewBillFrom: document.getElementById('previewBillFrom'),
+                previewTo: document.getElementById('previewTo'),
+                previewBankDetails: document.getElementById('previewBankDetails'),
+                previewNotes: document.getElementById('previewNotes'), 
+                notesInput: document.getElementById('notesInput'), 
+                footerPhone: document.querySelector('[data-field="phone"]'),
+                footerEmail: document.querySelector('[data-field="email"]'),
+                footerAddress: document.querySelector('[data-field="address"]'),
+                footerWebsite: document.querySelector('[data-field="website"]'),
+                editableElements: document.querySelectorAll('[contenteditable="true"]'),
+                loadQuotationModal: document.getElementById('loadQuotationModal'), 
+                closeLoadModal: document.getElementById('closeLoadModal'),         
+                savedQuotationsList: document.getElementById('savedQuotationsList'), 
+                noQuotationsMessage: document.getElementById('noQuotationsMessage')  
+            };
+
+            const COMPANY_LOGO_URL = "https://i.ibb.co/n84xMCHz/Logo-2.png";
+            const SAUDI_RIYAL_SYMBOL_URL = "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Saudi_Riyal_Symbol.svg/1833px-Saudi_Riyal_Symbol.svg.png";
+
+            const LOCAL_STORAGE_SEQ_KEY = 'sweaterQuotationSeqNum';
+            const LOCAL_STORAGE_LAST_DATE_KEY = 'sweaterLastQuotationDate';
+            const LOCAL_STORAGE_SAVED_QUOTATIONS_KEY = 'sweaterSavedQuotations';
+
+            // --- Notification System ---
+            function showNotification(type = 'success', title, message) {
+                const toast = document.createElement('div');
+                toast.classList.add('toast', type);
+                const icons = { success: 'fa-check-circle', error: 'fa-times-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
+                toast.innerHTML = `
+                    <i class="fa-solid ${icons[type]}"></i>
+                    <div class="toast-content">
+                        <div class="toast-title">${title}</div>
+                        <div class="toast-message">${message}</div>
+                    </div>
+                    <button class="close-btn">&times;</button>`;
+                elements.notificationContainer.appendChild(toast);
+                setTimeout(() => toast.classList.add('show'), 100);
+                const hideTimeout = setTimeout(() => {
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 400);
+                }, 5000);
+                toast.querySelector('.close-btn').addEventListener('click', () => {
+                    clearTimeout(hideTimeout);
+                    toast.classList.add('hide');
+                    setTimeout(() => toast.remove(), 400);
+                });
+            }
+
+            // --- Create Currency Symbol HTML (using <img>) ---
+            function getCurrencySymbolHtml() {
+                return `<span class="currency"><img src="${SAUDI_RIYAL_SYMBOL_URL}" alt="Saudi Riyal"></span>`;
+            }
+
+            // --- Generate Quotation Number Prefix and Suffix ---
+            function generateQuotationNumberParts() {
+                const today = new Date();
+                const year = String(today.getFullYear()).slice(-2);
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const currentDateFormatted = `${day}${month}${year}`;
+
+                let currentSeqNum = parseInt(localStorage.getItem(LOCAL_STORAGE_SEQ_KEY) || '0');
+                const lastDate = localStorage.getItem(LOCAL_STORAGE_LAST_DATE_KEY);
+
+                if (lastDate !== currentDateFormatted) {
+                    currentSeqNum = 0;
+                    localStorage.setItem(LOCAL_STORAGE_LAST_DATE_KEY, currentDateFormatted);
+                }
+                
+                const seqNumFormatted = String(currentSeqNum + 1).padStart(3, '0');
+
+                return {
+                    prefix: `SW-${currentDateFormatted}-`,
+                    suffix: seqNumFormatted
+                };
+            }
+
+            // --- Reset Quotation Sequence Number ---
+            elements.resetSequenceBtn.addEventListener('click', () => {
+                if (confirm('هل أنت متأكد من رغبتك في إعادة تعيين رقم تسلسل الفاتورة؟ سيؤدي هذا إلى البدء من 001 لليوم.')) {
+                    localStorage.setItem(LOCAL_STORAGE_SEQ_KEY, '0'); // Reset current sequence
+                    localStorage.removeItem(LOCAL_STORAGE_LAST_DATE_KEY); // Force new date check
+                    const newParts = generateQuotationNumberParts();
+                    elements.invoiceNumberPrefix.textContent = newParts.prefix;
+                    elements.invoiceNumberSuffix.textContent = newParts.suffix; // Update suffix to '001'
+                    showNotification('info', 'إعادة تعيين التسلسل', 'تم إعادة تعيين رقم تسلسل الفاتورة لليوم.');
+                }
+            });
+
+            // --- Calculate and Update Totals ---
+            function updateTotals() {
+                let subTotal = 0;
+                let totalQuantity = 0; 
+                const vatRate = parseFloat(elements.vatRateInput.value) / 100 || 0;
+                const discountRate = parseFloat(elements.discountInput.value) / 100 || 0; 
+                
+                elements.vatRateDisplay.textContent = parseFloat(elements.vatRateInput.value).toFixed(0);
+                elements.discountRateDisplay.textContent = parseFloat(elements.discountInput.value).toFixed(0); 
+
+                elements.itemsTableBody.querySelectorAll('.items-table-row').forEach(row => {
+                    const qtyElement = row.querySelector('[data-field="itemQty"]');
+                    const priceElement = row.querySelector('[data-field="itemPrice"]');
+
+                    const qty = parseFloat(qtyElement.textContent.replace(/[^0-9.]/g, '')) || 0;
+                    const price = parseFloat(priceElement.textContent.replace(/[^0-9.]/g, '')) || 0;
+                    
+                    const itemTotal = qty * price;
+                    row.querySelector('[data-field="itemTotal"]').innerHTML = `${itemTotal.toFixed(2)} ${getCurrencySymbolHtml()}`;
+                    subTotal += itemTotal;
+                    totalQuantity += qty; 
+                });
+                
+                const discountAmount = subTotal * discountRate; 
+                const subTotalAfterDiscount = subTotal - discountAmount; 
+
+                const vatAmount = subTotalAfterDiscount * vatRate; 
+                const grandTotal = subTotalAfterDiscount + vatAmount; 
+
+                elements.previewSubTotal.innerHTML = `${subTotal.toFixed(2)} ${getCurrencySymbolHtml()}`;
+                elements.previewDiscount.innerHTML = `${discountAmount.toFixed(2)} ${getCurrencySymbolHtml()}`; 
+                elements.previewVat.innerHTML = `${vatAmount.toFixed(2)} ${getCurrencySymbolHtml()}`;
+                elements.previewGrandTotal.innerHTML = `${grandTotal.toFixed(2)} ${getCurrencySymbolHtml()}`;
+
+                // Calculate and display Price per wash
+                // The condition was simplified here to ensure it appears if total quantity is greater than 0
+                if (totalQuantity > 0) { 
+                    const pricePerWash = grandTotal / totalQuantity;
+                    // Corrected to use innerHTML to render the currency symbol
+                    elements.calculatedPricePerWash.innerHTML = `${pricePerWash.toFixed(2)} ${getCurrencySymbolHtml()}`; 
+                    elements.pricePerWashNote.style.display = 'flex'; // Changed to flex to align icon and text
+                } else {
+                    // Corrected to use innerHTML to render the currency symbol
+                    elements.calculatedPricePerWash.innerHTML = `0.00 ${getCurrencySymbolHtml()}`; 
+                    elements.pricePerWashNote.style.display = 'none'; 
+                }
+            }
+
+            // --- Function to sanitize HTML content from contenteditable (for notes) ---
+            function sanitizeHtml(html) {
+                const div = document.createElement('div');
+                div.innerHTML = html;
+                return div.textContent || div.innerText || '';
+            }
+
+            // --- Update Notes display from textarea ---
+            function updateNotesDisplay() {
+                const notesText = elements.notesInput.value;
+                elements.previewNotes.innerHTML = ''; 
+                const lines = notesText.split('\n').filter(line => line.trim() !== ''); 
+                
+                if (lines.length > 0) {
+                    lines.forEach(line => {
+                        const li = document.createElement('li');
+                        li.textContent = line.trim();
+                        elements.previewNotes.appendChild(li);
+                    });
+                } else {
+                    elements.previewNotes.innerHTML = ''; /* Ensure it's truly empty if no notes */
+                }
+            }
+
+            // --- Attach event listeners for direct editing ---
+            function setupEditableElements(elementsToSetup) {
+                elementsToSetup.forEach(element => {
+                    element.addEventListener('focus', function() {
+                        this.dataset.originalContent = this.innerHTML;
+                        if (this.dataset.inputType === 'number') {
+                            const currencyImg = this.querySelector('.currency img');
+                            if (currencyImg && currencyImg.parentElement) {
+                                this.textContent = this.textContent.replace(currencyImg.parentElement.outerHTML, '').trim();
+                            }
+                            this.textContent = this.textContent.replace(/[^0-9.]/g, ''); 
+                        } else {
+                            this.textContent = sanitizeHtml(this.innerHTML); 
+                        }
+                    });
+
+                    element.addEventListener('blur', function() {
+                        let newContent = this.innerHTML.trim();
+                        
+                        newContent = sanitizeHtml(newContent);
+
+                        if (newContent === '' && element.dataset.placeholder) { 
+                            this.innerHTML = ''; 
+                        } else if (this.dataset.inputType === 'number') {
+                            let val = parseFloat(newContent) || 0; 
+                            if (val < 0) val = 0; 
+                            if (element.id === 'invoiceNumberSuffix') {
+                                val = String(parseInt(newContent.replace(/[^0-9]/g, '')) || 0).padStart(3, '0');
+                            }
+                            this.textContent = val.toString(); 
+                            if (this.dataset.field === 'itemPrice' || this.dataset.field === 'itemQty') {
+                                updateTotals(); 
+                                if (this.dataset.field === 'itemPrice') {
+                                    this.innerHTML = `${parseFloat(this.textContent).toFixed(2)} ${getCurrencySymbolHtml()}`;
+                                }
+                            }
+                        } else if (element.dataset.field === 'employeeCode') { 
+                            this.textContent = newContent.toUpperCase().substring(0, 2); 
+                        }
+                        else {
+                            this.innerHTML = newContent;
+                        }
+
+                        if (this.innerHTML !== this.dataset.originalContent && this.dataset.inputType !== 'number') {
+                            showNotification('success', 'تم التحديث', 'تم حفظ التغييرات.');
+                        }
+                    });
+
+                    element.addEventListener('keydown', function(e) {
+                        if (e.key === 'Enter') { 
+                            e.preventDefault(); 
+                            this.blur(); 
+                        }
+                    });
+
+                    if (element.innerHTML.trim() === '' && element.dataset.placeholder) {
+                        element.innerHTML = ''; 
+                    }
+                });
+            }
+
+            // --- Add New Item Row ---
+            function addNewItemRow(description = 'Service', qty = 0, price = 0.00) { 
+                const newRow = document.createElement('div');
+                newRow.classList.add('items-table-row');
+                newRow.innerHTML = `
+                    <div class="item-description-cell" contenteditable="true" data-field="itemDescription" data-placeholder="الوصف">${description}</div>
+                    <div class="item-qty-cell" contenteditable="true" data-field="itemQty" data-input-type="number" data-placeholder="الكمية">${qty}</div>
+                    <div class="item-price-cell" contenteditable="true" data-field="itemPrice" data-input-type="number" data-placeholder="السعر">${price.toFixed(2)} ${getCurrencySymbolHtml()}</div>
+                    <div class="item-total-cell" data-field="itemTotal">0.00 ${getCurrencySymbolHtml()}</div>
+                    <button class="delete-item-btn"><i class="fa-solid fa-trash-can"></i></button>
+                `;
+                elements.itemsTableBody.appendChild(newRow);
+
+                // Setup editable elements for the new row, excluding itemTotal as it's calculated
+                setupEditableElements(newRow.querySelectorAll('[contenteditable="true"]:not([data-field="itemTotal"])'));
+                
+                newRow.querySelector('.delete-item-btn').addEventListener('click', function() {
+                    if (elements.itemsTableBody.children.length > 1) { 
+                        newRow.remove();
+                        updateTotals();
+                        showNotification('info', 'تم حذف البند', 'تم حذف البند بنجاح.');
+                    } else {
+                        showNotification('warning', 'لا يمكن الحذف', 'يجب أن يبقى بند واحد على الأقل.');
+                    }
+                });
+
+                updateTotals(); 
+                showNotification('success', 'تم إضافة بند', 'تم إضافة بند جديد بنجاح.');
+            }
+
+            // Event listener for "Add Item" button inside the quotation
+            elements.addItemInQuotationBtn.addEventListener('click', () => addNewItemRow());
+
+            // --- Date Input Handler ---
+            elements.quotationDateInput.addEventListener('change', function() {
+                const dateValue = this.value; //YYYY-MM-DD
+                if (dateValue) {
+                    const [year, month, day] = dateValue.split('-');
+                    elements.previewQuotationDate.textContent = `${day}/${month}/${year}`;
+                }
+            });
+
+            // --- VAT Rate Input Handler ---
+            elements.vatRateInput.addEventListener('input', updateTotals);
+            // Discount Input Handler
+            elements.discountInput.addEventListener('input', updateTotals);
+
+            // Employee Code Input Handler
+            elements.employeeCodeInput.addEventListener('input', function() {
+                this.value = this.value.toUpperCase().substring(0, 2); 
+                elements.employeeCodeDisplay.textContent = this.value;
+            });
+
+            // Notes Textarea input handler
+            elements.notesInput.addEventListener('input', updateNotesDisplay);
+
+
+            // --- Save and Load Quotation Functions ---
+            function getQuotationData() {
+                const items = [];
+                elements.itemsTableBody.querySelectorAll('.items-table-row').forEach(row => {
+                    items.push({
+                        description: sanitizeHtml(row.querySelector('[data-field="itemDescription"]').innerHTML),
+                        qty: parseFloat(row.querySelector('[data-field="itemQty"]').textContent.replace(/[^0-9.]/g, '')) || 0,
+                        price: parseFloat(row.querySelector('[data-field="itemPrice"]').textContent.replace(/[^0-9.]/g, '')) || 0,
+                    });
+                });
+
+                return {
+                    quotationDate: elements.quotationDateInput.value,
+                    employeeCode: elements.employeeCodeInput.value, 
+                    invoiceNumberPrefix: elements.invoiceNumberPrefix.textContent,
+                    invoiceNumberSuffix: elements.invoiceNumberSuffix.textContent,
+                    billFromText: sanitizeHtml(elements.previewBillFrom.innerHTML),
+                    toText: sanitizeHtml(elements.previewTo.innerHTML),
+                    items: items,
+                    vatRate: parseFloat(elements.vatRateInput.value) || 0,
+                    discountRate: parseFloat(elements.discountInput.value) || 0, 
+                    bankDetailsText: elements.previewBankDetails.innerHTML, 
+                    notesText: elements.notesInput.value, 
+                    phone: sanitizeHtml(elements.footerPhone.innerHTML),
+                    email: sanitizeHtml(elements.footerEmail.innerHTML),
+                    address: sanitizeHtml(elements.footerAddress.innerHTML),
+                    website: sanitizeHtml(elements.footerWebsite.innerHTML)
+                };
+            }
+
+            function setQuotationData(data) {
+                elements.quotationDateInput.value = data.quotationDate;
+                const changeEvent = new Event('change');
+                elements.quotationDateInput.dispatchEvent(changeEvent);
+
+                elements.employeeCodeInput.value = data.employeeCode || 'AA'; 
+                elements.employeeCodeDisplay.textContent = data.employeeCode || 'AA'; 
+
+                elements.invoiceNumberPrefix.textContent = data.invoiceNumberPrefix;
+                elements.invoiceNumberSuffix.textContent = data.invoiceNumberSuffix;
+                elements.previewBillFrom.innerHTML = data.billFromText;
+                elements.previewTo.innerHTML = data.toText;
+                
+                elements.itemsTableBody.innerHTML = '';
+                data.items.forEach(item => addNewItemRow(item.description, item.qty, item.price));
+
+                elements.vatRateInput.value = data.vatRate;
+                elements.vatRateDisplay.textContent = data.vatRate.toFixed(0);
+                
+                elements.discountInput.value = data.discountRate || 0; 
+                elements.discountRateDisplay.textContent = (data.discountRate || 0).toFixed(0); 
+                
+                elements.previewBankDetails.innerHTML = data.bankDetailsText;
+                
+                elements.notesInput.value = data.notesText || ''; 
+                updateNotesDisplay(); 
+
+                elements.footerPhone.innerHTML = data.phone;
+                elements.footerEmail.innerHTML = data.email;
+                elements.footerAddress.innerHTML = data.address;
+                elements.footerWebsite.innerHTML = data.website;
+
+                document.querySelector('.header-company-logo img').src = COMPANY_LOGO_URL;
+
+                setupEditableElements(document.querySelectorAll('[contenteditable="true"]'));
+                updateTotals();
+            }
+
+            elements.saveQuotationBtn.addEventListener('click', () => {
+                const quotationName = prompt('الرجاء إدخال اسم لهذه الفاتورة (مثال: عرض سعر لشركة XYZ):');
+                if (quotationName) {
+                    let savedQuotations = JSON.parse(localStorage.getItem(LOCAL_STORAGE_SAVED_QUOTATIONS_KEY) || '[]');
+                    const currentData = getQuotationData();
+                    
+                    const existingIndex = savedQuotations.findIndex(q => q.name === quotationName);
+                    if (existingIndex > -1) {
+                        if (confirm(`فاتورة بهذا الاسم "${quotationName}" موجودة بالفعل. هل تريد الكتابة فوقها؟`)) {
+                            savedQuotations[existingIndex] = { name: quotationName, timestamp: new Date().toISOString(), data: currentData };
+                        } else {
+                            showNotification('info', 'تم الإلغاء', 'لم يتم حفظ الفاتورة.');
+                            return;
+                        }
+                    } else {
+                        savedQuotations.push({ name: quotationName, timestamp: new Date().toISOString(), data: currentData });
+                    }
+
+                    localStorage.setItem(LOCAL_STORAGE_SAVED_QUOTATIONS_KEY, JSON.stringify(savedQuotations));
+                    showNotification('success', 'تم الحفظ', `تم حفظ الفاتورة "${quotationName}" بنجاح.`);
+                } else {
+                    showNotification('info', 'تم الإلغاء', 'لم يتم حفظ الفاتورة.');
+                }
+            });
+
+            elements.loadQuotationBtn.addEventListener('click', () => {
+                const savedQuotations = JSON.parse(localStorage.getItem(LOCAL_STORAGE_SAVED_QUOTATIONS_KEY) || '[]');
+                elements.savedQuotationsList.innerHTML = ''; 
+
+                if (savedQuotations.length === 0) {
+                    elements.noQuotationsMessage.style.display = 'block';
+                } else {
+                    elements.noQuotationsMessage.style.display = 'none';
+                    savedQuotations.forEach((q, index) => {
+                        const listItem = document.createElement('li');
+                        listItem.classList.add('modal-list-item');
+                        listItem.innerHTML = `
+                            <div class="modal-item-info">
+                                <strong>${q.name}</strong><br>
+                                <span>تاريخ الحفظ: ${new Date(q.timestamp).toLocaleDateString()}</span>
+                            </div>
+                            <div class="modal-item-actions">
+                                <button class="modal-btn load" data-index="${index}">تحميل</button>
+                                <button class="modal-btn delete" data-index="${index}">حذف</button>
+                            </div>
+                        `;
+                        elements.savedQuotationsList.appendChild(listItem);
+                    });
+
+                    elements.savedQuotationsList.querySelectorAll('.modal-btn.load').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const index = event.target.dataset.index;
+                            setQuotationData(savedQuotations[index].data);
+                            elements.loadQuotationModal.classList.remove('show');
+                            showNotification('success', 'تم التحميل', `تم تحميل الفاتورة "${savedQuotations[index].name}" بنجاح.`);
+                        });
+                    });
+
+                    elements.savedQuotationsList.querySelectorAll('.modal-btn.delete').forEach(button => {
+                        button.addEventListener('click', (event) => {
+                            const index = event.target.dataset.index;
+                            if (confirm(`هل أنت متأكد أنك تريد حذف الفاتورة "${savedQuotations[index].name}"؟`)) {
+                                savedQuotations.splice(index, 1); 
+                                localStorage.setItem(LOCAL_STORAGE_SAVED_QUOTATIONS_KEY, JSON.stringify(savedQuotations)); 
+                                showNotification('success', 'تم الحذف', 'تم حذف الفاتورة بنجاح.');
+                                elements.loadQuotationModal.classList.remove('show'); 
+                                elements.loadQuotationBtn.click(); 
+                            }
+                        });
+                    });
+                }
+                elements.loadQuotationModal.classList.add('show'); 
+            });
+
+            elements.closeLoadModal.addEventListener('click', () => {
+                elements.loadQuotationModal.classList.remove('show'); 
+            });
+
+            elements.loadQuotationModal.addEventListener('click', (event) => {
+                if (event.target === elements.loadQuotationModal) {
+                    elements.loadQuotationModal.classList.remove('show');
+                }
+            });
+
+
+            // --- Export to PDF Functionality ---
+            elements.exportQuotationPdf.addEventListener('click', async () => {
+                elements.loadingOverlay.style.display = 'flex';
+                
+                // 1. Create a temporary clone of the quotation page
+                const originalQuotationPage = elements.quotationPage;
+                const clonedQuotationPage = originalQuotationPage.cloneNode(true);
+                
+                // Position the clone off-screen
+                clonedQuotationPage.style.position = 'absolute';
+                clonedQuotationPage.style.left = '-9999px';
+                clonedQuotationPage.style.top = '-9999px';
+                clonedQuotationPage.style.width = originalQuotationPage.offsetWidth + 'px'; 
+                clonedQuotationPage.style.height = originalQuotationPage.offsetHeight + 'px'; 
+                
+                // Append clone to body to be rendered for html2canvas
+                document.body.appendChild(clonedQuotationPage);
+
+                // 2. Hide unwanted elements *within the clone* using display: none; for reliability
+                clonedQuotationPage.querySelectorAll('[contenteditable="true"]').forEach(el => {
+                    el.style.boxShadow = 'none';
+                    el.style.outline = 'none'; 
+                    el.style.backgroundColor = 'transparent'; 
+                });
+                clonedQuotationPage.querySelectorAll('.delete-item-btn').forEach(btn => {btn.style.display = 'none';});
+                clonedQuotationPage.querySelector('.add-item-in-quotation').style.display = 'none';
+                
+                // Ensure currency img are VISIBLE for capture
+                clonedQuotationPage.querySelectorAll('.currency img').forEach(img => {img.style.visibility = 'visible'; img.style.opacity = '1';});
+                
+                // Set logo filter to convert to white for PDF export in the clone
+                const logoImg = clonedQuotationPage.querySelector('.header-company-logo img');
+                if (logoImg) {
+                    logoImg.style.filter = 'brightness(0) invert(1)'; 
+                }
+                // Set grand total currency filter to white for PDF export in the clone
+                const grandTotalCurrencyImg = clonedQuotationPage.querySelector('.grand-total .currency img');
+                if (grandTotalCurrencyImg) {
+                    grandTotalCurrencyImg.style.filter = 'brightness(0) invert(1)';
+                }
+
+                // 3. Ensure browser has rendered the clone before capturing
+                await new Promise(resolve => setTimeout(resolve, 50)); 
+
+                try {
+                    const { jsPDF } = window.jspdf;
+                    
+                    const rect = originalQuotationPage.getBoundingClientRect(); 
+                    const width = rect.width;
+                    const height = rect.height;
+
+                    const canvas = await html2canvas(clonedQuotationPage, { 
+                        scale: 2, 
+                        useCORS: true,
+                        backgroundColor: '#ffffff' 
+                    });
+
+                    const imgData = canvas.toDataURL('image/png');
+
+                    const pdf = new jsPDF({
+                        orientation: 'p', 
+                        unit: 'px',
+                        format: [width, height] 
+                    });
+
+                    pdf.addImage(imgData, 'PNG', 0, 0, width, height);
+                    
+                    // Use employee code in filename if present
+                    const employeeCodeForFilename = elements.employeeCodeInput.value ? `${elements.employeeCodeInput.value}-` : '';
+                    const invoiceNumForFilename = `${employeeCodeForFilename}${elements.invoiceNumberPrefix.textContent}${elements.invoiceNumberSuffix.textContent}`.replace(/[^a-zA-Z0-9-.]/g, '_');
+                    pdf.save(`Quotation-${invoiceNumForFilename}-${Date.now()}.pdf`);
+
+                    const currentSuffixNum = parseInt(elements.invoiceNumberSuffix.textContent) || 0;
+                    localStorage.setItem(LOCAL_STORAGE_SEQ_KEY, (currentSuffixNum).toString()); 
+                    
+                    const newParts = generateQuotationNumberParts();
+                    elements.invoiceNumberPrefix.textContent = newParts.prefix;
+                    elements.invoiceNumberSuffix.textContent = newParts.suffix; 
+
+                    showNotification('success', 'نجاح', 'تم تصدير الفاتورة إلى PDF بنجاح.');
+                } catch (error) {
+                    console.error('خطأ في تصدير الفاتورة:', error);
+                    showNotification('error', 'خطأ في التصدير', 'حدث خطأ أثناء تصدير الفاتورة. الرجاء المحاولة مرة أخرى.');
+                } finally {
+                    // 4. Remove the clone from the DOM
+                    document.body.removeChild(clonedQuotationPage);
+                    elements.loadingOverlay.style.display = 'none'; 
+                }
+            });
+
+            // Initial setup on page load
+            function initializeQuotation() {
+                // Set default date to today
+                const today = new Date();
+                const year = today.getFullYear();
+                const month = String(today.getMonth() + 1).padStart(2, '0');
+                const day = String(today.getDate()).padStart(2, '0');
+                const defaultDate = `${year}-${month}-${day}`;
+                elements.quotationDateInput.value = defaultDate;
+                elements.previewQuotationDate.textContent = `${day}/${month}/${year}`;
+
+                // Update company logo source
+                document.querySelector('.header-company-logo img').src = COMPANY_LOGO_URL;
+
+                const initialParts = generateQuotationNumberParts();
+                elements.invoiceNumberPrefix.textContent = initialParts.prefix;
+                elements.invoiceNumberSuffix.textContent = initialParts.suffix;
+
+                // Set default employee code
+                elements.employeeCodeInput.value = 'AA';
+                elements.employeeCodeDisplay.textContent = 'AA';
+
+                // Add an initial item row if none exist, with new default values
+                if (elements.itemsTableBody.children.length === 0) {
+                    addNewItemRow('Service', 0, 0.00); 
+                } else {
+                    // Re-setup editable elements for existing rows if page reloaded with items
+                    elements.itemsTableBody.querySelectorAll('.items-table-row').forEach(row => {
+                        setupEditableElements(row.querySelectorAll('[contenteditable="true"]:not([data-field="itemTotal"])'));
+                        row.querySelector('.delete-item-btn').addEventListener('click', function() {
+                            if (elements.itemsTableBody.children.length > 1) { 
+                                row.remove();
+                                updateTotals();
+                                showNotification('info', 'تم حذف البند', 'تم حذف البند بنجاح.');
+                            } else {
+                                showNotification('warning', 'لا يمكن الحذف', 'يجب أن يبقى بند واحد على الأقل.');
+                            }
+                        });
+                    });
+                }
+                
+                // Set initial content for Bill From
+                elements.previewBillFrom.innerHTML = `CR: Lamsa Modern Technology Co
+CR NO: 1010638717
+VAT NO: 310585080800003`;
+
+                // Set initial content for Bank Details section.
+                elements.previewBankDetails.innerHTML = `<strong>شركة اللمسة العصرية التقنية</strong><br>
+Ahli Bank IBAN: <strong>SA5110000026100000261004</strong><br>
+AC NO : 26100000261004`;
+
+                // Set initial notes for the textarea and update display
+                elements.notesInput.value = `Quotation for 6 Cars
+Wash 3 times per week
+Total wash 72 per month`;
+                updateNotesDisplay();
+
+                // Setup editable elements for non-item table elements and exclude notes (now textarea)
+                setupEditableElements(document.querySelectorAll('[contenteditable="true"]:not([data-field="itemDescription"]):not([data-field="itemQty"]):not([data-field="itemPrice"]):not([data-field="notesText"])'));
+                
+                updateTotals(); 
+            }
+
+            initializeQuotation();
+            const QUOTATION_DRAFT_KEY = 'sweaterQuotationAutosaveV2';
+            try {
+                const savedDraft = JSON.parse(localStorage.getItem(QUOTATION_DRAFT_KEY) || 'null');
+                if (savedDraft) {
+                    setQuotationData(savedDraft);
+                    showNotification('info', 'تمت استعادة المسودة', 'تم تحميل آخر عرض سعر غير محفوظ تلقائياً.');
+                }
+            } catch (_) { localStorage.removeItem(QUOTATION_DRAFT_KEY); }
+            let quotationAutosaveTimer;
+            const queueQuotationAutosave = () => {
+                clearTimeout(quotationAutosaveTimer);
+                quotationAutosaveTimer = setTimeout(() => {
+                    try { localStorage.setItem(QUOTATION_DRAFT_KEY, JSON.stringify(getQuotationData())); } catch (_) {}
+                }, 600);
+            };
+            elements.quotationPage.addEventListener('input', queueQuotationAutosave);
+            elements.quotationPage.addEventListener('click', queueQuotationAutosave);
+            elements.quotationDateInput.addEventListener('change', queueQuotationAutosave);
+            elements.vatRateInput.addEventListener('input', queueQuotationAutosave);
+            elements.discountInput.addEventListener('input', queueQuotationAutosave);
+            elements.notesInput.addEventListener('input', queueQuotationAutosave);
+        });
+    </script>
+<script src="./sweater-ui.js?v=5"></script>
+<script src="./local-studio.js?v=4"></script>
+</body>
+</html>

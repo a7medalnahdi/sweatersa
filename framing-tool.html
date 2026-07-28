@@ -1,0 +1,858 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="scroll-smooth">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>أداة تركيب الإطارات — SWEATER</title>
+<meta name="description" content="تركيب الإطارات على الصور وتصديرها بجودة عالية — SWEATER."/>
+<meta name="theme-color" content="#f96714"/>
+<link rel="stylesheet" href="./sweater-ui.css?v=4"/>
+<link rel="stylesheet" href="./local-studio.css?v=4"/>
+<link rel="manifest" href="./manifest.webmanifest"/>
+
+<!-- FontAwesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css"/>
+<!-- html2canvas -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com"></script>
+
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        fontFamily: { sans: ['LamaSans', 'Cairo', 'sans-serif'] },
+        colors: {
+          sweater: {
+            50: '#fff5f0', 100: '#ffe8d9', 200: '#ffccb0', 300: '#ffa77d',
+            400: '#ff7842', 500: '#f96714', 600: '#eb4d0b', 700: '#c2370a',
+            800: '#992c0f', 900: '#7a2610', 950: '#421006',
+          }
+        },
+        boxShadow: {
+          'glass': '0 4px 30px rgba(0, 0, 0, 0.1)',
+          'float': '0 10px 25px -5px rgba(249, 103, 20, 0.3)',
+        }
+      }
+    }
+  }
+</script>
+
+<style>
+  /* ===== FONTS ===== */
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Regular.woff2')format('woff2');font-weight:400}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Medium.woff2')format('woff2');font-weight:500}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-SemiBold.woff2')format('woff2');font-weight:600}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Bold.woff2')format('woff2');font-weight:700}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-ExtraBold.woff2')format('woff2');font-weight:800}
+  @font-face{font-family:'LamaSans';src:url('fonts/LamaSans-Black.woff2')format('woff2');font-weight:900}
+
+  /* ===== SCROLLBAR ===== */
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { @apply bg-slate-300 dark:bg-slate-700 rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-slate-400 dark:bg-slate-600; }
+
+  /* ===== CUSTOM SLIDERS ===== */
+  input[type=range] {
+    -webkit-appearance: none; width: 100%; height: 6px; border-radius: 999px;
+    @apply bg-slate-200 dark:bg-slate-700 outline-none;
+  }
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none; width: 20px; height: 20px; border-radius: 50%;
+    @apply bg-white dark:bg-slate-800 border-2 border-sweater-500 shadow-md cursor-pointer transition-transform hover:scale-110;
+  }
+  input[type=range]::-moz-range-thumb {
+    width: 20px; height: 20px; border-radius: 50%; border: none;
+    @apply bg-white dark:bg-slate-800 border-2 border-sweater-500 shadow-md cursor-pointer transition-transform hover:scale-110;
+  }
+
+  /* ===== CANVAS IMAGE POSITIONING ===== */
+  #userImg, .thumb-user {
+    object-position: var(--px, 50%) var(--py, 50%);
+    transform: scale(var(--pz, 1));
+    transition: object-position 0.1s, transform 0.1s;
+  }
+
+  /* ===== UI UTILITIES ===== */
+  .glass-header { @apply bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800; }
+  .panel-glass { @apply bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl border-slate-200 dark:border-slate-800 shadow-xl; }
+  
+  .hide-scrollbar::-webkit-scrollbar { display: none; }
+  .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  /* Animations */
+  @keyframes slideInUp { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
+  .animate-slide-up { animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+  
+  /* Toast */
+  .toast-enter { opacity: 0; transform: translateY(100%) scale(0.95); }
+  .toast-active { opacity: 1; transform: translateY(0) scale(1); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+  .toast-exit { opacity: 0; transform: translateY(20px) scale(0.95); transition: all 0.3s ease; }
+</style>
+</head>
+<body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-sweater-500 selection:text-white transition-colors duration-300 h-screen flex flex-col overflow-hidden">
+
+<!-- ===== TOPBAR ===== -->
+<header class="h-16 glass-header flex items-center justify-between px-4 sm:px-6 z-50 shrink-0">
+  <div class="flex items-center gap-4">
+    <a href="./index.html" class="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-bold transition-colors bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-2 rounded-xl">
+      <i class="fa-solid fa-arrow-right"></i>
+      <span class="hidden sm:block">العودة للوحة</span>
+    </a>
+    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
+    <div class="flex items-center gap-2 text-sweater-600 dark:text-sweater-400 font-black text-lg tracking-tight">
+      <i class="fa-solid fa-images text-xl"></i>
+      أداة تركيب الإطارات
+    </div>
+  </div>
+
+  <div class="flex items-center gap-4">
+    <div class="hidden sm:flex items-center">
+      <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-5 w-auto object-contain hidden dark:block brightness-200"/>
+      <img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER" class="h-5 w-auto object-contain block dark:hidden"/>
+    </div>
+    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700 hidden sm:block"></div>
+    <button id="themeBtn" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-sweater-500" title="تبديل المظهر">
+      <i class="fa-solid fa-moon text-lg" id="themeIco"></i>
+    </button>
+  </div>
+</header>
+
+<!-- ===== MAIN LAYOUT ===== -->
+<div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">
+
+  <!-- ====== LEFT PANEL (TOOLS) ====== -->
+  <aside class="w-full lg:w-80 border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20">
+    <div class="p-5 flex flex-col gap-6">
+
+      <!-- Mode Switch -->
+      <section>
+        <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+          <button id="btnSingle" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all text-sweater-600 dark:text-sweater-400 bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10">
+            <i class="fa-solid fa-image"></i> فردي
+          </button>
+          <button id="btnBatch" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200">
+            <i class="fa-solid fa-images"></i> مجموعة
+          </button>
+        </div>
+      </section>
+
+      <!-- Frame Selection -->
+      <section>
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-border-all"></i> اختر الإطار
+        </h3>
+        <div class="grid grid-cols-2 gap-3" id="framesGrid">
+          <!-- Frame 1 -->
+          <div class="group relative cursor-pointer">
+            <div class="frame-thumb-wrap active aspect-[3/2] rounded-xl overflow-hidden border-2 border-sweater-500 ring-2 ring-sweater-500/20 shadow-md transition-all relative" data-src="https://i.ibb.co/1tGQgpK7/11.png" data-name="الإطار الأول">
+              <img src="https://i.ibb.co/1tGQgpK7/11.png" alt="إطار 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"/>
+              <div class="check-icon absolute top-2 left-2 w-6 h-6 bg-sweater-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg transform scale-100 transition-transform">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-center mt-2 text-slate-700 dark:text-slate-300">الإطار الأول</div>
+          </div>
+          <!-- Frame 2 -->
+          <div class="group relative cursor-pointer">
+            <div class="frame-thumb-wrap aspect-[3/2] rounded-xl overflow-hidden border-2 border-transparent hover:border-slate-300 dark:hover:border-slate-600 transition-all relative" data-src="https://i.ibb.co/4n5D2hJt/22.png" data-name="الإطار الثاني">
+              <img src="https://i.ibb.co/4n5D2hJt/22.png" alt="إطار 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-80 group-hover:opacity-100"/>
+              <div class="check-icon absolute top-2 left-2 w-6 h-6 bg-sweater-500 text-white rounded-full flex items-center justify-center text-xs shadow-lg transform scale-0 transition-transform">
+                <i class="fa-solid fa-check"></i>
+              </div>
+            </div>
+            <div class="text-xs font-bold text-center mt-2 text-slate-500 dark:text-slate-400 group-hover:text-slate-700 dark:group-hover:text-slate-300">الإطار الثاني</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Upload Zone -->
+      <section id="uploadSection">
+        <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2">
+          <i class="fa-solid fa-cloud-arrow-up"></i> رفع الصور
+        </h3>
+        <label id="uploadZone" class="group relative flex flex-col items-center justify-center w-full h-32 border-2 border-slate-300 dark:border-slate-700 border-dashed rounded-2xl cursor-pointer bg-slate-50 dark:bg-slate-800/50 hover:bg-sweater-50 dark:hover:bg-sweater-500/10 hover:border-sweater-400 transition-all duration-300 overflow-hidden">
+          <div class="absolute inset-0 bg-sweater-500/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
+          <input type="file" id="imgUpload" accept="image/*" multiple class="hidden" />
+          <div class="flex flex-col items-center justify-center pt-5 pb-6 relative z-10">
+            <i class="fa-solid fa-arrow-up-from-bracket text-2xl text-slate-400 group-hover:text-sweater-500 mb-2 transition-colors"></i>
+            <p class="text-sm font-bold text-slate-600 dark:text-slate-300" id="uploadLabel">اسحب الصور أو انقر هنا</p>
+            <p class="text-xs text-slate-400 mt-1" id="uploadHint">PNG, JPG, WEBP — صورة واحدة</p>
+          </div>
+        </label>
+      </section>
+
+      <!-- Export Actions -->
+      <section>
+        <div class="flex flex-col gap-3">
+          <button id="btnDownloadSingle" disabled class="w-full py-3.5 rounded-xl bg-gradient-to-r from-emerald-500 to-emerald-600 hover:from-emerald-600 hover:to-emerald-700 text-white font-bold text-sm shadow-[0_8px_20px_-6px_rgba(16,185,129,0.5)] transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
+            <i class="fa-solid fa-download"></i> تحميل الصورة الحالية
+          </button>
+          
+          <button id="btnDownloadAll" style="display:none" disabled class="w-full py-3.5 rounded-xl bg-gradient-to-r from-sweater-500 to-sweater-600 hover:from-sweater-600 hover:to-sweater-700 text-white font-bold text-sm shadow-float transition-all transform hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2">
+            <i class="fa-solid fa-file-zipper"></i> تحميل الكل <span id="allCount" class="bg-white/20 px-2 py-0.5 rounded-md text-xs"></span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Batch Stats -->
+      <section id="statsWrap" style="display:none" class="animate-slide-up">
+        <div class="bg-slate-100 dark:bg-slate-800 rounded-xl p-4 border border-slate-200 dark:border-slate-700">
+          <div class="flex items-center justify-between mb-3">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-300">الصور المرفوعة</span>
+            <span class="bg-sweater-100 dark:bg-sweater-500/20 text-sweater-600 dark:text-sweater-400 px-2.5 py-1 rounded-lg text-xs font-black" id="totalBadge">0</span>
+          </div>
+          <div class="h-px bg-slate-200 dark:bg-slate-700 w-full mb-3"></div>
+          <div class="flex items-center justify-between">
+            <span class="text-sm font-bold text-slate-600 dark:text-slate-300">جاهزة للتحميل</span>
+            <span class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-600 dark:text-emerald-400 px-2.5 py-1 rounded-lg text-xs font-black" id="doneBadge">0</span>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- ====== CENTER (CANVAS/GRID) ====== -->
+  <main class="flex-1 bg-slate-100/50 dark:bg-slate-950/50 flex flex-col items-center overflow-y-auto p-4 sm:p-8 relative" id="centerPanel">
+    
+    <!-- Background Decoration -->
+    <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40">
+      <div class="absolute top-[10%] left-[20%] w-96 h-96 bg-sweater-500/10 rounded-full mix-blend-multiply filter blur-3xl dark:bg-sweater-500/5 dark:mix-blend-lighten"></div>
+    </div>
+
+    <!-- Single View Workspace -->
+    <div id="singleView" class="w-full max-w-4xl relative z-10 w-full flex-1 flex flex-col items-center justify-center min-h-[400px]">
+      <div class="w-full bg-white dark:bg-slate-900 rounded-3xl p-4 sm:p-6 shadow-2xl border border-slate-200 dark:border-slate-800 ring-1 ring-black/5">
+        
+        <!-- Canvas Wrapper -->
+        <div id="canvasWrap" class="relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 aspect-[3/2] shadow-inner flex items-center justify-center transition-all duration-300 mx-auto" style="max-width: 100%;">
+          
+          <img id="userImg" src="" alt="صورة المستخدم" crossorigin="anonymous" class="absolute inset-0 w-full h-full object-cover hidden transform-origin-center"/>
+          
+          <img id="frameOverlay" src="https://i.ibb.co/1tGQgpK7/11.png" alt="الإطار" crossorigin="anonymous" class="absolute inset-0 w-full h-full object-fill z-10 pointer-events-none"/>
+          
+          <div id="canvasPlaceholder" class="absolute inset-0 z-0 flex flex-col items-center justify-center text-slate-400 dark:text-slate-500 p-6 text-center animate-pulse">
+            <div class="w-20 h-20 mb-4 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center shadow-inner">
+              <i class="fa-regular fa-image text-3xl"></i>
+            </div>
+            <p class="font-bold text-sm leading-relaxed max-w-[200px]">ارفع صورة من القائمة الجانبية لمعاينتها هنا</p>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- Batch View Workspace -->
+    <div id="batchView" style="display:none" class="w-full max-w-6xl relative z-10 animate-slide-up">
+      <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 bg-white dark:bg-slate-900 p-4 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div>
+          <h2 class="text-lg font-black text-slate-900 dark:text-white flex items-center gap-2">
+            <i class="fa-solid fa-layer-group text-sweater-500"></i> معاينة المجموعة
+          </h2>
+          <p class="text-sm font-medium text-slate-500 mt-1" id="batchSubtitle">انقر على أي صورة لتعديل موضعها بشكل منفصل</p>
+        </div>
+        <button id="btnClearAll" class="px-4 py-2 bg-red-50 hover:bg-red-100 dark:bg-red-500/10 dark:hover:bg-red-500/20 text-red-600 dark:text-red-400 rounded-xl font-bold text-sm transition-colors flex items-center gap-2">
+          <i class="fa-solid fa-trash-can"></i> مسح الكل
+        </button>
+      </div>
+
+      <!-- Batch Progress -->
+      <div id="progressBar" style="display:none" class="w-full h-3 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden mb-6 shadow-inner">
+        <div id="progressFill" class="h-full bg-gradient-to-r from-sweater-400 to-sweater-600 rounded-full w-0 transition-all duration-300 relative">
+          <div class="absolute inset-0 bg-white/20 w-full h-full animate-[pulse_1s_infinite]"></div>
+        </div>
+      </div>
+
+      <!-- Batch Grid -->
+      <div id="imgGrid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4 sm:gap-6">
+        <!-- JS Grid Items Injected Here -->
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ====== RIGHT PANEL (PROPERTIES) ====== -->
+  <aside class="w-full lg:w-80 border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20">
+    
+    <!-- Empty State -->
+    <div id="rightPlaceholder" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400 min-h-[300px]">
+      <div class="w-16 h-16 rounded-full bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4">
+        <i class="fa-solid fa-sliders text-2xl opacity-50"></i>
+      </div>
+      <p class="font-bold text-sm leading-relaxed">أدوات التحكم والضبط<br>ستظهر هنا بعد رفع الصورة</p>
+    </div>
+
+    <!-- Controls Form -->
+    <div id="imgControls" style="display:none" class="flex flex-col h-full animate-slide-up">
+      
+      <!-- Panel Header -->
+      <div class="p-5 border-b border-slate-200 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 sticky top-0 backdrop-blur-md z-10">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-sweater-100 dark:bg-sweater-900/50 text-sweater-600 dark:text-sweater-400 flex items-center justify-center">
+            <i class="fa-solid fa-crop-simple text-lg"></i>
+          </div>
+          <div>
+            <h3 class="font-black text-slate-900 dark:text-white text-sm truncate w-48" id="ctrlImgName">ضبط الصورة</h3>
+            <p class="text-xs font-medium text-slate-500 mt-0.5">تحكم بالموضع والأبعاد</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-5 flex flex-col gap-6">
+        <!-- Sliders -->
+        <section>
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">التكبير والتصغير</label>
+            <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-black px-2 py-1 rounded-md min-w-[3rem] text-center" id="valZoom">100%</span>
+          </div>
+          <input type="range" id="slZoom" min="50" max="250" value="100" step="1" class="w-full mb-5">
+
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">المحور الأفقي (X)</label>
+            <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-black px-2 py-1 rounded-md min-w-[3rem] text-center" id="valX">50%</span>
+          </div>
+          <input type="range" id="slX" min="0" max="100" value="50" step="1" class="w-full mb-5">
+
+          <div class="flex items-center justify-between mb-2">
+            <label class="text-xs font-bold text-slate-700 dark:text-slate-300">المحور العمودي (Y)</label>
+            <span class="bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 text-[10px] font-black px-2 py-1 rounded-md min-w-[3rem] text-center" id="valY">50%</span>
+          </div>
+          <input type="range" id="slY" min="0" max="100" value="50" step="1" class="w-full">
+          
+          <button id="btnReset" class="w-full mt-6 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 font-bold text-xs transition-colors flex items-center justify-center gap-2">
+            <i class="fa-solid fa-arrow-rotate-left"></i> إعادة الضبط للافتراضي
+          </button>
+        </section>
+
+        <div class="h-px bg-slate-200 dark:bg-slate-800 w-full"></div>
+
+        <!-- Aspect Ratio -->
+        <section>
+          <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3 flex items-center gap-2">
+             <i class="fa-solid fa-expand"></i> نسبة الإطار
+          </h3>
+          <div class="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+            <button data-ratio="3/2" title="عرضي 3:2" class="ratio-btn flex-1 flex items-center justify-center py-2 rounded-lg text-sweater-600 dark:text-sweater-400 bg-white dark:bg-slate-900 shadow-sm transition-all relative">
+              <i class="fa-solid fa-panorama"></i>
+            </button>
+            <button data-ratio="1/1" title="مربع 1:1" class="ratio-btn flex-1 flex items-center justify-center py-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all">
+              <i class="fa-regular fa-square"></i>
+            </button>
+            <button data-ratio="2/3" title="طولي 2:3" class="ratio-btn flex-1 flex items-center justify-center py-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all">
+              <i class="fa-solid fa-mobile-screen"></i>
+            </button>
+          </div>
+        </section>
+
+        <!-- Hint -->
+        <div class="mt-auto bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800/50 rounded-xl p-3 flex gap-3">
+          <i class="fa-solid fa-circle-info text-blue-500 mt-0.5 text-sm"></i>
+          <p class="text-[0.7rem] text-blue-700 dark:text-blue-300 font-medium leading-relaxed">
+            الضبط يُطبّق حصرياً على الصورة المحددة حالياً. في وضع "المجموعة"، تحتفظ كل صورة بإعدادات موضعها المستقلة.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+
+</div>
+
+<!-- ===== LOADING OVERLAY ===== -->
+<div id="loading" class="fixed inset-0 bg-slate-900/70 backdrop-blur-sm z-[100] hidden items-center justify-center flex-col gap-4">
+  <div class="w-14 h-14 border-4 border-white/20 border-t-sweater-500 rounded-full animate-spin shadow-lg"></div>
+  <p id="loadingMsg" class="text-white font-bold text-sm tracking-wide drop-shadow-md">جاري المعالجة...</p>
+</div>
+
+<!-- ===== TOAST CONTAINER ===== -->
+<div id="toastsWrap" class="fixed bottom-6 right-6 z-[110] flex flex-col gap-3 max-w-sm w-full pointer-events-none"></div>
+
+
+<script>
+(() => {
+'use strict';
+
+// ─── CONSTANTS & STATE ──────────────────────────────────────────
+const EXPORT_W = 2280.96;
+const EXPORT_H = 1520.64;
+const $ = id => document.getElementById(id);
+const $$ = s => document.querySelectorAll(s);
+
+let currentFrameSrc = 'https://i.ibb.co/1tGQgpK7/11.png';
+let mode = 'single'; 
+let imageItems = []; 
+let activeIdx = -1;  
+
+// ─── DOM ELEMENTS ───────────────────────────────────────────────
+const D = {
+  themeBtn: $('themeBtn'), themeIco: $('themeIco'),
+  btnSingle: $('btnSingle'), btnBatch: $('btnBatch'),
+  framesGrid: $('framesGrid'),
+  uploadZone: $('uploadZone'), imgUpload: $('imgUpload'),
+  uploadLabel: $('uploadLabel'), uploadHint: $('uploadHint'),
+  btnDownloadSingle: $('btnDownloadSingle'), btnDownloadAll: $('btnDownloadAll'), allCount: $('allCount'),
+  statsWrap: $('statsWrap'), totalBadge: $('totalBadge'), doneBadge: $('doneBadge'),
+  singleView: $('singleView'), batchView: $('batchView'),
+  canvasWrap: $('canvasWrap'), userImg: $('userImg'), frameOverlay: $('frameOverlay'), canvasPlaceholder: $('canvasPlaceholder'),
+  batchSubtitle: $('batchSubtitle'), progressBar: $('progressBar'), progressFill: $('progressFill'),
+  imgGrid: $('imgGrid'), btnClearAll: $('btnClearAll'),
+  rightPlaceholder: $('rightPlaceholder'), imgControls: $('imgControls'), ctrlImgName: $('ctrlImgName'),
+  slZoom: $('slZoom'), valZoom: $('valZoom'), slX: $('slX'), valX: $('valX'), slY: $('slY'), valY: $('valY'),
+  btnReset: $('btnReset'),
+  loading: $('loading'), loadingMsg: $('loadingMsg'), toastsWrap: $('toastsWrap'),
+};
+
+// ─── THEME HANDLING ─────────────────────────────────────────────
+D.themeBtn.addEventListener('click', () => {
+  document.documentElement.classList.toggle('dark');
+  const dk = document.documentElement.classList.contains('dark');
+  
+  // Icon Animation
+  D.themeIco.style.transform = 'rotate(360deg) scale(0)';
+  setTimeout(() => {
+    D.themeIco.className = dk ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon';
+    D.themeIco.style.transform = 'rotate(0deg) scale(1)';
+  }, 150);
+  D.themeIco.style.transition = 'transform 0.3s ease';
+
+  localStorage.setItem('swDark', dk ? '1' : '0');
+});
+
+// Init Theme
+if (localStorage.getItem('swDark') === '1' || (!('swDark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  document.documentElement.classList.add('dark');
+  D.themeIco.className = 'fa-solid fa-sun text-amber-500';
+}
+
+// ─── TOAST NOTIFICATIONS ────────────────────────────────────────
+function toast(type, title, msg) {
+  const cfg = {
+    ok: { icon: 'fa-check', bg: 'bg-emerald-100 dark:bg-emerald-900/30', color: 'text-emerald-600 dark:text-emerald-400' },
+    err: { icon: 'fa-xmark', bg: 'bg-red-100 dark:bg-red-900/30', color: 'text-red-600 dark:text-red-400' },
+    wrn: { icon: 'fa-exclamation', bg: 'bg-sweater-100 dark:bg-sweater-900/30', color: 'text-sweater-600 dark:text-sweater-400' }
+  }[type];
+
+  const el = document.createElement('div');
+  el.className = `flex items-start gap-3 p-4 bg-white dark:bg-slate-800 rounded-xl shadow-glass border border-slate-200 dark:border-slate-700 pointer-events-auto toast-enter`;
+  el.innerHTML = `
+    <div class="w-8 h-8 shrink-0 rounded-full flex items-center justify-center text-sm ${cfg.bg} ${cfg.color}">
+      <i class="fa-solid ${cfg.icon}"></i>
+    </div>
+    <div class="flex-1 pt-0.5">
+      <div class="font-bold text-sm text-slate-900 dark:text-white">${title}</div>
+      ${msg ? `<div class="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1 leading-relaxed">${msg}</div>` : ''}
+    </div>
+    <button class="text-slate-400 hover:text-slate-700 dark:hover:text-slate-200 transition-colors p-1" onclick="this.parentElement.remove()">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  `;
+  
+  D.toastsWrap.appendChild(el);
+  
+  // Animate in
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      el.classList.remove('toast-enter');
+      el.classList.add('toast-active');
+    });
+  });
+
+  // Auto remove
+  setTimeout(() => {
+    el.classList.replace('toast-active', 'toast-exit');
+    setTimeout(() => el.remove(), 300);
+  }, 4000);
+}
+
+function showLoading(msg) { 
+  D.loadingMsg.textContent = msg || 'جاري المعالجة...'; 
+  D.loading.classList.replace('hidden', 'flex'); 
+}
+function hideLoading() { 
+  D.loading.classList.replace('flex', 'hidden'); 
+}
+
+// ─── MODE SWITCHING ─────────────────────────────────────────────
+function styleModeBtn(btn, isActive) {
+  if (isActive) {
+    btn.className = "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all text-sweater-600 dark:text-sweater-400 bg-white dark:bg-slate-900 shadow-sm ring-1 ring-slate-900/5 dark:ring-white/10";
+  } else {
+    btn.className = "flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200";
+  }
+}
+
+function switchMode(m) {
+  mode = m;
+  styleModeBtn(D.btnSingle, m === 'single');
+  styleModeBtn(D.btnBatch, m === 'batch');
+  
+  D.singleView.style.display = m === 'single' ? 'flex' : 'none';
+  D.batchView.style.display = m === 'batch' ? 'block' : 'none';
+  
+  D.btnDownloadSingle.style.display = m === 'single' ? 'flex' : 'none';
+  D.btnDownloadAll.style.display = m === 'batch' ? 'flex' : 'none';
+  
+  D.uploadHint.textContent = m === 'single' ? 'PNG, JPG, WEBP — صورة واحدة' : 'PNG, JPG, WEBP — ارفع أكثر من صورة';
+}
+
+D.btnSingle.addEventListener('click', () => switchMode('single'));
+D.btnBatch.addEventListener('click', () => switchMode('batch'));
+
+// ─── FRAME SELECTION ────────────────────────────────────────────
+$$('.frame-thumb-wrap').forEach(wrap => {
+  wrap.addEventListener('click', () => {
+    // Reset all
+    $$('.frame-thumb-wrap').forEach(w => {
+      w.classList.remove('border-sweater-500', 'ring-2', 'ring-sweater-500/20', 'border-transparent');
+      w.classList.add('border-transparent');
+      w.querySelector('.check-icon').classList.replace('scale-100', 'scale-0');
+      w.querySelector('img').classList.replace('opacity-100', 'opacity-80');
+    });
+    
+    // Set Active
+    wrap.classList.remove('border-transparent');
+    wrap.classList.add('border-sweater-500', 'ring-2', 'ring-sweater-500/20');
+    wrap.querySelector('.check-icon').classList.replace('scale-0', 'scale-100');
+    wrap.querySelector('img').classList.replace('opacity-80', 'opacity-100');
+
+    currentFrameSrc = wrap.dataset.src;
+    D.frameOverlay.src = currentFrameSrc;
+    
+    // Update batch grids
+    D.imgGrid.querySelectorAll('.thumb-frame').forEach(f => f.src = currentFrameSrc);
+    toast('ok', 'تم تغيير الإطار', wrap.dataset.name);
+  });
+});
+
+// ─── RATIO BUTTONS ──────────────────────────────────────────────
+$$('.ratio-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    $$('.ratio-btn').forEach(b => {
+      b.className = "ratio-btn flex-1 flex items-center justify-center py-2 rounded-lg text-slate-500 hover:text-slate-700 dark:text-slate-400 transition-all";
+    });
+    btn.className = "ratio-btn flex-1 flex items-center justify-center py-2 rounded-lg text-sweater-600 dark:text-sweater-400 bg-white dark:bg-slate-900 shadow-sm transition-all relative";
+    
+    const r = btn.dataset.ratio;
+    D.canvasWrap.className = 'relative w-full rounded-2xl overflow-hidden bg-slate-100 dark:bg-slate-800 shadow-inner flex items-center justify-center transition-all duration-300 mx-auto';
+    
+    if(r === '3/2') D.canvasWrap.classList.add('aspect-[3/2]');
+    else if(r === '1/1') D.canvasWrap.classList.add('aspect-square');
+    else if(r === '2/3') D.canvasWrap.classList.add('aspect-[2/3]');
+  });
+});
+
+// ─── UPLOAD LOGIC ───────────────────────────────────────────────
+D.imgUpload.addEventListener('change', e => {
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
+  e.target.value = '';
+
+  if (mode === 'single') loadSingleFile(files[0]);
+  else loadBatchFiles(files);
+});
+
+document.addEventListener('paste', e => {
+  if (e.target.matches('input, textarea, [contenteditable="true"]')) return;
+  const files = [...(e.clipboardData?.files || [])].filter(file => file.type.startsWith('image/'));
+  if (!files.length) return;
+  e.preventDefault();
+  if (mode === 'single') loadSingleFile(files[0]); else loadBatchFiles(files);
+  toast('ok', 'تم لصق الصورة', mode === 'single' ? 'الصورة جاهزة داخل الإطار.' : `تمت إضافة ${files.length} صورة للمجموعة.`);
+});
+
+document.addEventListener('keydown', e => {
+  if (e.target.matches('input, textarea, [contenteditable="true"]')) return;
+  const item = getActiveItem();
+  if (!item || !['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) return;
+  e.preventDefault();
+  const step = e.shiftKey ? 5 : 1;
+  if (e.key === 'ArrowUp') item.y = Math.max(0, item.y - step);
+  if (e.key === 'ArrowDown') item.y = Math.min(100, item.y + step);
+  if (e.key === 'ArrowLeft') item.x = Math.max(0, item.x - step);
+  if (e.key === 'ArrowRight') item.x = Math.min(100, item.x + step);
+  showControls(item, item.file?.name || 'الصورة');
+  if (mode === 'single') applyImageStyle(D.userImg, item); else renderGrid();
+});
+
+function loadSingleFile(file) {
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const item = { file, dataUrl: ev.target.result, zoom: 100, x: 50, y: 50, status: 'ready' };
+    imageItems = [item];
+    activeIdx = 0;
+    showSinglePreview(item);
+    showControls(item, file.name);
+    D.btnDownloadSingle.disabled = false;
+  };
+  reader.readAsDataURL(file);
+}
+
+function showSinglePreview(item) {
+  D.userImg.src = item.dataUrl;
+  D.userImg.classList.remove('hidden');
+  D.canvasPlaceholder.classList.add('hidden');
+  applyImageStyle(D.userImg, item);
+}
+
+async function loadBatchFiles(files) {
+  const newItems = [];
+  for (const file of files) {
+    const dataUrl = await readFile(file);
+    newItems.push({ file, dataUrl, zoom: 100, x: 50, y: 50, status: 'ready' });
+  }
+  imageItems = [...imageItems, ...newItems];
+  renderGrid();
+  updateStats();
+  D.btnDownloadAll.disabled = false;
+  D.statsWrap.style.display = 'block';
+  D.allCount.textContent = `(${imageItems.length})`;
+
+  if (activeIdx === -1 && imageItems.length > 0) selectGridItem(0);
+  toast('ok', 'تم رفع الصور', `${newItems.length} صورة أضيفت — الإجمالي: ${imageItems.length}`);
+}
+
+function readFile(file) {
+  return new Promise((res, rej) => {
+    const r = new FileReader();
+    r.onload = () => res(r.result);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+// ─── BATCH GRID ─────────────────────────────────────────────────
+function renderGrid() {
+  D.imgGrid.innerHTML = '';
+  imageItems.forEach((item, idx) => {
+    const card = document.createElement('div');
+    const isActive = idx === activeIdx;
+    
+    card.className = `group bg-white dark:bg-slate-800 rounded-xl border ${isActive ? 'border-sweater-500 ring-2 ring-sweater-500/20' : 'border-slate-200 dark:border-slate-700 hover:border-slate-300'} overflow-hidden relative shadow-sm cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-md`;
+    card.dataset.idx = idx;
+
+    const statusHtml = item.status === 'done'
+      ? `<span class="flex items-center gap-1 text-[0.65rem] font-bold text-emerald-600 dark:text-emerald-400 mt-1"><i class="fa-solid fa-check-circle"></i> تم التحميل</span>`
+      : `<span class="flex items-center gap-1 text-[0.65rem] font-bold text-slate-400 mt-1"><i class="fa-regular fa-clock"></i> جاهزة</span>`;
+
+    card.innerHTML = `
+      <div class="relative w-full aspect-[3/2] bg-slate-100 dark:bg-slate-900 overflow-hidden">
+        <img class="thumb-user absolute inset-0 w-full h-full object-cover" src="${item.dataUrl}" style="--px:${item.x}%;--py:${item.y}%;--pz:${item.zoom/100}"/>
+        <img class="thumb-frame absolute inset-0 w-full h-full object-fill z-10" src="${currentFrameSrc}" crossorigin="anonymous"/>
+        <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity z-20 flex items-center justify-center">
+          <i class="fa-solid fa-pen text-white text-lg"></i>
+        </div>
+      </div>
+      <div class="p-3">
+        <div class="text-xs font-bold text-slate-800 dark:text-slate-200 truncate" title="${item.file.name}">${item.file.name}</div>
+        ${statusHtml}
+      </div>
+      <button class="img-card-dl absolute top-2 right-2 z-30 w-8 h-8 rounded-lg bg-black/60 hover:bg-sweater-500 text-white flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-all backdrop-blur-sm shadow-lg transform translate-y-2 group-hover:translate-y-0" data-idx="${idx}" title="تحميل هذه الصورة">
+        <i class="fa-solid fa-download"></i>
+      </button>`;
+
+    card.addEventListener('click', e => {
+      if (e.target.closest('.img-card-dl')) return;
+      selectGridItem(idx);
+    });
+    card.querySelector('.img-card-dl').addEventListener('click', e => {
+      e.stopPropagation();
+      downloadSingleItem(idx);
+    });
+
+    D.imgGrid.appendChild(card);
+  });
+}
+
+function selectGridItem(idx) {
+  activeIdx = idx;
+  const item = imageItems[idx];
+  
+  D.userImg.src = item.dataUrl;
+  D.userImg.classList.remove('hidden');
+  D.canvasPlaceholder.classList.add('hidden');
+  
+  applyImageStyle(D.userImg, item);
+  showControls(item, item.file.name);
+  renderGrid(); // Re-render to update border classes
+}
+
+function updateStats() {
+  const done = imageItems.filter(i => i.status === 'done').length;
+  D.totalBadge.textContent = imageItems.length;
+  D.doneBadge.textContent = done;
+  D.allCount.textContent = `(${imageItems.length})`;
+}
+
+// ─── IMAGE STYLING & CONTROLS ───────────────────────────────────
+function applyImageStyle(imgEl, item) {
+  imgEl.style.setProperty('--px', item.x + '%');
+  imgEl.style.setProperty('--py', item.y + '%');
+  imgEl.style.setProperty('--pz', item.zoom / 100);
+}
+
+function showControls(item, name) {
+  D.rightPlaceholder.classList.add('hidden');
+  D.imgControls.style.display = 'flex'; // It's flex-col
+  D.ctrlImgName.textContent = name;
+  D.slZoom.value = item.zoom; D.valZoom.textContent = item.zoom + '%';
+  D.slX.value = item.x; D.valX.textContent = item.x + '%';
+  D.slY.value = item.y; D.valY.textContent = item.y + '%';
+}
+
+function getActiveItem() {
+  if (activeIdx < 0 || activeIdx >= imageItems.length) return null;
+  return imageItems[activeIdx];
+}
+
+function onSliderChange() {
+  const item = getActiveItem(); if (!item) return;
+  item.zoom = parseInt(D.slZoom.value);
+  item.x = parseInt(D.slX.value);
+  item.y = parseInt(D.slY.value);
+  D.valZoom.textContent = item.zoom + '%';
+  D.valX.textContent = item.x + '%';
+  D.valY.textContent = item.y + '%';
+  
+  applyImageStyle(D.userImg, item);
+  if (mode === 'batch') {
+    const card = D.imgGrid.querySelector(`[data-idx="${activeIdx}"] .thumb-user`);
+    if (card) applyImageStyle(card, item);
+  }
+}
+
+D.slZoom.addEventListener('input', onSliderChange);
+D.slX.addEventListener('input', onSliderChange);
+D.slY.addEventListener('input', onSliderChange);
+
+D.btnReset.addEventListener('click', () => {
+  const item = getActiveItem(); if (!item) return;
+  item.zoom = 100; item.x = 50; item.y = 50;
+  showControls(item, item.file?.name || 'صورة');
+  applyImageStyle(D.userImg, item);
+  if (mode === 'batch') {
+    const card = D.imgGrid.querySelector(`[data-idx="${activeIdx}"] .thumb-user`);
+    if (card) applyImageStyle(card, item);
+  }
+});
+
+// ─── EXPORT LOGIC ───────────────────────────────────────────────
+async function generateCanvas(item) {
+  const prevSrc = D.userImg.src;
+  D.userImg.src = item.dataUrl;
+  applyImageStyle(D.userImg, item);
+  D.userImg.classList.remove('hidden');
+  D.canvasPlaceholder.classList.add('hidden');
+  await new Promise(r => setTimeout(r, 80));
+
+  const cw = D.canvasWrap;
+  const orig = { pos: cw.style.position, top: cw.style.top, left: cw.style.left, w: cw.style.width, h: cw.style.height };
+
+  // Force absolute dimensions for capture
+  cw.style.position = 'fixed'; cw.style.top = '-9999px'; cw.style.left = '-9999px';
+  cw.style.width = EXPORT_W + 'px'; cw.style.height = EXPORT_H + 'px';
+  cw.style.maxWidth = 'none';
+
+  await new Promise(r => setTimeout(r, 60));
+
+  let canvas;
+  try {
+    canvas = await html2canvas(cw, {
+      useCORS: true, allowTaint: true, backgroundColor: null,
+      width: EXPORT_W, height: EXPORT_H, windowWidth: EXPORT_W, windowHeight: EXPORT_H, scale: 1,
+    });
+  } finally {
+    // Restore
+    cw.style.position = orig.pos; cw.style.top = orig.top; cw.style.left = orig.left;
+    cw.style.width = orig.w; cw.style.height = orig.h; cw.style.maxWidth = '';
+    D.userImg.src = prevSrc;
+    applyImageStyle(D.userImg, getActiveItem() || item);
+  }
+  return canvas;
+}
+
+function downloadCanvas(canvas, filename) {
+  const a = document.createElement('a');
+  a.download = filename;
+  a.href = canvas.toDataURL('image/png');
+  a.click();
+}
+
+D.btnDownloadSingle.addEventListener('click', async () => {
+  const item = getActiveItem(); if (!item) return;
+  showLoading('جاري تحضير الصورة عالية الدقة...');
+  try {
+    const canvas = await generateCanvas(item);
+    downloadCanvas(canvas, `framed-${item.file?.name || 'image'}.png`);
+    toast('ok', 'تم التحميل بنجاح', 'الصورة محفوظة بجودة عالية جاهزة للنشر');
+  } catch(e) { toast('err', 'حدث خطأ', 'فشل التصدير، يرجى المحاولة مرة أخرى'); }
+  finally { hideLoading(); }
+});
+
+async function downloadSingleItem(idx) {
+  const item = imageItems[idx]; if (!item) return;
+  showLoading('جاري التصدير...');
+  try {
+    const canvas = await generateCanvas(item);
+    downloadCanvas(canvas, `framed-${item.file.name}`);
+    item.status = 'done';
+    updateStats();
+    renderGrid();
+    toast('ok', 'تم التحميل', item.file.name);
+  } catch(e) { toast('err', 'خطأ في التصدير', item.file.name); }
+  finally { hideLoading(); }
+}
+
+D.btnDownloadAll.addEventListener('click', async () => {
+  if (!imageItems.length) return;
+  D.progressBar.style.display = 'block';
+  D.progressFill.style.width = '0%';
+  showLoading(`جاري معالجة ${imageItems.length} صورة...`);
+
+  let done = 0;
+  for (let i = 0; i < imageItems.length; i++) {
+    const item = imageItems[i];
+    D.loadingMsg.textContent = `معالجة ${i + 1} من ${imageItems.length} — ${item.file.name}`;
+    try {
+      const canvas = await generateCanvas(item);
+      downloadCanvas(canvas, `framed-${item.file.name}`);
+      item.status = 'done';
+    } catch(e) { console.error(e); }
+    done++;
+    D.progressFill.style.width = (done / imageItems.length * 100) + '%';
+    await new Promise(r => setTimeout(r, 150));
+  }
+
+  updateStats();
+  renderGrid();
+  hideLoading();
+  setTimeout(() => D.progressBar.style.display = 'none', 500);
+  toast('ok', 'اكتمل التصدير', `تم تحميل ${imageItems.length} صورة بنجاح`);
+});
+
+D.btnClearAll.addEventListener('click', () => {
+  if (!imageItems.length) return;
+  if (!confirm('هل أنت متأكد من مسح جميع الصور من المجموعة؟')) return;
+  imageItems = [];
+  activeIdx = -1;
+  D.imgGrid.innerHTML = '';
+  D.btnDownloadAll.disabled = true;
+  D.statsWrap.style.display = 'none';
+  D.rightPlaceholder.classList.remove('hidden');
+  D.imgControls.style.display = 'none';
+  D.userImg.classList.add('hidden');
+  D.canvasPlaceholder.classList.remove('hidden');
+  updateStats();
+});
+
+// INIT
+switchMode('single');
+
+})();
+</script>
+<script src="./sweater-ui.js?v=5"></script>
+<script src="./local-studio.js?v=4"></script>
+</body>
+</html>
