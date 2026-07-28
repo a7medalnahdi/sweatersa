@@ -5,6 +5,7 @@ create table if not exists public.profiles (
   id uuid primary key references auth.users(id) on delete cascade,
   full_name text not null default '',
   username text unique,
+  email text unique,
   department text,
   role text not null default 'employee' check (role in ('admin','editor','employee','viewer')),
   status text not null default 'active' check (status in ('active','suspended')),
@@ -38,10 +39,11 @@ using (id=auth.uid() or public.is_sweater_admin())
 with check (id=auth.uid() or public.is_sweater_admin());
 
 create or replace function public.protect_profile_privileges()
-returns trigger language plpgsql security definer set search_path=public
+returns trigger language plpgsql security invoker set search_path=public
 as $$
 begin
   if (old.role is distinct from new.role or old.status is distinct from new.status)
+     and current_user <> 'service_role'
      and not public.is_sweater_admin() then
     raise exception 'Only an active administrator can change roles or account status';
   end if;
@@ -64,15 +66,22 @@ language plpgsql
 security definer set search_path=public
 as $$
 declare first_role text;
+declare requested_role text;
+declare requested_status text;
 begin
   -- The very first registered account becomes admin; later accounts are employees.
   select case when exists(select 1 from public.profiles) then 'employee' else 'admin' end into first_role;
-  insert into public.profiles(id,full_name,username,role)
+  requested_role := case when new.raw_app_meta_data->>'sweater_role' = 'admin' then 'admin' else first_role end;
+  requested_status := case when new.raw_app_meta_data->>'sweater_status' = 'suspended' then 'suspended' else 'active' end;
+  insert into public.profiles(id,full_name,username,email,department,role,status)
   values(
     new.id,
     coalesce(new.raw_user_meta_data->>'full_name',''),
     nullif(new.raw_user_meta_data->>'username',''),
-    first_role
+    new.email,
+    nullif(new.raw_user_meta_data->>'department',''),
+    requested_role,
+    requested_status
   );
   return new;
 end;
@@ -82,6 +91,8 @@ drop trigger if exists on_auth_user_created on auth.users;
 create trigger on_auth_user_created
 after insert on auth.users
 for each row execute procedure public.handle_new_user();
+
+revoke all on function public.handle_new_user() from public, anon, authenticated;
 
 grant select,update on public.profiles to authenticated;
 grant select,insert,update,delete on public.user_data to authenticated;
