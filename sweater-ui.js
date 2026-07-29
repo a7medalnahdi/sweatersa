@@ -14,7 +14,7 @@
     const badge = document.createElement('span');
     badge.className = 'sw-version';
     badge.textContent = 'الإصدار 2.0';
-    const target = header.querySelector('.controls-container') || header.lastElementChild || header;
+    const target = header.querySelector(':scope > .controls-container, :scope > .actions, :scope > .top-actions, :scope > .head-actions, :scope > .head-side, :scope > .header-actions') || header.lastElementChild || header;
     target.prepend(badge);
   }
 
@@ -125,7 +125,7 @@
   trigger.title = 'مركز الأوامر (⌘K)';
   trigger.setAttribute('aria-label', 'فتح مركز الأوامر');
   trigger.innerHTML = '<i class="fa-solid fa-bolt"></i>';
-  const headerActions = header?.querySelector('.controls-container') || header?.querySelector(':scope > div > div:last-child') || header?.lastElementChild;
+  const headerActions = header?.querySelector(':scope > .controls-container, :scope > .actions, :scope > .top-actions, :scope > .head-actions, :scope > .head-side, :scope > .header-actions') || header?.lastElementChild;
   if (headerActions) { trigger.classList.add('in-header'); headerActions.prepend(trigger); }
   else document.body.appendChild(trigger);
 
