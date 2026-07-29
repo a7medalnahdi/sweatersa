@@ -72,7 +72,12 @@ Deno.serve(async (req) => {
       }),
     });
     const result = await openAIResponse.json();
-    if (!openAIResponse.ok) throw new Error(result?.error?.message || "تعذر الاتصال بخدمة الكتابة");
+    if (!openAIResponse.ok) {
+      if (result?.error?.code === "insufficient_quota" || /quota|billing/i.test(result?.error?.message || "")) {
+        throw new Error("مفتاح OpenAI صحيح، لكن حساب API لا يحتوي رصيداً متاحاً. فعّل الفوترة أو أضف رصيداً ثم حاول مجدداً.");
+      }
+      throw new Error(result?.error?.message || "تعذر الاتصال بخدمة الكتابة");
+    }
     const answer = String(result.output_text || "").trim();
     if (!answer) throw new Error("لم يصل رد من كاتب المحتوى");
 
@@ -86,6 +91,6 @@ Deno.serve(async (req) => {
     return json({ conversationId, answer });
   } catch (error) {
     console.error(error);
-    return json({ error: error instanceof Error ? error.message : "حدث خطأ غير متوقع" }, 500);
+    return json({ error: error instanceof Error ? error.message : "حدث خطأ غير متوقع" });
   }
 });
