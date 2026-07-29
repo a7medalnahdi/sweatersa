@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
         conversationId,
         error: "الأداة جاهزة، وينقصها فقط إضافة مفتاح OpenAI السري في Supabase.",
         setupRequired: true,
-      }, 503);
+      });
     }
 
     const [{ data: history }, { data: settings }] = await Promise.all([
