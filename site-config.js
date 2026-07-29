@@ -6,7 +6,7 @@
   const BUCKET='site-assets';
   const clone=value=>JSON.parse(JSON.stringify(value));
   const defaults={
-    version:7,
+    version:8,
     content:{
       heroTitle:'أدواتك في منصة واحدة متكاملة',
       heroDescription:'مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.',
@@ -31,6 +31,7 @@
       {id:'partners',href:'./logo-framer-tool.html',name:'قوالب الشراكات',description:'ركّب شعارات الشركاء على القوالب المعتمدة وصدّرها بأعلى جودة.',image:'https://i.ibb.co/nMRr1xgn/image.png',enabled:true}
       ,{id:'qrcode',href:'./qr-generator.html',name:'صانع QR Code',description:'أنشئ رموز QR للروابط والنصوص وواتساب والبريد وشبكات Wi‑Fi مع تخصيص كامل.',image:'./assets/qr-tool-card.svg',enabled:true}
       ,{id:'document-logo',href:'./document-logo-tool.html',name:'ختم الملفات بالشعار',description:'أضف شعاراً إلى جميع صفحات PDF أو شرائح PowerPoint وصدّر الملف كاملاً.',image:'./assets/document-logo-tool.svg',enabled:true}
+      ,{id:'package-cards',href:'./package-card-tool.html',name:'صانع كروت الباقات',description:'عدّل أسماء الباقات والأسعار والصلاحية وصدّر الكرت بالعربية أو الإنجليزية.',image:'./assets/package-card-tool.svg',enabled:true}
     ],
     stats:[
       {id:'washes',value:'3M',label:'غسلة'},
@@ -61,6 +62,8 @@
       ,{id:'builtin-qr-wifi',name:'شبكة Wi‑Fi',tool:'qrcode',category:'شبكات',status:'active',source:'built-in',preview:'./assets/qr-tool-card.svg',payload:{type:'wifi',fields:{ssid:'SWEATER',security:'WPA',password:'',hidden:false}},notes:'قالب مشاركة بيانات شبكة Wi‑Fi'}
       ,{id:'builtin-document-bottom-left',name:'شعار أسفل اليسار',tool:'document-logo',category:'ختم ملفات',status:'active',source:'built-in',preview:'./assets/document-logo-tool.svg',payload:{x:85,y:85,size:18,opacity:100},notes:'موضع واضح وهادئ لجميع الصفحات والشرائح'}
       ,{id:'builtin-document-top-right',name:'شعار أعلى اليمين',tool:'document-logo',category:'ختم ملفات',status:'active',source:'built-in',preview:'./assets/document-logo-tool.svg',payload:{x:15,y:15,size:15,opacity:90},notes:'موضع رسمي أعلى الصفحة'}
+      ,{id:'builtin-package-prime-ar',name:'برايم عربي',tool:'package-cards',category:'باقات',status:'active',source:'built-in',preview:'./assets/package-card-tool.svg',payload:{lang:'ar',packageName:'سويتر برايم',description:'5 غسلات ( داخلي وخارجي ) لسيارتك',validity:'صلاحية شهرين',perWash:'29',oldPrice:'299',newPrice:'145',ctaText:'اشتر الآن'},notes:'قالب كرت PRIME باللغة العربية'}
+      ,{id:'builtin-package-prime-en',name:'Prime English',tool:'package-cards',category:'باقات',status:'active',source:'built-in',preview:'./assets/package-card-tool.svg',payload:{lang:'en',packageName:'Sweater Prime',description:'5 (IN&OUT) washes',validity:'Valid for 2 months',perWash:'29',oldPrice:'299',newPrice:'145',ctaText:'Buy Now'},notes:'PRIME package card in English'}
     ],
     settings:{siteName:'SWEATER Workspace',supportEmail:'Business@sweater.sa',maintenance:false}
   };
@@ -100,7 +103,7 @@
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const safeLink=value=>{try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:''}catch(_){return ''}};
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
-  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo'}[page];
+  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards'}[page];
   const adapters={};
 
   async function loadCloud(){
