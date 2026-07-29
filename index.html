@@ -190,6 +190,11 @@
     .tools-section{padding-top:2rem!important}.tool-card,.tool-card-featured{grid-template-columns:112px minmax(0,1fr)!important;min-height:146px!important}
     .tool-card>.tool-visual,.tool-card-featured>.flex>div:first-child{min-height:146px!important}.tool-card .tool-card-copy,.tool-card>div:not(.tool-visual):not(.absolute),.tool-card-featured>.flex>div:last-child{padding:1rem!important}
   }
+  .tool-card-simple{position:relative;display:grid!important;grid-template-columns:138px minmax(0,1fr)!important;min-height:154px!important;overflow:hidden;border:1px solid #e2e8f0;border-radius:20px;background:#fff;text-decoration:none;box-shadow:0 4px 16px rgba(15,23,42,.035);transition:.22s ease}
+  .dark .tool-card-simple{border-color:#334155;background:#1e293b}.tool-card-simple:hover{transform:translateY(-3px);border-color:color-mix(in srgb,var(--c) 45%,#e2e8f0);box-shadow:0 14px 30px rgba(15,23,42,.1)}
+  .tool-card-simple .simple-visual{position:relative;min-height:154px;overflow:hidden;background:#e2e8f0}.tool-card-simple .simple-image{position:absolute;inset:0;background-position:center;background-size:cover;transition:transform .35s ease}.tool-card-simple:hover .simple-image{transform:scale(1.04)}.tool-card-simple .simple-shade{position:absolute;inset:0;background:linear-gradient(180deg,transparent 45%,rgba(15,23,42,.38))}.tool-card-simple .simple-icon{position:absolute;right:12px;bottom:12px;width:38px;height:38px;display:grid;place-items:center;border-radius:11px;background:var(--c);color:#fff;font-size:14px;box-shadow:0 7px 18px rgba(15,23,42,.18)}
+  .tool-card-simple .simple-copy{min-width:0;padding:18px;display:flex;flex-direction:column}.tool-card-simple h3{margin:0 0 7px!important;font-size:16px!important;font-weight:900;color:#0f172a;line-height:1.4}.dark .tool-card-simple h3{color:#fff}.tool-card-simple p{margin:0!important;color:#64748b;font-size:11px!important;font-weight:600;line-height:1.8!important;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}.dark .tool-card-simple p{color:#94a3b8}.tool-card-simple .simple-open{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:9px;color:var(--c);font-size:10px;font-weight:900}.tool-card-simple .simple-open i{transition:transform .2s}.tool-card-simple:hover .simple-open i{transform:translateX(-4px)}
+  @media(max-width:560px){.tool-card-simple{grid-template-columns:102px minmax(0,1fr)!important;min-height:132px!important;border-radius:16px}.tool-card-simple .simple-visual{min-height:132px}.tool-card-simple .simple-copy{padding:14px}.tool-card-simple h3{font-size:14px!important}.tool-card-simple p{font-size:10px!important}}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=1"></script><script src="./auth-gateway.js?v=2"></script>
 </head>
@@ -590,6 +595,16 @@
     // Save preference
     localStorage.setItem('swDark', isDark ? '1' : '0');
   });
+</script>
+<script>
+  (() => {
+    const cards=[...document.querySelectorAll('.tools-grid > a[href]')];
+    cards.forEach(card=>{
+      const image=card.querySelector('.bg-cover')?.style.backgroundImage||'',icon=card.querySelector('.tool-visual i,.tool-card-featured i.fa-ticket')?.className||'fa-solid fa-wand-magic-sparkles',title=card.querySelector('h3')?.textContent||'أداة',description=card.querySelector('p')?.textContent||'';
+      card.className='tool-card-simple';
+      card.innerHTML=`<div class="simple-visual"><div class="simple-image bg-cover" style="background-image:${image}"></div><div class="simple-shade"></div><span class="simple-icon"><i class="${icon}"></i></span></div><div class="simple-copy"><h3>${title}</h3><p>${description}</p><span class="simple-open"><span>فتح الأداة</span><i class="fa-solid fa-arrow-left"></i></span></div>`;
+    });
+  })();
 </script>
 <script src="./site-config.js?v=7"></script>
 <script src="./sweater-ui.js?v=8"></script>
