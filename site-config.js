@@ -32,6 +32,7 @@
       ,{id:'qrcode',href:'./qr-generator.html',name:'صانع QR Code',description:'أنشئ رموز QR للروابط والنصوص وواتساب والبريد وشبكات Wi‑Fi مع تخصيص كامل.',image:'./assets/qr-tool-card.svg',enabled:true}
       ,{id:'document-logo',href:'./document-logo-tool.html',name:'ختم الملفات بالشعار',description:'أضف شعاراً إلى جميع صفحات PDF أو شرائح PowerPoint وصدّر الملف كاملاً.',image:'./assets/document-logo-tool.svg',enabled:true}
       ,{id:'package-cards',href:'./package-card-tool.html',name:'صانع كروت الباقات',description:'عدّل أسماء الباقات والأسعار والصلاحية وصدّر الكرت بالعربية أو الإنجليزية.',image:'./assets/package-card-tool.svg',enabled:true}
+      ,{id:'content-writer',href:'./content-writer.html',name:'كاتب المحتوى',description:'مساعد ذكي يكتب محتوى سويتر ويحفظ محادثات كل موظف في حسابه.',image:'./assets/content-writer.svg',enabled:true}
     ],
     stats:[
       {id:'washes',value:'3M',label:'غسلة'},
@@ -103,7 +104,7 @@
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const safeLink=value=>{try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:''}catch(_){return ''}};
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
-  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards'}[page];
+  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards','content-writer.html':'content-writer'}[page];
   const adapters={};
 
   async function loadCloud(){
