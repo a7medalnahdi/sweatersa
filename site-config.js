@@ -6,7 +6,7 @@
   const BUCKET='site-assets';
   const clone=value=>JSON.parse(JSON.stringify(value));
   const defaults={
-    version:3,
+    version:4,
     content:{
       heroTitle:'أدواتك في منصة واحدة متكاملة',
       heroDescription:'مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.',
@@ -14,6 +14,12 @@
       referencesTitle:'مراجع الشركة',
       numbersTitle:'أرقام تكبر معنا كل يوم'
     },
+    references:[
+      {id:'company-profile',name:'الملف التعريفي',description:'نبذة الشركة، الخدمات، الانتشار وأبرز الإنجازات.',url:'',icon:'fa-building',enabled:true},
+      {id:'visual-identity',name:'الهوية البصرية',description:'الألوان، الخطوط، أسلوب الصور وقواعد الاستخدام.',url:'',icon:'fa-swatchbook',enabled:true},
+      {id:'logo-library',name:'الشعار',description:'نسخ الشعار المعتمدة للاستخدام الرقمي والمطبوع.',url:'',icon:'fa-signature',enabled:true},
+      {id:'photo-library',name:'مكتبة الصور',description:'صور الخدمات، الفرق، السيارات والحملات المعتمدة.',url:'',icon:'fa-images',enabled:true}
+    ],
     banners:[
       {id:'home-hero',name:'بنر الصفحة الرئيسية',image:'',alt:'بنر سويتر',enabled:false}
     ],
@@ -33,6 +39,14 @@
     ],
     employees:[],
     templates:[
+      {id:'builtin-framing-1',name:'الإطار الأول',tool:'framing',category:'إطارات',status:'active',source:'built-in',preview:'https://i.ibb.co/1tGQgpK7/11.png',payload:{src:'https://i.ibb.co/1tGQgpK7/11.png'},notes:'إطار أفقي معتمد'},
+      {id:'builtin-framing-2',name:'الإطار الثاني',tool:'framing',category:'إطارات',status:'active',source:'built-in',preview:'https://i.ibb.co/4n5D2hJt/22.png',payload:{src:'https://i.ibb.co/4n5D2hJt/22.png'},notes:'إطار أفقي معتمد'},
+      {id:'builtin-coupon-l1',name:'كوبون أفقي 1',tool:'coupons',category:'أفقي',status:'active',source:'built-in',preview:'https://i.ibb.co/MkCmHfJT/fdsfsd.png',payload:{url:'https://i.ibb.co/MkCmHfJT/fdsfsd.png',orientation:'landscape'},notes:'قالب كوبون أفقي معتمد'},
+      {id:'builtin-coupon-l2',name:'كوبون أفقي 2',tool:'coupons',category:'أفقي',status:'active',source:'built-in',preview:'https://i.ibb.co/Xz9tGxB/c1.png',payload:{url:'https://i.ibb.co/Xz9tGxB/c1.png',orientation:'landscape'},notes:'قالب كوبون أفقي معتمد'},
+      {id:'builtin-coupon-l3',name:'كوبون أفقي 3',tool:'coupons',category:'أفقي',status:'active',source:'built-in',preview:'https://i.ibb.co/7jXkH2B/c2.png',payload:{url:'https://i.ibb.co/7jXkH2B/c2.png',orientation:'landscape'},notes:'قالب كوبون أفقي معتمد'},
+      {id:'builtin-coupon-p1',name:'كوبون عمودي 1',tool:'coupons',category:'عمودي',status:'active',source:'built-in',preview:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png',payload:{url:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png',orientation:'portrait'},notes:'قالب كوبون عمودي معتمد'},
+      {id:'builtin-coupon-p2',name:'كوبون عمودي 2',tool:'coupons',category:'عمودي',status:'active',source:'built-in',preview:'https://i.ibb.co/dG0G2pB/coupon-bg-1.png',payload:{url:'https://i.ibb.co/dG0G2pB/coupon-bg-1.png',orientation:'portrait'},notes:'قالب كوبون عمودي معتمد'},
+      {id:'builtin-coupon-p3',name:'كوبون عمودي 3',tool:'coupons',category:'عمودي',status:'active',source:'built-in',preview:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png',payload:{url:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png',orientation:'portrait'},notes:'القالب الاحتياطي العمودي الموجود في الأداة'},
       {id:'builtin-design-orange',name:'منشور جريء',tool:'design',category:'منشورات',status:'active',source:'built-in',preview:'',payload:{builtInTemplate:'orange'},notes:'القالب الأساسي الموجود في استوديو التصميم — 1080 × 1080'},
       {id:'builtin-design-clean',name:'عرض خدمات',tool:'design',category:'عروض',status:'active',source:'built-in',preview:'',payload:{builtInTemplate:'clean'},notes:'القالب الأساسي الموجود في استوديو التصميم — 1080 × 1080'},
       {id:'builtin-design-dark',name:'رسالة ملهمة',tool:'design',category:'منشورات',status:'active',source:'built-in',preview:'',payload:{builtInTemplate:'dark'},notes:'القالب الأساسي الموجود في استوديو التصميم — 1080 × 1080'},
@@ -44,16 +58,24 @@
     settings:{siteName:'SWEATER Workspace',supportEmail:'Business@sweater.sa',maintenance:false}
   };
 
-  const merge=(base,value)=>({
-    ...clone(base),...(value||{}),version:base.version,
-    content:{...base.content,...(value?.content||{})},
-    settings:{...base.settings,...(value?.settings||{})},
-    banners:Array.isArray(value?.banners)?value.banners:clone(base.banners),
-    tools:Array.isArray(value?.tools)?value.tools:clone(base.tools),
-    stats:Array.isArray(value?.stats)?value.stats:clone(base.stats),
-    employees:Array.isArray(value?.employees)?value.employees:[],
-    templates:Array.isArray(value?.templates)?value.templates:clone(base.templates)
-  });
+  const merge=(base,value)=>{
+    const templates=Array.isArray(value?.templates)?clone(value.templates):clone(base.templates);
+    if(Number(value?.version||0)<4){
+      const known=new Set(templates.map(item=>item.id));
+      base.templates.forEach(item=>{if(!known.has(item.id))templates.push(clone(item))});
+    }
+    return {
+      ...clone(base),...(value||{}),version:base.version,
+      content:{...base.content,...(value?.content||{})},
+      settings:{...base.settings,...(value?.settings||{})},
+      references:Array.isArray(value?.references)?value.references:clone(base.references),
+      banners:Array.isArray(value?.banners)?value.banners:clone(base.banners),
+      tools:Array.isArray(value?.tools)?value.tools:clone(base.tools),
+      stats:Array.isArray(value?.stats)?value.stats:clone(base.stats),
+      employees:Array.isArray(value?.employees)?value.employees:[],
+      templates
+    };
+  };
   const cached=()=>{try{return merge(defaults,JSON.parse(localStorage.getItem(STORAGE)||'null'))}catch(_){return clone(defaults)}};
   let current=cached();
   const cache=value=>{
@@ -64,6 +86,7 @@
   };
   const client=window.SweaterCloud?.client;
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+  const safeLink=value=>{try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:''}catch(_){return ''}};
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
   const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners'}[page];
   const adapters={};
@@ -147,6 +170,20 @@
       const title=card.querySelector('h3'),desc=card.querySelector('p'),visual=card.querySelector('.bg-cover');
       if(title)title.textContent=tool.name;if(desc)desc.textContent=tool.description;
       if(visual&&tool.image)visual.style.backgroundImage=`url("${String(tool.image).replace(/"/g,'%22')}")`;
+    });
+    data.references.forEach(reference=>{
+      const card=document.querySelector(`[data-reference-id="${reference.id}"]`);if(!card)return;
+      card.style.display=reference.enabled===false?'none':'';
+      const title=card.querySelector('h3'),desc=card.querySelector('p'),icon=card.querySelector('.reference-icon i'),status=card.querySelector('[data-reference-status]');
+      if(title)title.textContent=reference.name;if(desc)desc.textContent=reference.description;
+      if(icon)icon.className=`fa-solid ${reference.icon||'fa-link'}`;
+      const referenceUrl=safeLink(reference.url);
+      const available=Boolean(referenceUrl);
+      card.href=available?referenceUrl:'#company-references';
+      card.target=available?'_blank':'';
+      card.rel=available?'noopener noreferrer':'';
+      card.setAttribute('aria-disabled',String(!available));
+      if(status){status.textContent=available?'فتح المرجع':'غير متاح';status.classList.toggle('text-sweater-500',available)}
     });
     const statCards=[...document.querySelectorAll('#company-numbers .stat-card')];
     data.stats.forEach((stat,index)=>{const card=statCards[index];if(!card)return;const strong=card.querySelector('strong'),span=card.querySelector('span');if(strong)strong.textContent=stat.value;if(span)span.textContent=stat.label});

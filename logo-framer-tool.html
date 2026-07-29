@@ -613,16 +613,23 @@ function finishExport() {
 // Load first template on init
 const initialTemplate = document.querySelector('.template-thumb.active');
 if (initialTemplate) setTemplate(initialTemplate);
+window.SweaterPartnerApplyTemplate=payload=>{
+  if(!payload?.src)return;
+  const existing=[...D.templateThumbs].find(item=>item.dataset.src===payload.src);
+  if(existing){setTemplate(existing);return}
+  D.templateImage.src=payload.src;
+  D.logoImage.style.left=`${payload.x||50}%`;
+  D.logoImage.style.top=`${payload.y||50}%`;
+  D.logoImage.style.width=`${payload.size||30}%`;
+  D.logoSizeSlider.value=payload.size||30;
+  D.logoSizeValue.textContent=`${payload.size||30}%`;
+};
 
 })();
 </script>
-<script src="./site-config.js?v=3"></script>
+<script src="./site-config.js?v=4"></script>
 <script>
-window.addEventListener('sweater:apply-admin-template',e=>{
-  const src=e.detail?.payload?.src;if(!src)return;
-  const thumb=[...document.querySelectorAll('.template-thumb')].find(x=>x.dataset.src===src);
-  if(thumb)thumb.click();
-});
+window.addEventListener('sweater:apply-admin-template',e=>window.SweaterPartnerApplyTemplate?.(e.detail?.payload));
 </script>
 <script src="./sweater-ui.js?v=6"></script>
 <script src="./local-studio.js?v=6"></script>

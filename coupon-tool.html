@@ -1334,9 +1334,18 @@ try {
 } catch (_) { localStorage.removeItem('sweaterCouponAutosaveV2'); }
 setTimeout(() => Hist.push(), 300);
 
+window.addEventListener('sweater:apply-admin-template',event=>{
+  const payload=event.detail?.payload||{};
+  if(!payload.url)return;
+  const orientation=payload.orientation==='portrait'?'portrait':'landscape';
+  setOrientation(orientation,false);
+  applyTemplate(payload.url,event.detail?.id||`admin-${Date.now()}`);
+  toast('ok','تم تطبيق القالب','تم تحميل القالب المختار من مكتبة الإدارة.');
+});
+
 })();
 </script>
-<script src="./site-config.js?v=3"></script>
+<script src="./site-config.js?v=4"></script>
 <script src="./sweater-ui.js?v=6"></script>
 <script src="./local-studio.js?v=6"></script>
 </body>

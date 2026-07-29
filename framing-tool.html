@@ -851,9 +851,18 @@ D.btnClearAll.addEventListener('click', () => {
 // INIT
 switchMode('single');
 
+window.addEventListener('sweater:apply-admin-template',event=>{
+  const src=event.detail?.payload?.src;if(!src)return;
+  currentFrameSrc=src;
+  D.frameOverlay.src=src;
+  D.imgGrid.querySelectorAll('.thumb-frame').forEach(frame=>frame.src=src);
+  $$('.frame-thumb-wrap').forEach(frame=>frame.classList.toggle('active',frame.dataset.src===src));
+  toast('ok','تم تطبيق الإطار','تم تحميل القالب المختار من مكتبة الإدارة.');
+});
+
 })();
 </script>
-<script src="./site-config.js?v=3"></script>
+<script src="./site-config.js?v=4"></script>
 <script src="./sweater-ui.js?v=6"></script>
 <script src="./local-studio.js?v=6"></script>
 </body>

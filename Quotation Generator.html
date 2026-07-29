@@ -222,7 +222,7 @@
     try{const draft=JSON.parse(localStorage.getItem(DRAFT)||'null');if(draft?.quoteNumber)applyState(draft);else applyState({...state,quoteNumber:nextNumber(),quoteDate:today(),expiryDate:plusDays(today(),15),items:[newItem({description:'اشتراك غسيل شهري',qty:1,unit:'باقة',price:0}),newItem({description:'خدمة إضافية',qty:1,unit:'خدمة',price:0})]})}catch(_){applyState({...state,quoteNumber:nextNumber(),quoteDate:today(),expiryDate:plusDays(today(),15),items:[newItem()]})}
   })();
   </script>
-  <script src="./site-config.js?v=3"></script>
+  <script src="./site-config.js?v=4"></script>
   <script src="./sweater-ui.js?v=6"></script>
 </body>
 </html>

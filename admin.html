@@ -48,6 +48,7 @@
       </section>
       <section class="view" data-view="employees"><div class="section-head"><div><h2>حسابات الموظفين</h2><p>أنشئ سجلات الموظفين وحدد الأدوار والصلاحيات.</p></div><div class="toolbar"><input class="search" id="employeeSearch" placeholder="ابحث بالاسم أو البريد"><button class="btn primary" id="addEmployee"><i class="fa-solid fa-user-plus"></i> موظف جديد</button></div></div><div class="table-wrap"><table><thead><tr><th>الموظف</th><th>القسم</th><th>الدور</th><th>الحالة</th><th>رمز التفعيل</th><th>إجراءات</th></tr></thead><tbody id="employeeRows"></tbody></table></div></section>
       <section class="view" data-view="homepage"><div class="section-head"><div><h2>نصوص الصفحة الرئيسية</h2><p>تغيير الرسائل والعناوين الرئيسية مباشرة.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="form-grid" id="contentForm"></div></div></section>
+      <section class="view" data-view="references"><div class="section-head"><div><h2>مراجع الشركة</h2><p>تحكم في روابط الملفات الرسمية ومعلومات بطاقاتها.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="editor-list" id="referenceEditors"></div></div></section>
       <section class="view" data-view="tools"><div class="section-head"><div><h2>بطاقات الأدوات</h2><p>تحكم في الاسم والوصف والصورة والظهور.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="editor-list" id="toolEditors"></div></div></section>
       <section class="view" data-view="stats"><div class="section-head"><div><h2>أرقام الشركة</h2><p>حدّث المؤشرات الظاهرة للزوار.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="stats-grid" id="statEditors"></div></section>
       <section class="view" data-view="banners"><div class="section-head"><div><h2>بنرات الموقع</h2><p>ارفع البنرات واحفظها لتظهر فوراً لجميع المستخدمين.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="editor-list" id="bannerEditors"></div></div></section>
@@ -66,7 +67,7 @@
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=1"></script>
-<script src="./site-config.js?v=3"></script>
+<script src="./site-config.js?v=4"></script>
 <script>
 (async() => {
   const unlock=()=>document.body.classList.remove('admin-locked');
@@ -82,6 +83,7 @@
     ['overview','نظرة عامة','fa-chart-pie','ملخص الموقع وإدارة المحتوى'],
     ['employees','الموظفون','fa-users','إدارة الحسابات والصلاحيات'],
     ['homepage','الرئيسية','fa-house','تحرير محتوى الصفحة الرئيسية'],
+    ['references','مراجع الشركة','fa-link','إدارة روابط وملفات الشركة'],
     ['tools','الأدوات','fa-toolbox','إدارة بطاقات الأدوات'],
     ['stats','الأرقام','fa-arrow-trend-up','تحديث مؤشرات الشركة'],
     ['banners','البنرات','fa-panorama','إدارة بنرات الموقع'],
@@ -105,12 +107,14 @@
   ].map(x=>`<div class="metric"><i class="fa-solid ${x[0]}"></i><strong>${x[1]}</strong><span>${x[2]}</span></div>`).join('')}
   const contentLabels={heroTitle:'العنوان الرئيسي',heroDescription:'الوصف الرئيسي',toolsTitle:'عنوان قسم الأدوات',referencesTitle:'عنوان مراجع الشركة',numbersTitle:'عنوان أرقامنا'};
   $('#contentForm').innerHTML=Object.entries(contentLabels).map(([k,l])=>`<div class="field ${k==='heroDescription'?'full':''}"><label>${l}</label>${k==='heroDescription'?`<textarea data-content="${k}">${esc(data.content[k])}</textarea>`:`<input data-content="${k}" value="${esc(data.content[k])}">`}</div>`).join('');
+  $('#referenceEditors').innerHTML=data.references.map((r,i)=>`<div class="editor-row" data-reference="${i}"><div class="thumb" style="display:grid;place-items:center;color:var(--a);font-size:20px"><i class="fa-solid ${esc(r.icon)}"></i></div><div class="field"><label>اسم المرجع</label><input data-key="name" value="${esc(r.name)}"><label style="margin-top:7px">أيقونة Font Awesome</label><input data-key="icon" dir="ltr" value="${esc(r.icon)}"></div><div class="field"><label>الوصف</label><textarea data-key="description">${esc(r.description)}</textarea></div><div class="field"><label>رابط الملف أو المجلد</label><input data-key="url" dir="ltr" type="url" placeholder="https://..." value="${esc(r.url)}"><div class="hint">يمكن استخدام رابط Google Drive أو أي رابط مباشر معتمد.</div></div><label style="font-size:9px"><input type="checkbox" data-key="enabled" ${r.enabled?'checked':''}> ظاهر</label></div>`).join('');
   $('#toolEditors').innerHTML=data.tools.map((t,i)=>`<div class="editor-row" data-tool="${i}"><img class="thumb" src="${esc(t.image)}" alt=""><div class="field"><label>اسم الأداة</label><input data-key="name" value="${esc(t.name)}"></div><div class="field"><label>الوصف</label><input data-key="description" value="${esc(t.description)}"></div><div class="field"><label>رابط الصورة</label><input data-key="image" value="${esc(t.image)}"><input type="file" data-upload accept="image/*" style="margin-top:5px;padding-top:8px"></div><label style="font-size:9px"><input type="checkbox" data-key="enabled" ${t.enabled?'checked':''}> ظاهرة</label></div>`).join('');
   $('#statEditors').innerHTML=data.stats.map((s,i)=>`<div class="stat-edit" data-stat="${i}"><div class="field"><label>القيمة</label><input data-key="value" value="${esc(s.value)}"><label>الوصف</label><input data-key="label" value="${esc(s.label)}"></div></div>`).join('');
   $('#bannerEditors').innerHTML=data.banners.map((b,i)=>`<div class="editor-row" data-banner="${i}"><img class="thumb" src="${esc(b.image)}" alt=""><div class="field"><label>اسم البنر</label><input data-key="name" value="${esc(b.name)}"></div><div class="field"><label>النص البديل</label><input data-key="alt" value="${esc(b.alt)}"></div><div class="field"><label>رابط الصورة</label><input data-key="image" value="${esc(b.image)}"><input type="file" data-banner-upload accept="image/*" style="margin-top:5px;padding-top:8px"></div><label style="font-size:9px"><input type="checkbox" data-key="enabled" ${b.enabled?'checked':''}> ظاهر</label></div>`).join('');
   $('#settingsForm').innerHTML=`<div class="field"><label>اسم الموقع</label><input data-setting="siteName" value="${esc(data.settings.siteName)}"></div><div class="field"><label>بريد الدعم</label><input data-setting="supportEmail" type="email" dir="ltr" value="${esc(data.settings.supportEmail)}"></div><div class="field full"><label><input data-setting="maintenance" type="checkbox" ${data.settings.maintenance?'checked':''}> وضع الصيانة</label><div class="hint">يحجب أدوات الموقع عن الموظفين مؤقتاً، ويبقى المدير قادراً على الدخول والإدارة.</div></div>`;
   function syncEditors(){
     $$('[data-content]').forEach(x=>data.content[x.dataset.content]=x.value);
+    $$('[data-reference]').forEach(row=>{const reference=data.references[+row.dataset.reference];row.querySelectorAll('[data-key]').forEach(input=>reference[input.dataset.key]=input.type==='checkbox'?input.checked:input.value.trim())});
     $$('[data-tool]').forEach(r=>{const t=data.tools[+r.dataset.tool];r.querySelectorAll('[data-key]').forEach(x=>t[x.dataset.key]=x.type==='checkbox'?x.checked:x.value)});
     $$('[data-stat]').forEach(r=>{const s=data.stats[+r.dataset.stat];r.querySelectorAll('[data-key]').forEach(x=>s[x.dataset.key]=x.value)});
     $$('[data-banner]').forEach(r=>{const b=data.banners[+r.dataset.banner];r.querySelectorAll('[data-key]').forEach(x=>b[x.dataset.key]=x.type==='checkbox'?x.checked:x.value)});
