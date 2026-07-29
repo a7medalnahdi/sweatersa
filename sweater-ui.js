@@ -10,7 +10,7 @@
   if (page === 'n_icons.html') document.body.classList.add('sw-designer');
 
   const header = document.querySelector('header, .top-bar');
-  if (header && !header.querySelector('.sw-version')) {
+  if (header && !isDashboard && !header.querySelector('.sw-version')) {
     const badge = document.createElement('span');
     badge.className = 'sw-version';
     badge.textContent = 'الإصدار 2.0';

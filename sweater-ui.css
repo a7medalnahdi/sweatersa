@@ -50,6 +50,18 @@ body.sw-legacy{background:radial-gradient(circle at 85% -10%,rgba(249,103,20,.1)
 body.sw-dashboard{background:#f6f6f3!important}
 .dark body.sw-dashboard{background:#090d15!important}
 .sw-dashboard .glass-header{box-shadow:0 1px 0 rgba(15,23,42,.04)}
+.sw-dashboard .home-header{background:rgba(255,255,255,.9);backdrop-filter:blur(18px);border-bottom:1px solid rgba(226,232,240,.8)}
+.dark .sw-dashboard .home-header{background:rgba(9,13,21,.9);border-color:#1e293b}
+.sw-dashboard .home-brand{min-width:150px}
+.sw-dashboard .home-header .header-actions{min-width:0}
+.sw-dashboard .home-header .sw-power-trigger.in-header{display:none}
+.sw-dashboard .home-header .sw-user-trigger{height:46px;gap:10px;padding:4px 7px 4px 13px;border-radius:14px;box-shadow:0 4px 15px rgba(15,23,42,.04)}
+.sw-dashboard .home-header .sw-user-avatar{width:36px;height:36px;border-radius:11px;font-size:13px}
+.sw-dashboard .home-header .sw-user-copy strong{max-width:145px;font-size:11px}
+.sw-dashboard .home-header .sw-user-copy small{margin-top:4px;font-size:8px;color:#64748b}
+.sw-dashboard .home-header .sw-user-trigger>i{margin-right:2px;font-size:9px}
+.sw-dashboard .home-header .ls-launcher.in-header{height:40px;padding:0 11px;border-radius:12px;background:#f1f5f9;color:#475569}
+.dark .sw-dashboard .home-header .ls-launcher.in-header{background:#1e293b;color:#cbd5e1}
 .sw-dashboard .release-mark{display:inline-flex;align-items:center;gap:9px;padding:8px 12px;border-radius:999px;background:#171717;color:#fff;font-size:12px;font-weight:800;box-shadow:0 8px 18px rgba(15,23,42,.12)}
 .dark .sw-dashboard .release-mark{background:#fff;color:#171717}
 .sw-dashboard .tool-search{width:min(100%,560px);height:56px;padding:0 52px 0 18px;border:1px solid #e7e5e4;border-radius:17px;background:rgba(255,255,255,.85);box-shadow:0 12px 35px rgba(15,23,42,.06);color:#171717;font-size:14px;font-weight:600;transition:.2s}
@@ -72,6 +84,7 @@ body.sw-dashboard{background:#f6f6f3!important}
   .sw-shortcuts{display:none}.sw-version{display:none}
   .sw-legacy .top-bar{padding:0 12px!important}.sw-legacy .top-bar .title{font-size:15px!important}
   .sw-dashboard .tool-search{height:52px}
+  .sw-dashboard .home-brand{min-width:0}.sw-dashboard .home-header .sw-user-trigger{padding:4px}.sw-dashboard .home-header .ls-launcher.in-header{width:40px;padding:0;justify-content:center}
 }
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
