@@ -44,5 +44,18 @@
     const {data,error}=await client.from('profiles').select('*').eq('id',id).single();
     if(error)throw error;return data;
   }
-  window.SweaterCloud={client,pull,pushLocal,profile,keys:CLOUD_KEYS,setUser:id=>{userId=id},clearUser:()=>{userId=null}};
+  async function trackVisit(id,page){
+    const safePage=String(page||'index.html').slice(0,160);
+    const [{error:visitError},{error:presenceError}]=await Promise.all([
+      client.from('site_visits').insert({user_id:id,page:safePage}),
+      client.from('user_presence').upsert({user_id:id,current_page:safePage,last_seen_at:new Date().toISOString()},{onConflict:'user_id'})
+    ]);
+    if(visitError)console.warn('Visit tracking unavailable',visitError.message);
+    if(presenceError)console.warn('Presence tracking unavailable',presenceError.message);
+    if(!presenceError){
+      const heartbeat=()=>{if(document.visibilityState==='visible')client.from('user_presence').upsert({user_id:id,current_page:safePage,last_seen_at:new Date().toISOString()},{onConflict:'user_id'}).then(()=>{})};
+      const timer=setInterval(heartbeat,60000);window.addEventListener('pagehide',()=>clearInterval(timer),{once:true});document.addEventListener('visibilitychange',heartbeat);
+    }
+  }
+  window.SweaterCloud={client,pull,pushLocal,profile,trackVisit,keys:CLOUD_KEYS,setUser:id=>{userId=id},clearUser:()=>{userId=null}};
 })();

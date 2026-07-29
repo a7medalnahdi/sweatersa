@@ -32,6 +32,7 @@
       isAdmin:()=>authUser.role==='admin',
       signOut:async()=>{sessionStorage.removeItem(syncMarker);await client.auth.signOut();location.replace('./login.html')}
     };
+    window.SweaterCloud.trackVisit?.(session.user.id,page).catch(()=>{});
     document.documentElement.style.visibility='';
     return authUser;
   })().catch(error=>{
