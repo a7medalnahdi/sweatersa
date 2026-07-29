@@ -15,7 +15,7 @@
     'framing-tool.html':[],
     'coupon-tool.html':['sweaterCouponAutosaveV2'],
     'Quotation Generator.html':['sweaterQuotationAutosaveV2'],
-    'n_icons.html':['sweaterDesignAutosaveV3'],
+    'n_icons.html':['sweaterDesignAutosaveV3','sweater-design-autosave-v3'],
     'qr-generator.html':['sweaterQrHistoryV1'],
     'document-logo-tool.html':[],
     'logo-framer-tool.html':[]
