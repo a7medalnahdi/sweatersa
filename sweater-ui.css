@@ -117,18 +117,18 @@ body.sw-dashboard{background:#f6f6f3!important}
 @media(max-width:900px){.sw-quotation .main-layout{display:flex!important;flex-direction:column!important}.sw-quotation .left-panel{position:static!important;max-height:none!important;order:1!important}.sw-quotation .quotation-preview-wrapper{order:2!important;overflow-x:auto!important}.sw-quotation .quotation-page{min-width:760px}}
 .sw-focus-mode.sw-quotation .main-layout{grid-template-columns:1fr!important}
 .sw-focus-mode.sw-quotation .quotation-preview-wrapper{grid-column:1!important;width:100%!important}
-.sw-quotation .quotation-page .meta label{font-size:10.5px!important}
-.sw-quotation .quotation-page .meta :is(.editable,input){font-size:12px!important}
-.sw-quotation .quotation-page .party h3{font-size:11.5px!important}
-.sw-quotation .quotation-page .party-lines{font-size:12px!important}
-.sw-quotation .quotation-page .items-table th{font-size:10.5px!important}
-.sw-quotation .quotation-page .items-table td{font-size:11.5px!important}
-.sw-quotation .quotation-page :is(.item-desc,.cell-input){font-size:12px!important}
-.sw-quotation .quotation-page .item-unit{font-size:10px!important}
-.sw-quotation .quotation-page .text-block h3{font-size:11.5px!important}
-.sw-quotation .quotation-page .text-block .editable{font-size:11.5px!important}
-.sw-quotation .quotation-page .total-line{font-size:11.5px!important}
-.sw-quotation .quotation-page .paper-footer{font-size:10px!important}
+.sw-quotation :is(.quotation-page,.paper) .meta label{font-size:10.5px!important}
+.sw-quotation :is(.quotation-page,.paper) .meta :is(.editable,input){font-size:12px!important}
+.sw-quotation :is(.quotation-page,.paper) .party h3{font-size:11.5px!important}
+.sw-quotation :is(.quotation-page,.paper) .party-lines{font-size:12px!important}
+.sw-quotation :is(.quotation-page,.paper) .items-table th{font-size:10.5px!important}
+.sw-quotation :is(.quotation-page,.paper) .items-table td{font-size:11.5px!important}
+.sw-quotation :is(.quotation-page,.paper) :is(.item-desc,.cell-input){font-size:12px!important}
+.sw-quotation :is(.quotation-page,.paper) .item-unit{font-size:10px!important}
+.sw-quotation :is(.quotation-page,.paper) .text-block h3{font-size:11.5px!important}
+.sw-quotation :is(.quotation-page,.paper) .text-block .editable{font-size:11.5px!important}
+.sw-quotation :is(.quotation-page,.paper) .total-line{font-size:11.5px!important}
+.sw-quotation :is(.quotation-page,.paper) .paper-footer{font-size:10px!important}
 
 /* Site-wide readability and stable tool headers */
 body.sw-tool{font-size:14px;line-height:1.55}
