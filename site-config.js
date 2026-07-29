@@ -182,7 +182,10 @@
     const nums=document.querySelector('#company-numbers h2');if(nums)nums.textContent=data.content.numbersTitle;
     data.tools.forEach(tool=>{
       const card=document.querySelector(`a[href="${tool.href}"]`);if(!card)return;
-      card.style.display=tool.enabled===false?'none':'';
+      const isHidden=tool.enabled===false;
+      card.classList.toggle('tool-card-hidden',isHidden);
+      if(isHidden)card.style.setProperty('display','none','important');
+      else card.style.removeProperty('display');
       const title=card.querySelector('h3'),desc=card.querySelector('p'),visual=card.querySelector('.bg-cover');
       if(title)title.textContent=tool.name;if(desc)desc.textContent=tool.description;
       if(visual&&tool.image)visual.style.backgroundImage=`url("${String(tool.image).replace(/"/g,'%22')}")`;

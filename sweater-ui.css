@@ -69,7 +69,7 @@ body.sw-dashboard{background:#f6f6f3!important}
 .dark .sw-dashboard .tool-search{background:rgba(15,23,42,.88);border-color:#263244;color:#fff}
 .sw-dashboard .search-wrap{position:relative;margin-top:30px;width:min(100%,560px)}
 .sw-dashboard .search-wrap i{position:absolute;right:19px;top:50%;transform:translateY(-50%);color:#f96714}
-.sw-dashboard .tool-card-hidden{display:none!important}
+.tool-card-hidden{display:none!important}
 .sw-dashboard [href$=".html"].card-hover-fx{box-shadow:0 8px 30px rgba(15,23,42,.05);border-color:#e7e5e4!important}
 .sw-dashboard [href$=".html"].card-hover-fx:hover{box-shadow:0 24px 60px rgba(15,23,42,.11)!important}
 .sw-dashboard .empty-tools{display:none;padding:48px 20px;text-align:center;color:#64748b;font-weight:700}
