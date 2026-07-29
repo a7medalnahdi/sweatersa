@@ -117,3 +117,48 @@ body.sw-dashboard{background:#f6f6f3!important}
 @media(max-width:900px){.sw-quotation .main-layout{display:flex!important;flex-direction:column!important}.sw-quotation .left-panel{position:static!important;max-height:none!important;order:1!important}.sw-quotation .quotation-preview-wrapper{order:2!important;overflow-x:auto!important}.sw-quotation .quotation-page{min-width:760px}}
 .sw-focus-mode.sw-quotation .main-layout{grid-template-columns:1fr!important}
 .sw-focus-mode.sw-quotation .quotation-preview-wrapper{grid-column:1!important;width:100%!important}
+
+/* Site-wide readability and stable tool headers */
+body.sw-tool{font-size:14px;line-height:1.55}
+.sw-tool header{min-height:74px!important;height:auto!important;padding:10px 20px!important;gap:14px!important;flex-wrap:nowrap!important}
+.sw-tool header>*{min-width:0}
+.sw-tool header :is(.brand,.title,.brand-title){min-width:170px}
+.sw-tool header :is(.brand strong,.title strong,.brand-title strong){font-size:16px!important;line-height:1.3!important}
+.sw-tool header :is(.brand span,.title span,.brand-title span){font-size:11px!important;line-height:1.4!important}
+.sw-tool header :is(.actions,.top-actions,.head-actions,.head-side,.controls-container){display:flex!important;align-items:center!important;justify-content:flex-start!important;gap:8px!important;min-width:0;flex-wrap:nowrap}
+.sw-tool header :is(button,.btn,a.back,.back,.icon-btn){min-height:42px;font-size:12px!important}
+.sw-tool :is(.panel,.preview-panel,.side,.left-panel,.right-panel,.controls-panel-menu,.text-controls-panel,.inspector) :is(h2,h3,.section-title){font-size:14px!important;line-height:1.45!important}
+.sw-tool :is(.panel,.preview-panel,.side,.left-panel,.right-panel,.controls-panel-menu,.text-controls-panel,.inspector) label{font-size:12px!important;line-height:1.45!important}
+.sw-tool :is(.panel,.preview-panel,.side,.left-panel,.right-panel,.controls-panel-menu,.text-controls-panel,.inspector) :is(input:not([type=range]):not([type=color]),select,textarea){font-size:13px!important;min-height:44px}
+.sw-tool :is(.panel,.preview-panel,.side,.left-panel,.right-panel,.controls-panel-menu,.text-controls-panel,.inspector) button{font-size:12px!important;line-height:1.35!important}
+.sw-tool :is(.hint,.tip,.payload,.history-item span,.preview-head span,.preview-copy p,.canvas-meta,.edit-tip,.save-state,.access-note){font-size:11px!important;line-height:1.65!important}
+.sw-tool :is(.toast,.toast-wrap .toast){font-size:12px!important}
+.sw-tool .field{margin-bottom:14px}
+.sw-tool .quick button{font-size:12px!important;min-height:38px}
+.sw-tool .msg{font-size:13px!important;line-height:1.85!important}
+.sw-tool .composer textarea{font-size:13px!important}
+.sw-tool .history-item strong{font-size:12px!important}
+
+.sw-dashboard .home-header .sw-user-copy strong{font-size:13px!important}
+.sw-dashboard .home-header .sw-user-copy small{font-size:11px!important}
+.sw-dashboard .tool-card-simple h3{font-size:18px!important}
+.sw-dashboard .tool-card-simple p{font-size:13px!important;line-height:1.75!important}
+.sw-dashboard .tool-card-simple .simple-open{font-size:12px!important}
+
+@media(max-width:1100px){
+  .sw-tool header :is(.brand span,.title span,.brand-title span){display:none!important}
+  .sw-tool header :is(.brand,.title,.brand-title){min-width:0;flex:1}
+  .sw-tool header :is(.actions,.top-actions,.head-actions,.head-side,.controls-container){flex:0 1 auto;overflow-x:auto;scrollbar-width:none}
+  .sw-tool header :is(.actions,.top-actions,.head-actions,.head-side,.controls-container)::-webkit-scrollbar{display:none}
+}
+@media(max-width:700px){
+  .sw-tool header{min-height:66px!important;padding:8px 10px!important;gap:8px!important}
+  .sw-tool header :is(.brand strong,.title strong,.brand-title strong){font-size:14px!important;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .sw-tool header :is(.brand,.title,.brand-title){min-width:90px}
+  .sw-tool header :is(.actions,.top-actions,.head-actions,.head-side,.controls-container){max-width:52%;gap:5px!important}
+  .sw-tool header :is(button,.btn,a.back,.back,.icon-btn){min-width:40px;min-height:40px;padding-inline:10px!important}
+  .sw-tool header :is(button,.btn) span{display:none}
+  .sw-tool :is(.panel,.preview-panel,.side,.left-panel,.right-panel,.controls-panel-menu,.text-controls-panel,.inspector) label{font-size:12px!important}
+  .sw-dashboard .tool-card-simple h3{font-size:16px!important}
+  .sw-dashboard .tool-card-simple p{font-size:12px!important}
+}
