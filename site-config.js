@@ -6,7 +6,7 @@
   const BUCKET='site-assets';
   const clone=value=>JSON.parse(JSON.stringify(value));
   const defaults={
-    version:5,
+    version:6,
     content:{
       heroTitle:'أدواتك في منصة واحدة متكاملة',
       heroDescription:'مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.',
@@ -30,6 +30,7 @@
       {id:'design',href:'./n_icons.html',name:'استوديو التصميم',description:'استوديو متكامل لإنشاء التصاميم وإدارة النصوص والصور والطبقات.',image:'https://i.ibb.co/F4J0bMRW/image.png',enabled:true},
       {id:'partners',href:'./logo-framer-tool.html',name:'قوالب الشراكات',description:'ركّب شعارات الشركاء على القوالب المعتمدة وصدّرها بأعلى جودة.',image:'https://i.ibb.co/nMRr1xgn/image.png',enabled:true}
       ,{id:'qrcode',href:'./qr-generator.html',name:'صانع QR Code',description:'أنشئ رموز QR للروابط والنصوص وواتساب والبريد وشبكات Wi‑Fi مع تخصيص كامل.',image:'./assets/qr-tool-card.svg',enabled:true}
+      ,{id:'document-logo',href:'./document-logo-tool.html',name:'ختم الملفات بالشعار',description:'أضف شعاراً إلى جميع صفحات PDF أو شرائح PowerPoint وصدّر الملف كاملاً.',image:'./assets/document-logo-tool.svg',enabled:true}
     ],
     stats:[
       {id:'washes',value:'3M',label:'غسلة'},
@@ -58,18 +59,20 @@
       ,{id:'builtin-qr-url',name:'رابط موقع',tool:'qrcode',category:'روابط',status:'active',source:'built-in',preview:'./assets/qr-tool-card.svg',payload:{type:'url',fields:{url:'https://sweater.sa'},darkColor:'#111827',lightColor:'#ffffff'},notes:'قالب سريع لإنشاء QR لرابط'}
       ,{id:'builtin-qr-whatsapp',name:'تواصل واتساب',tool:'qrcode',category:'تواصل',status:'active',source:'built-in',preview:'./assets/qr-tool-card.svg',payload:{type:'whatsapp',fields:{phone:'966',message:'مرحباً، أود الاستفسار'}},notes:'قالب واتساب مع رسالة جاهزة'}
       ,{id:'builtin-qr-wifi',name:'شبكة Wi‑Fi',tool:'qrcode',category:'شبكات',status:'active',source:'built-in',preview:'./assets/qr-tool-card.svg',payload:{type:'wifi',fields:{ssid:'SWEATER',security:'WPA',password:'',hidden:false}},notes:'قالب مشاركة بيانات شبكة Wi‑Fi'}
+      ,{id:'builtin-document-bottom-left',name:'شعار أسفل اليسار',tool:'document-logo',category:'ختم ملفات',status:'active',source:'built-in',preview:'./assets/document-logo-tool.svg',payload:{x:85,y:85,size:18,opacity:100},notes:'موضع واضح وهادئ لجميع الصفحات والشرائح'}
+      ,{id:'builtin-document-top-right',name:'شعار أعلى اليمين',tool:'document-logo',category:'ختم ملفات',status:'active',source:'built-in',preview:'./assets/document-logo-tool.svg',payload:{x:15,y:15,size:15,opacity:90},notes:'موضع رسمي أعلى الصفحة'}
     ],
     settings:{siteName:'SWEATER Workspace',supportEmail:'Business@sweater.sa',maintenance:false}
   };
 
   const merge=(base,value)=>{
     const templates=Array.isArray(value?.templates)?clone(value.templates):clone(base.templates);
-    if(Number(value?.version||0)<5){
+    {
       const known=new Set(templates.map(item=>item.id));
-      base.templates.forEach(item=>{if(!known.has(item.id))templates.push(clone(item))});
+      base.templates.filter(item=>item.source==='built-in').forEach(item=>{if(!known.has(item.id))templates.push(clone(item))});
     }
     const tools=Array.isArray(value?.tools)?clone(value.tools):clone(base.tools);
-    if(Number(value?.version||0)<5){
+    {
       const known=new Set(tools.map(item=>item.id));
       base.tools.forEach(item=>{if(!known.has(item.id))tools.push(clone(item))});
     }
@@ -97,7 +100,7 @@
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const safeLink=value=>{try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:''}catch(_){return ''}};
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
-  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode'}[page];
+  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo'}[page];
   const adapters={};
 
   async function loadCloud(){
