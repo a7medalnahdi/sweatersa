@@ -6,7 +6,7 @@
   const BUCKET='site-assets';
   const clone=value=>JSON.parse(JSON.stringify(value));
   const defaults={
-    version:6,
+    version:7,
     content:{
       heroTitle:'أدواتك في منصة واحدة متكاملة',
       heroDescription:'مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.',
@@ -215,12 +215,11 @@
 
   async function maintenanceGate(){
     if(page==='admin.html'||!current.settings.maintenance)return;
-    let profile=null;
+    let auth=null;
     try{
-      const auth=await window.SweaterAuthReady;
-      if(auth?.user&&window.SweaterCloud)profile=await window.SweaterCloud.profile(auth.user.id);
+      auth=await window.SweaterAuthReady;
     }catch(_){}
-    if(profile?.role==='admin'&&profile?.status==='active')return;
+    if(auth?.role==='admin')return;
     document.body.innerHTML=`<main class="sw-maintenance"><img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER"><h1>نعود إليكم قريباً</h1><p>نجري حالياً تحسينات على مساحة العمل. يرجى المحاولة بعد قليل.</p><a href="mailto:${escape(current.settings.supportEmail)}">التواصل مع الدعم</a></main>`;
     const style=document.createElement('style');style.textContent='.sw-maintenance{min-height:100vh;display:grid;place-content:center;justify-items:center;text-align:center;padding:24px;background:#f8fafc;color:#172033;font-family:LamaSans,sans-serif}.sw-maintenance img{width:150px;margin-bottom:28px}.sw-maintenance h1{font-size:30px;margin:0 0 10px}.sw-maintenance p{color:#64748b}.sw-maintenance a{margin-top:14px;padding:12px 18px;border-radius:12px;background:#f96714;color:#fff;text-decoration:none;font-weight:800}';document.head.append(style);
   }

@@ -160,7 +160,7 @@
       return json;
     }
     async function setupAdminTemplates(){
-      try{const auth=await window.SweaterAuthReady,user=auth?.user;if(!user||!window.SweaterCloud)return;const profile=await window.SweaterCloud.profile(user.id);if(profile.role==='admin'&&profile.status==='active')$('adminTemplateBtn').classList.remove('hidden')}catch(_){}
+      try{const user=await window.SweaterAuthReady;if(user?.id&&user.role==='admin')$('adminTemplateBtn').classList.remove('hidden')}catch(_){}
     }
     async function publishAdminTemplate(){
       const button=$('publishTemplate'),original=button.innerHTML;button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> جارٍ رفع القالب';
@@ -193,7 +193,7 @@
     init();
   })();
   </script>
-  <script src="./site-config.js?v=6"></script>
+  <script src="./site-config.js?v=7"></script>
   <script src="./sweater-ui.js?v=8"></script>
   <script src="./local-studio.js?v=6"></script>
 </body>
