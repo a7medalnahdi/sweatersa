@@ -1,8 +1,12 @@
 (() => {
   'use strict';
-  const STORAGE='sweaterAdminConfigV1';
+
+  const STORAGE='sweaterAdminConfigV2';
+  const ROW_ID='global';
+  const BUCKET='site-assets';
+  const clone=value=>JSON.parse(JSON.stringify(value));
   const defaults={
-    version:2,
+    version:3,
     content:{
       heroTitle:'أدواتك في منصة واحدة متكاملة',
       heroDescription:'مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.',
@@ -10,6 +14,9 @@
       referencesTitle:'مراجع الشركة',
       numbersTitle:'أرقام تكبر معنا كل يوم'
     },
+    banners:[
+      {id:'home-hero',name:'بنر الصفحة الرئيسية',image:'',alt:'بنر سويتر',enabled:false}
+    ],
     tools:[
       {id:'framing',href:'./framing-tool.html',name:'أداة تركيب الإطارات',description:'ارفع صورك وأضف إطاراً من اختيارك، مع دعم التصدير الفردي أو الجماعي دفعةً واحدة.',image:'https://i.ibb.co/FbHvLZwd/444.png',enabled:true},
       {id:'coupons',href:'./coupon-tool.html',name:'أداة تصدير الكوبونات',description:'صمّم كوبونات الخصم، واستورد ملف Excel لإنتاج مئات الكوبونات دفعة واحدة.',image:'https://i.ibb.co/jPLhFFf5/333.png',enabled:true},
@@ -36,25 +43,94 @@
     ],
     settings:{siteName:'SWEATER Workspace',supportEmail:'Business@sweater.sa',maintenance:false}
   };
-  const clone=v=>JSON.parse(JSON.stringify(v));
-  const merge=(base,value)=>({...clone(base),...(value||{}),version:base.version,content:{...base.content,...(value?.content||{})},settings:{...base.settings,...(value?.settings||{})},tools:Array.isArray(value?.tools)?value.tools:clone(base.tools),stats:Array.isArray(value?.stats)?value.stats:clone(base.stats),employees:Array.isArray(value?.employees)?value.employees:[],templates:Array.isArray(value?.templates)?value.templates:clone(base.templates)});
-  const load=()=>{try{const raw=JSON.parse(localStorage.getItem(STORAGE)||'null');const data=merge(defaults,raw);if(raw&&Number(raw.version||1)<2){const existing=new Set(data.templates.map(t=>t.id));defaults.templates.forEach(t=>{if(!existing.has(t.id))data.templates.push(clone(t))});data.version=2;localStorage.setItem(STORAGE,JSON.stringify(data))}return data}catch(_){return clone(defaults)}};
-  const save=data=>{const saved=merge(defaults,data);localStorage.setItem(STORAGE,JSON.stringify(saved));window.dispatchEvent(new CustomEvent('sweater:config-updated',{detail:saved}));return saved};
+
+  const merge=(base,value)=>({
+    ...clone(base),...(value||{}),version:base.version,
+    content:{...base.content,...(value?.content||{})},
+    settings:{...base.settings,...(value?.settings||{})},
+    banners:Array.isArray(value?.banners)?value.banners:clone(base.banners),
+    tools:Array.isArray(value?.tools)?value.tools:clone(base.tools),
+    stats:Array.isArray(value?.stats)?value.stats:clone(base.stats),
+    employees:Array.isArray(value?.employees)?value.employees:[],
+    templates:Array.isArray(value?.templates)?value.templates:clone(base.templates)
+  });
+  const cached=()=>{try{return merge(defaults,JSON.parse(localStorage.getItem(STORAGE)||'null'))}catch(_){return clone(defaults)}};
+  let current=cached();
+  const cache=value=>{
+    current=merge(defaults,value);
+    try{localStorage.setItem(STORAGE,JSON.stringify(current))}catch(_){}
+    window.dispatchEvent(new CustomEvent('sweater:config-updated',{detail:clone(current)}));
+    return clone(current);
+  };
+  const client=window.SweaterCloud?.client;
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
   const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners'}[page];
   const adapters={};
+
+  async function loadCloud(){
+    if(!client)return current;
+    try{
+      const {data,error}=await client.from('site_config').select('value').eq('id',ROW_ID).maybeSingle();
+      if(error)throw error;
+      return data?.value?cache(data.value):current;
+    }catch(error){
+      console.warn('تعذر تحميل إعدادات الموقع المركزية',error);
+      return current;
+    }
+  }
+
+  const ready=(async()=>{
+    if(window.SweaterAuthReady)await window.SweaterAuthReady.catch(()=>null);
+    const result=await loadCloud();
+    if(client){
+      client.channel('sweater-global-site-config')
+        .on('postgres_changes',{event:'*',schema:'public',table:'site_config',filter:`id=eq.${ROW_ID}`},payload=>{
+          if(payload.new?.value)cache(payload.new.value);
+        })
+        .subscribe();
+    }
+    return result;
+  })();
+
+  async function save(value){
+    if(!client)throw new Error('الاتصال بقاعدة البيانات غير متاح');
+    const saved=merge(defaults,value);
+    const {data:sessionData}=await client.auth.getSession();
+    const user=sessionData.session?.user;
+    if(!user)throw new Error('يجب تسجيل الدخول أولاً');
+    const {error}=await client.from('site_config').upsert({
+      id:ROW_ID,value:saved,updated_by:user.id,updated_at:new Date().toISOString()
+    },{onConflict:'id'});
+    if(error)throw error;
+    return cache(saved);
+  }
+
+  async function uploadAsset(file,folder='general'){
+    if(!client)throw new Error('خدمة رفع الصور غير متاحة');
+    if(!file?.type?.startsWith('image/'))throw new Error('اختر ملف صورة صالحاً');
+    if(file.size>10*1024*1024)throw new Error('حجم الصورة يجب ألا يتجاوز 10 ميجابايت');
+    const ext=(file.name.split('.').pop()||'jpg').toLowerCase().replace(/[^a-z0-9]/g,'');
+    const path=`${folder}/${Date.now()}-${crypto.randomUUID()}.${ext}`;
+    const {error}=await client.storage.from(BUCKET).upload(path,file,{cacheControl:'3600',upsert:false,contentType:file.type});
+    if(error)throw error;
+    return client.storage.from(BUCKET).getPublicUrl(path).data.publicUrl;
+  }
+
   window.SweaterAdmin={
     defaults:clone(defaults),
-    load,
+    ready,
+    load:()=>clone(current),
     save,
-    reset:()=>{localStorage.removeItem(STORAGE);location.reload()},
-    getTemplates:id=>load().templates.filter(t=>t.tool===id&&t.status!=='archived'),
+    reset:()=>save(clone(defaults)),
+    uploadAsset,
+    getTemplates:id=>current.templates.filter(t=>t.tool===id&&t.status!=='archived'),
     registerTemplateAdapter:(id,fn)=>{adapters[id]=fn}
   };
+
   function applyHome(){
     if(page!=='index.html'&&page!=='')return;
-    const data=load();
+    const data=current;
     const h1=document.querySelector('main section h1');
     const heroP=h1?.parentElement?.querySelector('p');
     if(h1&&data.content.heroTitle)h1.textContent=data.content.heroTitle;
@@ -74,17 +150,46 @@
     });
     const statCards=[...document.querySelectorAll('#company-numbers .stat-card')];
     data.stats.forEach((stat,index)=>{const card=statCards[index];if(!card)return;const strong=card.querySelector('strong'),span=card.querySelector('span');if(strong)strong.textContent=stat.value;if(span)span.textContent=stat.label});
+    const banner=data.banners.find(item=>item.id==='home-hero');
+    const bannerImage=document.querySelector('#homeHeroBannerImage');
+    const bannerFallback=document.querySelector('#homeHeroBannerFallback');
+    const showBanner=Boolean(banner?.enabled&&banner?.image);
+    if(bannerImage){bannerImage.src=showBanner?banner.image:'';bannerImage.alt=banner?.alt||'بنر سويتر';bannerImage.classList.toggle('hidden',!showBanner)}
+    if(bannerFallback)bannerFallback.classList.toggle('hidden',showBanner);
   }
+
+  function applyGlobal(){
+    document.documentElement.dataset.siteConfig='ready';
+    if(current.settings.siteName)document.title=document.title.replace(/SWEATER Workspace|مغاسل سويتر/g,current.settings.siteName);
+    if(toolId&&current.tools.find(t=>t.id===toolId)?.enabled===false)location.replace('./index.html?tool=disabled');
+  }
+
+  async function maintenanceGate(){
+    if(page==='admin.html'||!current.settings.maintenance)return;
+    let profile=null;
+    try{
+      const auth=await window.SweaterAuthReady;
+      if(auth?.user&&window.SweaterCloud)profile=await window.SweaterCloud.profile(auth.user.id);
+    }catch(_){}
+    if(profile?.role==='admin'&&profile?.status==='active')return;
+    document.body.innerHTML=`<main class="sw-maintenance"><img src="https://i.ibb.co/qLNFj53h/Logo-2.png" alt="SWEATER"><h1>نعود إليكم قريباً</h1><p>نجري حالياً تحسينات على مساحة العمل. يرجى المحاولة بعد قليل.</p><a href="mailto:${escape(current.settings.supportEmail)}">التواصل مع الدعم</a></main>`;
+    const style=document.createElement('style');style.textContent='.sw-maintenance{min-height:100vh;display:grid;place-content:center;justify-items:center;text-align:center;padding:24px;background:#f8fafc;color:#172033;font-family:LamaSans,sans-serif}.sw-maintenance img{width:150px;margin-bottom:28px}.sw-maintenance h1{font-size:30px;margin:0 0 10px}.sw-maintenance p{color:#64748b}.sw-maintenance a{margin-top:14px;padding:12px 18px;border-radius:12px;background:#f96714;color:#fff;text-decoration:none;font-weight:800}';document.head.append(style);
+  }
+
   function templateModal(){
-    if(!toolId||page==='index.html')return;
-    const list=window.SweaterAdmin.getTemplates(toolId);if(!list.length)return;
-    const header=document.querySelector('header,.top-bar');const actions=header?.querySelector('.controls-container')||header?.lastElementChild;if(!actions)return;
+    if(!toolId)return;
+    const list=current.templates.filter(t=>t.tool===toolId&&t.status!=='archived');if(!list.length)return;
+    const header=document.querySelector('header,.top-bar');const actions=header?.querySelector('.controls-container')||header?.lastElementChild;if(!actions||actions.querySelector('.sw-admin-templates-btn'))return;
     const btn=document.createElement('button');btn.className='sw-admin-templates-btn';btn.innerHTML=`<i class="fa-solid fa-boxes-stacked"></i><span>قوالب الإدارة</span><b>${list.length}</b>`;actions.prepend(btn);
-    const modal=document.createElement('div');modal.className='sw-admin-templates-modal';modal.innerHTML=`<div class="sw-admin-template-card"><header><div><strong>قوالب ${escape(load().tools.find(t=>t.id===toolId)?.name||'الأداة')}</strong><span>قوالب أضافها مدير النظام</span></div><button aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button></header><div class="sw-admin-template-grid">${list.map(t=>`<article><div class="sw-admin-template-preview">${t.preview?`<img src="${escape(t.preview)}" alt="">`:'<i class="fa-solid fa-layer-group"></i>'}</div><div><strong>${escape(t.name)}</strong><span>${escape(t.category||'عام')}</span></div><button data-admin-template="${escape(t.id)}">استخدام القالب</button></article>`).join('')}</div></div>`;document.body.append(modal);
+    const modal=document.createElement('div');modal.className='sw-admin-templates-modal';modal.innerHTML=`<div class="sw-admin-template-card"><header><div><strong>قوالب ${escape(current.tools.find(t=>t.id===toolId)?.name||'الأداة')}</strong><span>قوالب أضافها مدير النظام</span></div><button aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button></header><div class="sw-admin-template-grid">${list.map(t=>`<article><div class="sw-admin-template-preview">${t.preview?`<img src="${escape(t.preview)}" alt="">`:'<i class="fa-solid fa-layer-group"></i>'}</div><div><strong>${escape(t.name)}</strong><span>${escape(t.category||'عام')}</span></div><button data-admin-template="${escape(t.id)}">استخدام القالب</button></article>`).join('')}</div></div>`;document.body.append(modal);
     btn.onclick=()=>modal.classList.add('open');modal.querySelector('header button').onclick=()=>modal.classList.remove('open');modal.onclick=e=>{if(e.target===modal)modal.classList.remove('open')};
-    modal.querySelectorAll('[data-admin-template]').forEach(button=>button.onclick=()=>{const template=list.find(t=>t.id===button.dataset.adminTemplate);if(!template)return;localStorage.setItem('sweaterPendingAdminTemplate',JSON.stringify(template));if(adapters[toolId])adapters[toolId](template);else window.dispatchEvent(new CustomEvent('sweater:apply-admin-template',{detail:template}));modal.classList.remove('open');const notice=document.createElement('div');notice.className='sw-admin-template-notice';notice.textContent=`تم تجهيز قالب «${template.name}» للأداة`;document.body.append(notice);setTimeout(()=>notice.classList.add('show'),10);setTimeout(()=>notice.remove(),2600)});
+    modal.querySelectorAll('[data-admin-template]').forEach(button=>button.onclick=()=>{const template=list.find(t=>t.id===button.dataset.adminTemplate);if(!template)return;localStorage.setItem('sweaterPendingAdminTemplate',JSON.stringify(template));if(adapters[toolId])adapters[toolId](template);else window.dispatchEvent(new CustomEvent('sweater:apply-admin-template',{detail:template}));modal.classList.remove('open')});
   }
+
   const styles=document.createElement('style');styles.textContent=`
-    .sw-admin-templates-btn{height:40px;padding:0 12px;border:1px solid #fed7aa;border-radius:11px;background:#fff7ed;color:#c2410c;display:flex;align-items:center;gap:7px;font:800 10px LamaSans,Cairo,sans-serif}.sw-admin-templates-btn b{min-width:18px;height:18px;display:grid;place-items:center;border-radius:99px;background:#f96714;color:#fff;font-size:8px}.sw-admin-templates-modal{position:fixed;inset:0;z-index:10000;display:none;place-items:center;padding:18px;background:rgba(2,6,23,.58);backdrop-filter:blur(8px);direction:rtl}.sw-admin-templates-modal.open{display:grid}.sw-admin-template-card{width:min(760px,100%);max-height:82vh;overflow:auto;border-radius:22px;background:#fff;box-shadow:0 30px 90px rgba(2,6,23,.3);color:#172033}.sw-admin-template-card>header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #e5e7eb}.sw-admin-template-card header strong{display:block;font-size:14px}.sw-admin-template-card header span{display:block;margin-top:3px;color:#94a3b8;font-size:9px}.sw-admin-template-card header button{width:34px;height:34px;border:0;border-radius:9px;background:#f1f5f9;color:#64748b}.sw-admin-template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}.sw-admin-template-grid article{border:1px solid #e5e7eb;border-radius:15px;overflow:hidden;background:#fff}.sw-admin-template-preview{height:120px;display:grid;place-items:center;background:#f8fafc;color:#f96714;font-size:28px}.sw-admin-template-preview img{width:100%;height:100%;object-fit:cover}.sw-admin-template-grid article>div:nth-child(2){padding:10px 11px}.sw-admin-template-grid article strong{display:block;font-size:10px}.sw-admin-template-grid article span{font-size:8px;color:#94a3b8}.sw-admin-template-grid article>button{width:calc(100% - 20px);height:34px;margin:0 10px 10px;border:0;border-radius:9px;background:#f96714;color:#fff;font-size:9px;font-weight:800}.sw-admin-template-notice{position:fixed;left:18px;bottom:18px;z-index:11000;padding:12px 15px;border-radius:11px;background:#111827;color:#fff;font:800 10px LamaSans,Cairo,sans-serif;opacity:0;transform:translateY(10px);transition:.2s}.sw-admin-template-notice.show{opacity:1;transform:none}@media(max-width:650px){.sw-admin-template-grid{grid-template-columns:1fr 1fr}.sw-admin-templates-btn span{display:none}}`;document.head.append(styles);
-  applyHome();templateModal();window.addEventListener('sweater:config-updated',applyHome);
+    .sw-admin-templates-btn{height:40px;padding:0 12px;border:1px solid #fed7aa;border-radius:11px;background:#fff7ed;color:#c2410c;display:flex;align-items:center;gap:7px;font:800 10px LamaSans,Cairo,sans-serif}.sw-admin-templates-btn b{min-width:18px;height:18px;display:grid;place-items:center;border-radius:99px;background:#f96714;color:#fff;font-size:8px}.sw-admin-templates-modal{position:fixed;inset:0;z-index:10000;display:none;place-items:center;padding:18px;background:rgba(2,6,23,.58);backdrop-filter:blur(8px);direction:rtl}.sw-admin-templates-modal.open{display:grid}.sw-admin-template-card{width:min(760px,100%);max-height:82vh;overflow:auto;border-radius:22px;background:#fff;box-shadow:0 30px 90px rgba(2,6,23,.3);color:#172033}.sw-admin-template-card>header{display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid #e5e7eb}.sw-admin-template-card header strong{display:block;font-size:14px}.sw-admin-template-card header span{display:block;margin-top:3px;color:#94a3b8;font-size:9px}.sw-admin-template-card header button{width:34px;height:34px;border:0;border-radius:9px;background:#f1f5f9;color:#64748b}.sw-admin-template-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px}.sw-admin-template-grid article{border:1px solid #e5e7eb;border-radius:15px;overflow:hidden;background:#fff}.sw-admin-template-preview{height:120px;display:grid;place-items:center;background:#f8fafc;color:#f96714;font-size:28px}.sw-admin-template-preview img{width:100%;height:100%;object-fit:cover}.sw-admin-template-grid article>div:nth-child(2){padding:10px 11px}.sw-admin-template-grid article strong{display:block;font-size:10px}.sw-admin-template-grid article span{font-size:8px;color:#94a3b8}.sw-admin-template-grid article>button{width:calc(100% - 20px);height:34px;margin:0 10px 10px;border:0;border-radius:9px;background:#f96714;color:#fff;font-size:9px;font-weight:800}@media(max-width:650px){.sw-admin-template-grid{grid-template-columns:1fr 1fr}.sw-admin-templates-btn span{display:none}}`;document.head.append(styles);
+
+  applyHome();applyGlobal();
+  ready.then(()=>{applyHome();applyGlobal();templateModal();maintenanceGate()});
+  window.addEventListener('sweater:config-updated',()=>{applyHome();applyGlobal()});
 })();

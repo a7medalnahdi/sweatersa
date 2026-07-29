@@ -349,7 +349,7 @@
     try{const saved=JSON.parse(localStorage.getItem(AUTOSAVE)||'null');if(saved?.canvas)loadState(saved);else{const legacy=localStorage.getItem(LEGACY);if(legacy)loadState({width:1080,height:1080,name:'تصميم مستعاد',canvas:JSON.parse(legacy)});else{fitCanvas();updateAll();snapshot()}}}catch(_){fitCanvas();updateAll();snapshot()}
   })();
   </script>
-  <script src="./site-config.js?v=1"></script>
+  <script src="./site-config.js?v=3"></script>
   <script src="./sweater-ui.js?v=6"></script>
   <script src="./local-studio.js?v=7"></script>
 </body>

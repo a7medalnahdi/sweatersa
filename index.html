@@ -197,7 +197,9 @@
     </div>
     
     <div class="w-full lg:w-auto animate-fade-in-up stagger-1">
-      <div class="relative bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 text-center lg:min-w-[280px] overflow-hidden group">
+      <div class="relative bg-white dark:bg-slate-800 p-8 rounded-3xl shadow-xl border border-slate-100 dark:border-slate-700 text-center lg:min-w-[280px] min-h-[245px] overflow-hidden group">
+        <img id="homeHeroBannerImage" class="hidden absolute inset-0 w-full h-full object-cover" src="" alt="بنر سويتر">
+        <div id="homeHeroBannerFallback">
         <!-- Decoration -->
         <div class="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-sweater-100 to-transparent dark:from-sweater-900/40 rounded-bl-full -z-10 transition-transform group-hover:scale-110"></div>
         
@@ -209,6 +211,7 @@
           <div class="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/50 border-2 border-white dark:border-slate-800 flex items-center justify-center text-orange-500 text-xs shadow-sm"><i class="fa-solid fa-ticket"></i></div>
           <div class="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/50 border-2 border-white dark:border-slate-800 flex items-center justify-center text-blue-500 text-xs shadow-sm"><i class="fa-solid fa-file-invoice"></i></div>
           <div class="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-700 border-2 border-white dark:border-slate-800 flex items-center justify-center text-slate-500 text-xs shadow-sm font-bold">+2</div>
+        </div>
         </div>
       </div>
     </div>
@@ -533,7 +536,7 @@
     localStorage.setItem('swDark', isDark ? '1' : '0');
   });
 </script>
-<script src="./site-config.js?v=1"></script>
+<script src="./site-config.js?v=3"></script>
 <script src="./sweater-ui.js?v=6"></script>
 <script src="./local-studio.js?v=6"></script>
 </body>

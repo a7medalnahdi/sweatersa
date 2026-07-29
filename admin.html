@@ -30,28 +30,29 @@
     <div class="field"><label>كلمة المرور</label><input name="password" type="password" autocomplete="current-password" dir="ltr" required></div>
     <button class="btn primary"><i class="fa-solid fa-arrow-right-to-bracket"></i> تسجيل الدخول</button>
     <div class="login-error" id="loginError"></div>
-    <div class="login-foot"><i class="fa-solid fa-lock"></i> حماية محلية مؤقتة. عند ربط قاعدة البيانات سيتم استبدالها بمصادقة آمنة من الخادم.</div>
+    <div class="login-foot"><i class="fa-solid fa-lock"></i> محمية بتسجيل الدخول وصلاحيات المدير عبر Supabase.</div>
   </form>
 </section>
 <div class="shell">
   <aside class="side">
     <div class="brand"><div class="brand-mark"><i class="fa-solid fa-sliders"></i></div><div class="brand-copy"><strong>لوحة سويتر</strong><span>إدارة محتوى الموقع</span></div></div>
     <nav class="nav" id="nav"></nav>
-    <div class="local-note"><b><i class="fa-solid fa-circle"></i> يعمل محليًا</b><br>البيانات محفوظة على هذا المتصفح. الهيكل جاهز للربط بقاعدة بيانات.</div>
+    <div class="local-note"><b><i class="fa-solid fa-circle"></i> متصل ومزامن</b><br>تُحفظ التعديلات مركزياً وتظهر لجميع المستخدمين وعلى كل الأجهزة.</div>
   </aside>
   <main class="main">
     <header class="top"><div><h1 id="pageTitle">نظرة عامة</h1><p id="pageDesc">إدارة الموقع من مكان واحد</p></div><div class="top-actions"><button class="btn" id="exportBtn"><i class="fa-solid fa-download"></i><span>تصدير البيانات</span></button><a class="btn primary" href="./index.html"><i class="fa-solid fa-arrow-up-left-from-square"></i><span>فتح الموقع</span></a><button class="btn danger" id="logoutBtn" title="تسجيل الخروج"><i class="fa-solid fa-right-from-bracket"></i></button></div></header>
     <div class="content">
       <section class="view active" data-view="overview">
         <div class="grid4" id="metrics"></div>
-        <div class="split"><div class="card"><h3>جاهزية الإدارة</h3><div class="readiness"><div class="ready-row"><span>محتوى الصفحة الرئيسية</span><span>متصل</span></div><div class="ready-row"><span>بطاقات الأدوات والصور</span><span>متصل</span></div><div class="ready-row"><span>الأرقام والمؤشرات</span><span>متصل</span></div><div class="ready-row"><span>مكتبة القوالب</span><span>متصل</span></div><div class="ready-row"><span>قاعدة البيانات</span><span style="color:#b45309">بانتظار الربط</span></div></div></div><div class="card"><h3>آخر حالة</h3><div class="activity-empty"><i class="fa-solid fa-shield-halved"></i>كل التغييرات محفوظة تلقائيًا على جهازك</div></div></div>
+        <div class="split"><div class="card"><h3>جاهزية الإدارة</h3><div class="readiness"><div class="ready-row"><span>محتوى الصفحة الرئيسية</span><span>متصل</span></div><div class="ready-row"><span>بطاقات الأدوات والصور</span><span>متصل</span></div><div class="ready-row"><span>الأرقام والمؤشرات</span><span>متصل</span></div><div class="ready-row"><span>البنرات والقوالب</span><span>متصل</span></div><div class="ready-row"><span>قاعدة البيانات</span><span>متصل</span></div></div></div><div class="card"><h3>حالة المزامنة</h3><div class="activity-empty"><i class="fa-solid fa-cloud-arrow-up"></i>كل تغيير تحفظه يصل إلى المستخدمين على جميع الأجهزة</div></div></div>
       </section>
       <section class="view" data-view="employees"><div class="section-head"><div><h2>حسابات الموظفين</h2><p>أنشئ سجلات الموظفين وحدد الأدوار والصلاحيات.</p></div><div class="toolbar"><input class="search" id="employeeSearch" placeholder="ابحث بالاسم أو البريد"><button class="btn primary" id="addEmployee"><i class="fa-solid fa-user-plus"></i> موظف جديد</button></div></div><div class="table-wrap"><table><thead><tr><th>الموظف</th><th>القسم</th><th>الدور</th><th>الحالة</th><th>رمز التفعيل</th><th>إجراءات</th></tr></thead><tbody id="employeeRows"></tbody></table></div></section>
       <section class="view" data-view="homepage"><div class="section-head"><div><h2>نصوص الصفحة الرئيسية</h2><p>تغيير الرسائل والعناوين الرئيسية مباشرة.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="form-grid" id="contentForm"></div></div></section>
       <section class="view" data-view="tools"><div class="section-head"><div><h2>بطاقات الأدوات</h2><p>تحكم في الاسم والوصف والصورة والظهور.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="editor-list" id="toolEditors"></div></div></section>
       <section class="view" data-view="stats"><div class="section-head"><div><h2>أرقام الشركة</h2><p>حدّث المؤشرات الظاهرة للزوار.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="stats-grid" id="statEditors"></div></section>
+      <section class="view" data-view="banners"><div class="section-head"><div><h2>بنرات الموقع</h2><p>ارفع البنرات واحفظها لتظهر فوراً لجميع المستخدمين.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="editor-list" id="bannerEditors"></div></div></section>
       <section class="view" data-view="templates"><div class="section-head"><div><h2>مكتبة القوالب</h2><p>أضف قوالب مخصصة لكل أداة مع بياناتها القابلة للتطبيق.</p></div><div class="toolbar"><select class="search" id="templateFilter"></select><button class="btn primary" id="addTemplate"><i class="fa-solid fa-plus"></i> قالب جديد</button></div></div><div class="template-grid" id="templateCards"></div></section>
-      <section class="view" data-view="settings"><div class="section-head"><div><h2>الإعدادات والبيانات</h2><p>إدارة النسخة المحلية وتجهيز الانتقال لقاعدة البيانات.</p></div></div><div class="split"><div class="card"><h3>إعدادات عامة</h3><div class="form-grid" id="settingsForm"></div><button class="btn primary save-view" style="margin-top:14px">حفظ الإعدادات</button></div><div class="card"><h3>نسخة البيانات</h3><p style="font-size:9px;color:var(--muted);line-height:1.9">صدّر ملفًا واحدًا يحتوي المحتوى والموظفين والقوالب، أو استورد نسخة سابقة.</p><div class="toolbar"><button class="btn" id="importBtn"><i class="fa-solid fa-upload"></i> استيراد</button><button class="btn danger" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> استعادة الافتراضي</button></div><input type="file" id="importFile" accept=".json" hidden></div></div></section>
+      <section class="view" data-view="settings"><div class="section-head"><div><h2>الإعدادات والبيانات</h2><p>إعدادات مركزية ونسخة احتياطية للموقع.</p></div></div><div class="split"><div class="card"><h3>إعدادات عامة</h3><div class="form-grid" id="settingsForm"></div><button class="btn primary save-view" style="margin-top:14px">حفظ الإعدادات</button></div><div class="card"><h3>نسخة البيانات</h3><p style="font-size:9px;color:var(--muted);line-height:1.9">صدّر ملفًا واحدًا يحتوي المحتوى والقوالب، أو استورد نسخة سابقة إلى الإعدادات المركزية.</p><div class="toolbar"><button class="btn" id="importBtn"><i class="fa-solid fa-upload"></i> استيراد</button><button class="btn danger" id="resetBtn"><i class="fa-solid fa-rotate-left"></i> استعادة الافتراضي</button></div><input type="file" id="importFile" accept=".json" hidden></div></div></section>
     </div>
   </main>
 </div>
@@ -65,9 +66,9 @@
 <div class="toast" id="toast"></div>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=1"></script>
-<script src="./site-config.js?v=1"></script>
+<script src="./site-config.js?v=3"></script>
 <script>
-(() => {
+(async() => {
   const unlock=()=>document.body.classList.remove('admin-locked');
   const cloud=window.SweaterCloud;
   cloud.client.auth.getSession().then(async({data})=>{
@@ -76,13 +77,14 @@
   });
   document.querySelector('#adminLogin').onsubmit=e=>{e.preventDefault();location.href='./login.html?next=admin.html'};
   document.querySelector('#logoutBtn').onclick=async()=>{await cloud.client.auth.signOut();location.replace('./login.html')};
-  const API=window.SweaterAdmin; let data=API.load();
+  const API=window.SweaterAdmin; await API.ready; let data=API.load();
   const views=[
     ['overview','نظرة عامة','fa-chart-pie','ملخص الموقع وإدارة المحتوى'],
     ['employees','الموظفون','fa-users','إدارة الحسابات والصلاحيات'],
     ['homepage','الرئيسية','fa-house','تحرير محتوى الصفحة الرئيسية'],
     ['tools','الأدوات','fa-toolbox','إدارة بطاقات الأدوات'],
     ['stats','الأرقام','fa-arrow-trend-up','تحديث مؤشرات الشركة'],
+    ['banners','البنرات','fa-panorama','إدارة بنرات الموقع'],
     ['templates','القوالب','fa-layer-group','قوالب الأدوات'],
     ['settings','الإعدادات','fa-gear','الإعدادات والنسخ الاحتياطي']
   ];
@@ -90,7 +92,7 @@
   const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
   const toast=m=>{const e=$('#toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)};
-  function persist(msg='تم حفظ التغييرات'){API.save(data);renderMetrics();toast(msg)}
+  async function persist(msg='تم الحفظ والمزامنة مع جميع الأجهزة'){data=await API.save(data);renderMetrics();toast(msg);return data}
   function navMarkup(){return views.map(v=>`<button data-go="${v[0]}" class="${v[0]==='overview'?'active':''}"><i class="fa-solid ${v[2]}"></i><span>${v[1]}</span></button>`).join('')}
   $('#nav').innerHTML=navMarkup(); $('#mobileNav').innerHTML=navMarkup();
   function go(id){$$('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===id));$$('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));const v=views.find(x=>x[0]===id);$('#pageTitle').textContent=v[1];$('#pageDesc').textContent=v[3];if(id==='employees')renderEmployees();if(id==='templates')renderTemplates()}
@@ -105,15 +107,18 @@
   $('#contentForm').innerHTML=Object.entries(contentLabels).map(([k,l])=>`<div class="field ${k==='heroDescription'?'full':''}"><label>${l}</label>${k==='heroDescription'?`<textarea data-content="${k}">${esc(data.content[k])}</textarea>`:`<input data-content="${k}" value="${esc(data.content[k])}">`}</div>`).join('');
   $('#toolEditors').innerHTML=data.tools.map((t,i)=>`<div class="editor-row" data-tool="${i}"><img class="thumb" src="${esc(t.image)}" alt=""><div class="field"><label>اسم الأداة</label><input data-key="name" value="${esc(t.name)}"></div><div class="field"><label>الوصف</label><input data-key="description" value="${esc(t.description)}"></div><div class="field"><label>رابط الصورة</label><input data-key="image" value="${esc(t.image)}"><input type="file" data-upload accept="image/*" style="margin-top:5px;padding-top:8px"></div><label style="font-size:9px"><input type="checkbox" data-key="enabled" ${t.enabled?'checked':''}> ظاهرة</label></div>`).join('');
   $('#statEditors').innerHTML=data.stats.map((s,i)=>`<div class="stat-edit" data-stat="${i}"><div class="field"><label>القيمة</label><input data-key="value" value="${esc(s.value)}"><label>الوصف</label><input data-key="label" value="${esc(s.label)}"></div></div>`).join('');
-  $('#settingsForm').innerHTML=`<div class="field"><label>اسم الموقع</label><input data-setting="siteName" value="${esc(data.settings.siteName)}"></div><div class="field"><label>بريد الدعم</label><input data-setting="supportEmail" type="email" dir="ltr" value="${esc(data.settings.supportEmail)}"></div><div class="field full"><label><input data-setting="maintenance" type="checkbox" ${data.settings.maintenance?'checked':''}> وضع الصيانة</label><div class="hint">محجوز للربط المستقبلي؛ لا يحجب الموقع في النسخة المحلية.</div></div>`;
+  $('#bannerEditors').innerHTML=data.banners.map((b,i)=>`<div class="editor-row" data-banner="${i}"><img class="thumb" src="${esc(b.image)}" alt=""><div class="field"><label>اسم البنر</label><input data-key="name" value="${esc(b.name)}"></div><div class="field"><label>النص البديل</label><input data-key="alt" value="${esc(b.alt)}"></div><div class="field"><label>رابط الصورة</label><input data-key="image" value="${esc(b.image)}"><input type="file" data-banner-upload accept="image/*" style="margin-top:5px;padding-top:8px"></div><label style="font-size:9px"><input type="checkbox" data-key="enabled" ${b.enabled?'checked':''}> ظاهر</label></div>`).join('');
+  $('#settingsForm').innerHTML=`<div class="field"><label>اسم الموقع</label><input data-setting="siteName" value="${esc(data.settings.siteName)}"></div><div class="field"><label>بريد الدعم</label><input data-setting="supportEmail" type="email" dir="ltr" value="${esc(data.settings.supportEmail)}"></div><div class="field full"><label><input data-setting="maintenance" type="checkbox" ${data.settings.maintenance?'checked':''}> وضع الصيانة</label><div class="hint">يحجب أدوات الموقع عن الموظفين مؤقتاً، ويبقى المدير قادراً على الدخول والإدارة.</div></div>`;
   function syncEditors(){
     $$('[data-content]').forEach(x=>data.content[x.dataset.content]=x.value);
     $$('[data-tool]').forEach(r=>{const t=data.tools[+r.dataset.tool];r.querySelectorAll('[data-key]').forEach(x=>t[x.dataset.key]=x.type==='checkbox'?x.checked:x.value)});
     $$('[data-stat]').forEach(r=>{const s=data.stats[+r.dataset.stat];r.querySelectorAll('[data-key]').forEach(x=>s[x.dataset.key]=x.value)});
+    $$('[data-banner]').forEach(r=>{const b=data.banners[+r.dataset.banner];r.querySelectorAll('[data-key]').forEach(x=>b[x.dataset.key]=x.type==='checkbox'?x.checked:x.value)});
     $$('[data-setting]').forEach(x=>data.settings[x.dataset.setting]=x.type==='checkbox'?x.checked:x.value);
   }
-  $$('.save-view').forEach(b=>b.onclick=()=>{syncEditors();persist()});
-  $$('[data-upload]').forEach(inp=>inp.onchange=()=>{const f=inp.files[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{const row=inp.closest('[data-tool]');row.querySelector('[data-key=image]').value=reader.result;row.querySelector('img').src=reader.result};reader.readAsDataURL(f)});
+  $$('.save-view').forEach(b=>b.onclick=async()=>{syncEditors();b.disabled=true;try{await persist()}catch(error){toast(error.message||'تعذر الحفظ')}finally{b.disabled=false}});
+  $$('[data-upload]').forEach(inp=>inp.onchange=async()=>{const f=inp.files[0];if(!f)return;try{toast('جارٍ رفع الصورة…');const url=await API.uploadAsset(f,'tool-cards');const row=inp.closest('[data-tool]');row.querySelector('[data-key=image]').value=url;row.querySelector('img').src=url;toast('تم رفع الصورة، اضغط حفظ التغييرات')}catch(error){toast(error.message||'تعذر رفع الصورة')}});
+  $$('[data-banner-upload]').forEach(inp=>inp.onchange=async()=>{const f=inp.files[0];if(!f)return;try{toast('جارٍ رفع البنر…');const url=await API.uploadAsset(f,'banners');const row=inp.closest('[data-banner]');row.querySelector('[data-key=image]').value=url;row.querySelector('img').src=url;toast('تم رفع البنر، اضغط حفظ التغييرات')}catch(error){toast(error.message||'تعذر رفع البنر')}});
   const roleName={admin:'مدير',employee:'موظف'},statusName={active:'نشط',suspended:'موقوف'};
   async function refreshCloudEmployees(){
     const {data:profiles,error}=await cloud.client.from('profiles').select('*').order('created_at',{ascending:false});
@@ -141,11 +146,11 @@
     $$('[data-edit-template]').forEach(b=>b.onclick=()=>{const t=data.templates.find(x=>x.id===b.dataset.editTemplate),f=$('#templateForm');Object.keys(t).forEach(k=>{if(f.elements[k])f.elements[k].value=typeof t[k]==='object'?JSON.stringify(t[k],null,2):t[k]});$('#templateModalTitle').textContent='تعديل القالب';openModal('#templateModal')});
     $$('[data-delete-template]').forEach(b=>b.onclick=()=>{if(!confirm('حذف القالب؟'))return;data.templates=data.templates.filter(x=>x.id!==b.dataset.deleteTemplate);persist('تم حذف القالب');renderTemplates()})
   }
-  $('#templateImage').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>$('#templateForm').preview.value=r.result;r.readAsDataURL(f)};
-  $('#templateForm').onsubmit=e=>{e.preventDefault();const f=e.currentTarget,o=Object.fromEntries(new FormData(f));delete o[''];try{o.payload=o.payload.trim()?JSON.parse(o.payload):{}}catch{toast('صيغة JSON غير صحيحة');return}o.id=o.id||uid();const i=data.templates.findIndex(x=>x.id===o.id);o.source=i>=0?(data.templates[i].source||'custom'):'custom';if(i<0)data.templates.unshift(o);else data.templates[i]=o;persist('تم حفظ القالب');closeModals();renderTemplates()};
-  function download(){syncEditors();API.save(data);const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='sweater-site-backup.json';a.click();URL.revokeObjectURL(a.href);toast('تم تصدير نسخة البيانات')}
-  $('#exportBtn').onclick=download;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{data=API.save(JSON.parse(r.result));location.reload()}catch{toast('تعذر قراءة ملف النسخة')}};r.readAsText(f)};
-  $('#resetBtn').onclick=()=>{if(!confirm('استعادة البيانات الافتراضية؟ سيتم حذف تعديلات هذه النسخة المحلية.'))return;API.reset();location.reload()};
+  $('#templateImage').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{toast('جارٍ رفع صورة القالب…');$('#templateForm').preview.value=await API.uploadAsset(f,'templates');toast('تم رفع صورة القالب')}catch(error){toast(error.message||'تعذر رفع الصورة')}};
+  $('#templateForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,o=Object.fromEntries(new FormData(f));delete o[''];try{o.payload=o.payload.trim()?JSON.parse(o.payload):{}}catch{toast('صيغة JSON غير صحيحة');return}o.id=o.id||uid();const i=data.templates.findIndex(x=>x.id===o.id);o.source=i>=0?(data.templates[i].source||'custom'):'custom';if(i<0)data.templates.unshift(o);else data.templates[i]=o;try{await persist('تم حفظ القالب ومزامنته');closeModals();renderTemplates()}catch(error){toast(error.message||'تعذر حفظ القالب')}};
+  function download(){syncEditors();const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download='sweater-site-backup.json';a.click();URL.revokeObjectURL(a.href);toast('تم تصدير نسخة البيانات')}
+  $('#exportBtn').onclick=download;$('#importBtn').onclick=()=>$('#importFile').click();$('#importFile').onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=async()=>{try{data=await API.save(JSON.parse(r.result));location.reload()}catch{toast('تعذر قراءة أو حفظ ملف النسخة')}};r.readAsText(f)};
+  $('#resetBtn').onclick=async()=>{if(!confirm('استعادة الإعدادات الافتراضية لجميع المستخدمين؟'))return;try{data=await API.reset();location.reload()}catch(error){toast(error.message||'تعذر الاستعادة')}};
   renderMetrics();renderEmployees();renderTemplates();
 })();
 </script>

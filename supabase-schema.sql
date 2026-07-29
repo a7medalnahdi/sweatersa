@@ -29,6 +29,9 @@ create or replace function public.is_sweater_admin()
 returns boolean language sql stable security definer set search_path=public
 as $$ select exists(select 1 from public.profiles where id=auth.uid() and role='admin' and status='active') $$;
 
+revoke execute on function public.is_sweater_admin() from public, anon;
+grant execute on function public.is_sweater_admin() to authenticated;
+
 drop policy if exists "profile read own or admin" on public.profiles;
 create policy "profile read own or admin" on public.profiles for select to authenticated
 using (id=auth.uid() or public.is_sweater_admin());
@@ -99,3 +102,78 @@ grant select,insert,update,delete on public.user_data to authenticated;
 
 create index if not exists user_data_user_id_idx on public.user_data(user_id);
 create index if not exists profiles_role_idx on public.profiles(role);
+
+-- Global site configuration shared by every signed-in user and device.
+create table if not exists public.site_config (
+  id text primary key check (id = 'global'),
+  value jsonb not null default '{}'::jsonb,
+  updated_by uuid references auth.users(id) on delete set null,
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
+
+alter table public.site_config enable row level security;
+
+drop policy if exists "authenticated users read site config" on public.site_config;
+create policy "authenticated users read site config" on public.site_config
+for select to authenticated using (true);
+
+drop policy if exists "admins insert site config" on public.site_config;
+create policy "admins insert site config" on public.site_config
+for insert to authenticated with check (public.is_sweater_admin());
+
+drop policy if exists "admins update site config" on public.site_config;
+create policy "admins update site config" on public.site_config
+for update to authenticated
+using (public.is_sweater_admin())
+with check (public.is_sweater_admin());
+
+grant select,insert,update on public.site_config to authenticated;
+
+-- Public image bucket: everyone can display images, active admins can manage them.
+insert into storage.buckets (id,name,public,file_size_limit,allowed_mime_types)
+values (
+  'site-assets',
+  'site-assets',
+  true,
+  10485760,
+  array['image/jpeg','image/png','image/webp','image/gif','image/svg+xml']
+)
+on conflict (id) do update set
+  public=excluded.public,
+  file_size_limit=excluded.file_size_limit,
+  allowed_mime_types=excluded.allowed_mime_types;
+
+drop policy if exists "authenticated users read site assets" on storage.objects;
+
+drop policy if exists "admins insert site assets" on storage.objects;
+create policy "admins insert site assets" on storage.objects
+for insert to authenticated with check (
+  bucket_id='site-assets' and public.is_sweater_admin()
+);
+
+drop policy if exists "admins update site assets" on storage.objects;
+create policy "admins update site assets" on storage.objects
+for update to authenticated
+using (bucket_id='site-assets' and public.is_sweater_admin())
+with check (bucket_id='site-assets' and public.is_sweater_admin());
+
+drop policy if exists "admins delete site assets" on storage.objects;
+create policy "admins delete site assets" on storage.objects
+for delete to authenticated
+using (bucket_id='site-assets' and public.is_sweater_admin());
+
+-- Broadcast configuration changes instantly to already-open pages.
+do $$
+begin
+  if not exists (
+    select 1
+    from pg_publication_tables
+    where pubname='supabase_realtime'
+      and schemaname='public'
+      and tablename='site_config'
+  ) then
+    alter publication supabase_realtime add table public.site_config;
+  end if;
+end
+$$;
