@@ -387,6 +387,22 @@
         </div>
       </a>
 
+      <!-- 6. QR Code -->
+      <a href="./qr-generator.html" class="tool-card tool-card-compact group card-hover-fx bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 overflow-hidden flex flex-col relative animate-fade-in-up stagger-5" style="--c:#0891b2;--c-bg:#cffafe;--c-dark:#164e63">
+        <div class="absolute inset-x-0 top-0 h-1.5 bg-[var(--c)] transform origin-right scale-x-0 group-hover:scale-x-100 transition-transform duration-300 ease-out z-20"></div>
+        <div class="tool-visual h-48 relative overflow-hidden bg-slate-100 dark:bg-slate-900">
+          <div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style="background-image:url('./assets/qr-tool-card.svg')"></div>
+          <div class="absolute inset-0 bg-gradient-to-t from-black/55 via-black/5 to-transparent"></div>
+          <div class="absolute bottom-4 right-4 w-12 h-12 rounded-2xl bg-[var(--c)] text-white flex items-center justify-center text-xl shadow-lg transform group-hover:-translate-y-1 transition-transform"><i class="fa-solid fa-qrcode"></i></div>
+        </div>
+        <div class="tool-card-copy p-6 flex-1 flex flex-col">
+          <h3 class="text-xl font-black text-slate-900 dark:text-white mb-3">صانع QR Code</h3>
+          <p class="text-sm text-slate-500 dark:text-slate-400 font-medium leading-relaxed flex-1 mb-5">أنشئ رموز QR للروابط والنصوص وواتساب والبريد وشبكات Wi‑Fi، مع الألوان والشعار وتصدير عالي الجودة.</p>
+          <div class="flex flex-wrap gap-2 mb-6"><span class="px-3 py-1 rounded-lg text-[.7rem] font-bold bg-[var(--c-bg)] dark:bg-[var(--c-dark)] text-[var(--c)] dark:text-cyan-300">PNG / SVG</span><span class="px-3 py-1 rounded-lg text-[.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">شعار</span><span class="px-3 py-1 rounded-lg text-[.7rem] font-bold bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300">Wi‑Fi</span></div>
+          <div class="flex items-center justify-between pt-4 border-t border-slate-100 dark:border-slate-700/50 text-[var(--c)] dark:text-cyan-400"><span class="text-sm font-bold">فتح الأداة</span><i class="fa-solid fa-arrow-left transform group-hover:-translate-x-2 transition-transform"></i></div>
+        </div>
+      </a>
+
     </div>
   </section>
 
@@ -529,7 +545,7 @@
     localStorage.setItem('swDark', isDark ? '1' : '0');
   });
 </script>
-<script src="./site-config.js?v=4"></script>
+<script src="./site-config.js?v=5"></script>
 <script src="./sweater-ui.js?v=8"></script>
 <script src="./local-studio.js?v=6"></script>
 </body>

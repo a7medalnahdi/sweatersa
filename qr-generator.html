@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>صانع QR Code | SWEATER</title>
+  <meta name="description" content="إنشاء رموز QR احترافية للروابط والنصوص ووسائل التواصل والشبكات.">
+  <link rel="stylesheet" href="./sweater-ui.css?v=8">
+  <link rel="stylesheet" href="./local-studio.css?v=6">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.min.js"></script>
+  <style>
+    :root{--a:#f96714;--ink:#172033;--muted:#6f7d91;--line:#e5e9ef;--soft:#f5f7f9}*{box-sizing:border-box}body{margin:0;background:#f4f6f8;color:var(--ink);font-family:LamaSans,sans-serif}button,input,textarea,select{font:inherit}.qr-head{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;background:rgba(255,255,255,.94);border-bottom:1px solid var(--line);position:sticky;top:0;z-index:30;backdrop-filter:blur(16px)}.brand,.head-side{display:flex;align-items:center;gap:10px}.back{width:40px;height:40px;display:grid;place-items:center;border-radius:11px;background:#f1f5f9;color:#64748b;text-decoration:none}.brand-mark{width:41px;height:41px;border-radius:12px;display:grid;place-items:center;background:#ecfeff;color:#0891b2;font-size:18px}.brand strong{display:block;font-size:13px}.brand span{display:block;color:var(--muted);font-size:8px;margin-top:3px}.workspace{max-width:1240px;margin:auto;padding:22px;display:grid;grid-template-columns:minmax(330px,430px) minmax(0,1fr);gap:18px}.panel,.preview-panel{background:#fff;border:1px solid var(--line);border-radius:20px}.panel{padding:18px}.section-title{display:flex;align-items:center;gap:8px;margin:0 0 13px;font-size:11px}.section-title i{color:var(--a)}.type-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin-bottom:18px}.type-btn{height:58px;border:1px solid var(--line);border-radius:11px;background:#fff;color:#64748b;font-size:8px;font-weight:800}.type-btn i{display:block;font-size:15px;margin-bottom:6px}.type-btn.active{border-color:#fdba8c;background:#fff7ed;color:#c2410c}.field{margin-bottom:12px}.field label{display:block;margin-bottom:6px;color:#566377;font-size:8px;font-weight:900}.field input,.field textarea,.field select{width:100%;height:43px;border:1px solid var(--line);border-radius:10px;background:#fafbfc;padding:0 11px;outline:none;font-size:10px}.field textarea{height:88px;padding:10px;resize:vertical}.field input:focus,.field textarea:focus,.field select:focus{border-color:#fb923c;background:#fff;box-shadow:0 0 0 3px #fff0e7}.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.customize{margin-top:18px;padding-top:17px;border-top:1px solid var(--line)}.color-input{display:flex;align-items:center;gap:8px}.color-input input[type=color]{width:43px;padding:4px}.logo-upload{display:flex;align-items:center;gap:8px}.logo-upload input{padding-top:10px}.preview-panel{min-height:650px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px;position:sticky;top:90px}.preview-copy{text-align:center;margin-bottom:24px}.preview-copy h2{font-size:20px;margin:0 0 7px}.preview-copy p{font-size:9px;color:var(--muted);margin:0}.qr-stage{width:min(390px,90%);aspect-ratio:1;border-radius:24px;background:#fff;display:grid;place-items:center;padding:28px;box-shadow:0 24px 70px rgba(15,23,42,.12);border:1px solid #eef1f4}.qr-stage svg{width:100%;height:100%;display:block}.payload{max-width:500px;margin:20px 0 0;padding:10px 13px;border-radius:10px;background:#f8fafc;color:#64748b;font:600 9px/1.7 monospace;direction:ltr;text-align:left;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.actions{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap;justify-content:center}.btn{height:42px;padding:0 14px;border:1px solid var(--line);border-radius:11px;background:#fff;color:#536176;font-size:9px;font-weight:900;display:inline-flex;align-items:center;gap:7px}.btn.primary{border-color:var(--a);background:var(--a);color:#fff}.history{width:100%;margin-top:25px;padding-top:18px;border-top:1px solid var(--line)}.history-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}.history-head strong{font-size:10px}.history-list{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.history-item{min-width:0;padding:9px;border:1px solid var(--line);border-radius:10px;background:#fff;text-align:right;color:#475569}.history-item strong,.history-item span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.history-item strong{font-size:8px}.history-item span{font-size:7px;color:#94a3b8;margin-top:4px;direction:ltr}.toast{position:fixed;left:18px;bottom:18px;padding:11px 14px;border-radius:10px;background:#111827;color:#fff;font-size:9px;font-weight:800;opacity:0;transform:translateY(8px);transition:.2s;z-index:100}.toast.show{opacity:1;transform:none}.dark body{background:#090d15;color:#f8fafc}.dark .qr-head,.dark .panel,.dark .preview-panel,.dark .type-btn,.dark .btn,.dark .history-item{background:#111827;border-color:#293548}.dark .field input,.dark .field textarea,.dark .field select,.dark .payload{background:#182235;border-color:#334155;color:#e2e8f0}.dark .qr-stage{border-color:#334155}.dark .back{background:#1e293b}@media(max-width:880px){.workspace{grid-template-columns:1fr}.preview-panel{position:static;min-height:auto}.history-list{grid-template-columns:1fr 1fr}}@media(max-width:520px){.qr-head{padding:0 12px}.brand span{display:none}.workspace{padding:12px}.panel,.preview-panel{border-radius:16px}.type-grid{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.history-list{grid-template-columns:1fr}}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=2"></script><script src="./auth-gateway.js?v=2"></script>
+</head>
+<body>
+  <header class="qr-head">
+    <div class="brand"><a class="back" href="./index.html" aria-label="العودة"><i class="fa-solid fa-arrow-right"></i></a><div class="brand-mark"><i class="fa-solid fa-qrcode"></i></div><div><strong>صانع QR Code</strong><span>إنشاء وتخصيص وتصدير</span></div></div>
+    <div class="head-side"><button class="btn" id="themeBtn" title="تبديل المظهر"><i class="fa-solid fa-moon"></i></button></div>
+  </header>
+  <main class="workspace">
+    <section class="panel">
+      <h2 class="section-title"><i class="fa-solid fa-shapes"></i> نوع المحتوى</h2>
+      <div class="type-grid" id="typeGrid">
+        <button class="type-btn active" data-type="url"><i class="fa-solid fa-link"></i>رابط</button>
+        <button class="type-btn" data-type="text"><i class="fa-solid fa-align-right"></i>نص</button>
+        <button class="type-btn" data-type="whatsapp"><i class="fa-brands fa-whatsapp"></i>واتساب</button>
+        <button class="type-btn" data-type="email"><i class="fa-regular fa-envelope"></i>بريد</button>
+        <button class="type-btn" data-type="phone"><i class="fa-solid fa-phone"></i>اتصال</button>
+        <button class="type-btn" data-type="wifi"><i class="fa-solid fa-wifi"></i>Wi‑Fi</button>
+      </div>
+      <div id="dynamicFields"></div>
+      <div class="customize">
+        <h2 class="section-title"><i class="fa-solid fa-sliders"></i> التخصيص</h2>
+        <div class="row">
+          <div class="field"><label>لون الرمز</label><div class="color-input"><input id="darkColor" type="color" value="#111827"><input id="darkColorText" value="#111827" dir="ltr"></div></div>
+          <div class="field"><label>لون الخلفية</label><div class="color-input"><input id="lightColor" type="color" value="#ffffff"><input id="lightColorText" value="#ffffff" dir="ltr"></div></div>
+        </div>
+        <div class="row">
+          <div class="field"><label>الدقة عند التنزيل</label><select id="size"><option value="1024">1024 × 1024</option><option value="2048">2048 × 2048</option><option value="512">512 × 512</option></select></div>
+          <div class="field"><label>هامش الرمز</label><select id="margin"><option value="4">عادي</option><option value="2">صغير</option><option value="6">كبير</option></select></div>
+        </div>
+        <div class="field"><label>شعار في المنتصف — اختياري</label><div class="logo-upload"><input id="logoInput" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml"><button class="btn" id="removeLogo" type="button"><i class="fa-solid fa-xmark"></i></button></div></div>
+      </div>
+    </section>
+    <section class="preview-panel">
+      <div class="preview-copy"><h2>المعاينة المباشرة</h2><p>يتحدث الرمز تلقائياً عند تغيير البيانات.</p></div>
+      <div class="qr-stage" id="qrStage"></div>
+      <div class="payload" id="payloadText"></div>
+      <div class="actions">
+        <button class="btn primary" id="pngBtn"><i class="fa-solid fa-download"></i> تنزيل PNG</button>
+        <button class="btn" id="svgBtn"><i class="fa-regular fa-file-code"></i> تنزيل SVG</button>
+        <button class="btn" id="copyBtn"><i class="fa-regular fa-copy"></i> نسخ المحتوى</button>
+      </div>
+      <div class="history"><div class="history-head"><strong>آخر الرموز</strong><button class="btn" id="clearHistory">مسح السجل</button></div><div class="history-list" id="historyList"></div></div>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script>
+  (()=>{'use strict';
+    const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)],HISTORY='sweaterQrHistoryV1';
+    let type='url',logoData='',svgMarkup='',payload='',timer;
+    const fieldSets={
+      url:'<div class="field"><label>الرابط</label><input data-value="url" type="url" dir="ltr" placeholder="https://sweater.sa" value="https://sweater.sa"></div>',
+      text:'<div class="field"><label>النص</label><textarea data-value="text" placeholder="اكتب أي نص هنا"></textarea></div>',
+      whatsapp:'<div class="row"><div class="field"><label>رقم واتساب مع رمز الدولة</label><input data-value="phone" dir="ltr" placeholder="9665XXXXXXXX"></div><div class="field"><label>الرسالة الجاهزة</label><input data-value="message" placeholder="مرحباً، أود الاستفسار"></div></div>',
+      email:'<div class="field"><label>البريد الإلكتروني</label><input data-value="email" type="email" dir="ltr" placeholder="name@example.com"></div><div class="row"><div class="field"><label>العنوان</label><input data-value="subject"></div><div class="field"><label>نص الرسالة</label><input data-value="body"></div></div>',
+      phone:'<div class="field"><label>رقم الاتصال</label><input data-value="phone" dir="ltr" placeholder="+9665XXXXXXXX"></div>',
+      wifi:'<div class="row"><div class="field"><label>اسم الشبكة</label><input data-value="ssid"></div><div class="field"><label>نوع الحماية</label><select data-value="security"><option value="WPA">WPA/WPA2</option><option value="WEP">WEP</option><option value="nopass">بدون كلمة مرور</option></select></div></div><div class="field"><label>كلمة المرور</label><input data-value="password" dir="ltr"><label style="margin-top:8px"><input data-value="hidden" type="checkbox" style="width:auto;height:auto"> شبكة مخفية</label></div>'
+    };
+    const escWifi=v=>String(v||'').replace(/([\\\\;,:\"])/g,'\\\\$1');
+    const values=()=>Object.fromEntries($$('[data-value]').map(x=>[x.dataset.value,x.type==='checkbox'?x.checked:x.value.trim()]));
+    const buildPayload=()=>{const v=values();if(type==='url')return v.url||'';if(type==='text')return v.text||'';if(type==='whatsapp')return v.phone?`https://wa.me/${v.phone.replace(/\\D/g,'')}${v.message?`?text=${encodeURIComponent(v.message)}`:''}`:'';if(type==='email')return v.email?`mailto:${v.email}?subject=${encodeURIComponent(v.subject||'')}&body=${encodeURIComponent(v.body||'')}`:'';if(type==='phone')return v.phone?`tel:${v.phone.replace(/\\s/g,'')}`:'';if(type==='wifi')return v.ssid?`WIFI:T:${v.security};S:${escWifi(v.ssid)};P:${escWifi(v.password)};H:${v.hidden?'true':'false'};;`:'';return''};
+    const toast=m=>{const e=$('#toast');e.textContent=m;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)};
+    const renderFields=(data={})=>{$('#dynamicFields').innerHTML=fieldSets[type];Object.entries(data).forEach(([k,v])=>{const e=$(`[data-value="${k}"]`);if(e)e.type==='checkbox'?e.checked=Boolean(v):e.value=v});$$('[data-value]').forEach(e=>e.addEventListener('input',queue));render()};
+    const makeSvg=(qr,dark,light,margin)=>{
+      const n=qr.getModuleCount(),total=n+margin*2,parts=[`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${total} ${total}" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="${light}"/>`];
+      for(let r=0;r<n;r++)for(let c=0;c<n;c++)if(qr.isDark(r,c))parts.push(`<rect x="${c+margin}" y="${r+margin}" width="1" height="1" fill="${dark}"/>`);
+      if(logoData){const size=Math.max(5,Math.floor(n*.2)),x=(total-size)/2,y=(total-size)/2;parts.push(`<rect x="${x-1}" y="${y-1}" width="${size+2}" height="${size+2}" rx="2" fill="${light}"/><image href="${logoData}" x="${x}" y="${y}" width="${size}" height="${size}" preserveAspectRatio="xMidYMid meet"/>`)}
+      parts.push('</svg>');return parts.join('');
+    };
+    function render(){payload=buildPayload();$('#payloadText').textContent=payload||'أدخل البيانات لإنشاء الرمز';if(!payload){$('#qrStage').innerHTML='<i class="fa-solid fa-qrcode" style="font-size:90px;color:#e2e8f0"></i>';svgMarkup='';return}try{const qr=qrcode(0,logoData?'H':'M');qr.addData(payload);qr.make();svgMarkup=makeSvg(qr,$('#darkColorText').value,$('#lightColorText').value,+$('#margin').value);$('#qrStage').innerHTML=svgMarkup}catch(error){svgMarkup='';$('#qrStage').innerHTML='<span style="color:#dc2626;font-size:10px">المحتوى طويل جداً لإنشاء الرمز</span>'}}
+    const queue=()=>{clearTimeout(timer);timer=setTimeout(render,90)};
+    const download=(blob,name)=>{const a=document.createElement('a'),url=URL.createObjectURL(blob);a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),1500)};
+    const saveHistory=()=>{if(!payload)return;let list=[];try{list=JSON.parse(localStorage.getItem(HISTORY)||'[]')}catch(_){}list=[{id:Date.now(),type,payload,at:new Date().toISOString()},...list.filter(x=>x.payload!==payload)].slice(0,9);localStorage.setItem(HISTORY,JSON.stringify(list));renderHistory()};
+    const renderHistory=()=>{let list=[];try{list=JSON.parse(localStorage.getItem(HISTORY)||'[]')}catch(_){}$('#historyList').innerHTML=list.length?list.map(x=>`<button class="history-item" data-history="${x.id}"><strong>${x.type.toUpperCase()}</strong><span>${x.payload.replace(/&/g,'&amp;').replace(/</g,'&lt;')}</span></button>`).join(''):'<span style="font-size:8px;color:#94a3b8">لا يوجد سجل بعد</span>';$$('[data-history]').forEach(b=>b.onclick=()=>{const item=list.find(x=>String(x.id)===b.dataset.history);type=item.type;$$('[data-type]').forEach(x=>x.classList.toggle('active',x.dataset.type===type));renderFields(type==='url'?{url:item.payload}:type==='text'?{text:item.payload}:{})})};
+    $$('[data-type]').forEach(b=>b.onclick=()=>{type=b.dataset.type;$$('[data-type]').forEach(x=>x.classList.toggle('active',x===b));renderFields()});
+    ['darkColor','lightColor'].forEach(id=>{$('#'+id).oninput=e=>{$('#'+id+'Text').value=e.target.value;render()}});
+    ['darkColorText','lightColorText','size','margin'].forEach(id=>$('#'+id).oninput=render);
+    $('#logoInput').onchange=e=>{const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=()=>{logoData=reader.result;render();toast('تمت إضافة الشعار')};reader.readAsDataURL(f)};
+    $('#removeLogo').onclick=()=>{logoData='';$('#logoInput').value='';render();toast('تم حذف الشعار')};
+    $('#svgBtn').onclick=()=>{if(!svgMarkup)return toast('أدخل المحتوى أولاً');download(new Blob([svgMarkup],{type:'image/svg+xml'}),`sweater-qr-${Date.now()}.svg`);saveHistory();toast('تم تنزيل SVG')};
+    $('#pngBtn').onclick=()=>{if(!svgMarkup)return toast('أدخل المحتوى أولاً');const size=+$('#size').value,img=new Image(),url=URL.createObjectURL(new Blob([svgMarkup],{type:'image/svg+xml'}));img.onload=()=>{const canvas=document.createElement('canvas');canvas.width=canvas.height=size;canvas.getContext('2d').drawImage(img,0,0,size,size);canvas.toBlob(blob=>download(blob,`sweater-qr-${Date.now()}.png`),'image/png');URL.revokeObjectURL(url);saveHistory();toast('تم تنزيل PNG')};img.src=url};
+    $('#copyBtn').onclick=async()=>{if(!payload)return toast('أدخل المحتوى أولاً');await navigator.clipboard.writeText(payload);toast('تم نسخ المحتوى')};
+    $('#clearHistory').onclick=()=>{localStorage.removeItem(HISTORY);renderHistory();toast('تم مسح السجل')};
+    $('#themeBtn').onclick=()=>{document.documentElement.classList.toggle('dark');const dark=document.documentElement.classList.contains('dark');localStorage.setItem('swDark',dark?'1':'0');$('#themeBtn i').className=dark?'fa-solid fa-sun':'fa-solid fa-moon'};if(localStorage.getItem('swDark')==='1'){document.documentElement.classList.add('dark');$('#themeBtn i').className='fa-solid fa-sun'}
+    window.addEventListener('sweater:apply-admin-template',event=>{const p=event.detail?.payload||{};if(p.type){type=p.type;$$('[data-type]').forEach(x=>x.classList.toggle('active',x.dataset.type===type));if(p.darkColor){$('#darkColor').value=$('#darkColorText').value=p.darkColor}if(p.lightColor){$('#lightColor').value=$('#lightColorText').value=p.lightColor}renderFields(p.fields||{})}});
+    renderFields();renderHistory();
+  })();
+  </script>
+  <script src="./site-config.js?v=5"></script>
+  <script src="./sweater-ui.js?v=8"></script>
+  <script src="./local-studio.js?v=6"></script>
+</body>
+</html>

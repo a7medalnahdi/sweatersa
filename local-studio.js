@@ -2,7 +2,7 @@
   'use strict';
   const DB_NAME='sweater-local-studio'; const DB_VERSION=1;
   const tool=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
-  const toolNames={'index.html':'لوحة الأدوات','framing-tool.html':'تركيب الإطارات','coupon-tool.html':'صانع الكوبونات','Quotation Generator.html':'عروض الأسعار','n_icons.html':'استوديو التصميم','logo-framer-tool.html':'قوالب الشراكات'};
+  const toolNames={'index.html':'لوحة الأدوات','framing-tool.html':'تركيب الإطارات','coupon-tool.html':'صانع الكوبونات','Quotation Generator.html':'عروض الأسعار','n_icons.html':'استوديو التصميم','logo-framer-tool.html':'قوالب الشراكات','qr-generator.html':'صانع QR Code'};
   const uid=()=>crypto.randomUUID?.()||`${Date.now()}-${Math.random().toString(16).slice(2)}`;
   const request=p=>new Promise((resolve,reject)=>{p.onsuccess=()=>resolve(p.result);p.onerror=()=>reject(p.error)});
   const openDB=()=>new Promise((resolve,reject)=>{const q=indexedDB.open(DB_NAME,DB_VERSION);q.onupgradeneeded=()=>{const d=q.result;if(!d.objectStoreNames.contains('projects')){const s=d.createObjectStore('projects',{keyPath:'id'});s.createIndex('tool','tool');s.createIndex('updatedAt','updatedAt')}if(!d.objectStoreNames.contains('assets')){const s=d.createObjectStore('assets',{keyPath:'id'});s.createIndex('createdAt','createdAt');s.createIndex('type','type')}if(!d.objectStoreNames.contains('activity')){const s=d.createObjectStore('activity',{keyPath:'id'});s.createIndex('createdAt','createdAt')}};q.onsuccess=()=>resolve(q.result);q.onerror=()=>reject(q.error)});
@@ -16,6 +16,7 @@
     'coupon-tool.html':['sweaterCouponAutosaveV2'],
     'Quotation Generator.html':['sweaterQuotationAutosaveV2'],
     'n_icons.html':['sweaterDesignAutosaveV3'],
+    'qr-generator.html':['sweaterQrHistoryV1'],
     'logo-framer-tool.html':[]
   };
   const localSnapshot=()=>{const data={};const allowed=new Set(['swDark',`sw:draft:${tool}`,...(projectKeys[tool]||[])]);for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i);if(k&&allowed.has(k))data[k]=localStorage.getItem(k)}return data};

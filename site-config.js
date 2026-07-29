@@ -6,7 +6,7 @@
   const BUCKET='site-assets';
   const clone=value=>JSON.parse(JSON.stringify(value));
   const defaults={
-    version:4,
+    version:5,
     content:{
       heroTitle:'أدواتك في منصة واحدة متكاملة',
       heroDescription:'مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.',
@@ -29,6 +29,7 @@
       {id:'quotes',href:'./Quotation Generator.html',name:'مولّد عروض الأسعار',description:'أنشئ عروض أسعار احترافية واحفظها وصدّرها كملفات PDF رسمية.',image:'https://i.ibb.co/k20tnLpN/112.png',enabled:true},
       {id:'design',href:'./n_icons.html',name:'استوديو التصميم',description:'استوديو متكامل لإنشاء التصاميم وإدارة النصوص والصور والطبقات.',image:'https://i.ibb.co/F4J0bMRW/image.png',enabled:true},
       {id:'partners',href:'./logo-framer-tool.html',name:'قوالب الشراكات',description:'ركّب شعارات الشركاء على القوالب المعتمدة وصدّرها بأعلى جودة.',image:'https://i.ibb.co/nMRr1xgn/image.png',enabled:true}
+      ,{id:'qrcode',href:'./qr-generator.html',name:'صانع QR Code',description:'أنشئ رموز QR للروابط والنصوص وواتساب والبريد وشبكات Wi‑Fi مع تخصيص كامل.',image:'./assets/qr-tool-card.svg',enabled:true}
     ],
     stats:[
       {id:'washes',value:'3M',label:'غسلة'},
@@ -54,15 +55,23 @@
       {id:'builtin-partners-modern',name:'قالب شراكة عصري',tool:'partners',category:'شراكات',status:'active',source:'built-in',preview:'https://i.ibb.co/nqcpnVM4/Artboard-2.png',payload:{src:'https://i.ibb.co/nqcpnVM4/Artboard-2.png',x:50,y:50,size:30},notes:'قالب الشراكات الحالي'},
       {id:'builtin-partners-minimal',name:'قالب شراكة بسيط',tool:'partners',category:'شراكات',status:'active',source:'built-in',preview:'https://i.ibb.co/gL64tpnH/Artboard-3.png',payload:{src:'https://i.ibb.co/gL64tpnH/Artboard-3.png',x:50,y:35,size:25},notes:'قالب الشراكات الحالي'},
       {id:'builtin-partners-future',name:'قالب شراكة مستقبلي',tool:'partners',category:'شراكات',status:'active',source:'built-in',preview:'https://i.ibb.co/Df4Z9Khx/LINK-30-7.png',payload:{src:'https://i.ibb.co/Df4Z9Khx/LINK-30-7.png',x:50,y:70,size:35},notes:'قالب الشراكات الحالي'}
+      ,{id:'builtin-qr-url',name:'رابط موقع',tool:'qrcode',category:'روابط',status:'active',source:'built-in',preview:'./assets/qr-tool-card.svg',payload:{type:'url',fields:{url:'https://sweater.sa'},darkColor:'#111827',lightColor:'#ffffff'},notes:'قالب سريع لإنشاء QR لرابط'}
+      ,{id:'builtin-qr-whatsapp',name:'تواصل واتساب',tool:'qrcode',category:'تواصل',status:'active',source:'built-in',preview:'./assets/qr-tool-card.svg',payload:{type:'whatsapp',fields:{phone:'966',message:'مرحباً، أود الاستفسار'}},notes:'قالب واتساب مع رسالة جاهزة'}
+      ,{id:'builtin-qr-wifi',name:'شبكة Wi‑Fi',tool:'qrcode',category:'شبكات',status:'active',source:'built-in',preview:'./assets/qr-tool-card.svg',payload:{type:'wifi',fields:{ssid:'SWEATER',security:'WPA',password:'',hidden:false}},notes:'قالب مشاركة بيانات شبكة Wi‑Fi'}
     ],
     settings:{siteName:'SWEATER Workspace',supportEmail:'Business@sweater.sa',maintenance:false}
   };
 
   const merge=(base,value)=>{
     const templates=Array.isArray(value?.templates)?clone(value.templates):clone(base.templates);
-    if(Number(value?.version||0)<4){
+    if(Number(value?.version||0)<5){
       const known=new Set(templates.map(item=>item.id));
       base.templates.forEach(item=>{if(!known.has(item.id))templates.push(clone(item))});
+    }
+    const tools=Array.isArray(value?.tools)?clone(value.tools):clone(base.tools);
+    if(Number(value?.version||0)<5){
+      const known=new Set(tools.map(item=>item.id));
+      base.tools.forEach(item=>{if(!known.has(item.id))tools.push(clone(item))});
     }
     return {
       ...clone(base),...(value||{}),version:base.version,
@@ -70,7 +79,7 @@
       settings:{...base.settings,...(value?.settings||{})},
       references:Array.isArray(value?.references)?value.references:clone(base.references),
       banners:Array.isArray(value?.banners)?value.banners:clone(base.banners),
-      tools:Array.isArray(value?.tools)?value.tools:clone(base.tools),
+      tools,
       stats:Array.isArray(value?.stats)?value.stats:clone(base.stats),
       employees:Array.isArray(value?.employees)?value.employees:[],
       templates
@@ -88,7 +97,7 @@
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const safeLink=value=>{try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:''}catch(_){return ''}};
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
-  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners'}[page];
+  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode'}[page];
   const adapters={};
 
   async function loadCloud(){

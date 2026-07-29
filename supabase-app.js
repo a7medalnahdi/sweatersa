@@ -7,7 +7,8 @@
   });
   const CLOUD_KEYS=new Set([
     'sweaterQuoteStudioV3','sweaterQuotationAutosaveV2','sweaterQuoteSequenceV3',
-    'sweaterDesignProjectsV3','sweaterDesignAutosaveV3','sweaterCouponAutosaveV2'
+    'sweaterDesignProjectsV3','sweaterDesignAutosaveV3','sweaterCouponAutosaveV2',
+    'sweaterQrHistoryV1'
   ]);
   let userId=null,syncing=false;
   const rawSet=localStorage.setItem.bind(localStorage);
