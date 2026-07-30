@@ -517,7 +517,7 @@
           <div class="bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl p-4 mb-5">
             <h4 class="text-xs font-bold text-slate-700 dark:text-slate-300 mb-2"><i class="fa-solid fa-lightbulb text-amber-500 mr-1"></i> كيف تعمل؟</h4>
             <ol class="text-[10px] text-slate-600 dark:text-slate-400 list-decimal list-inside space-y-1.5 pr-2">
-              <li>اكتب اسم العمود بين قوسين بالتصميم: <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded text-sweater-600">{{الاسم}}</code> أو <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded text-sweater-600">{{Code}}</code></li>
+              <li>يُربط عمود <code class="bg-slate-200 dark:bg-slate-700 px-1 rounded text-sweater-600">Code</code> تلقائياً بعنصر كود الخصم في التصميم.</li>
               <li>ارفع ملف Excel يحتوي على أعمدة بنفس الأسماء.</li>
               <li>سيقوم النظام تلقائياً باستبدالها وتصديرها كملف PDF مجمع!</li>
             </ol>
@@ -1325,6 +1325,10 @@ D.btnGenBatch.addEventListener('click', () => {
       
       elements.forEach(el => {
         if(el.dataset.type === 'logo') return;
+        if (el.id === 'el_code' && el.dataset.type === 'text') {
+          el.textContent = String(row.Code ?? '');
+          return;
+        }
         let textTemplate = originals[el.id];
         batchHeaders.forEach(header => {
           const val = row[header] || '';
