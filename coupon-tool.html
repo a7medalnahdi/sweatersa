@@ -17,7 +17,7 @@
 <!-- jsPDF -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <!-- SheetJS (Excel) -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="./vendor/xlsx.full.min.js?v=20.3"></script>
 <!-- QRCode.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <!-- Tailwind CSS -->
@@ -1232,22 +1232,57 @@ D.btnPdf.addEventListener('click', () => doExport(async () => {
 
 D.batchFile.addEventListener('change', e => {
   const file = e.target.files[0]; if (!file) return;
+  if (!window.XLSX?.read || !window.XLSX?.utils?.sheet_to_json) {
+    toast('err','تعذر تشغيل قارئ Excel','حدّث الصفحة ثم حاول مرة أخرى.');
+    e.target.value = '';
+    return;
+  }
   const reader = new FileReader();
   reader.onload = ev => {
     try {
       const wb = XLSX.read(new Uint8Array(ev.target.result), {type:'array'});
-      const ws = wb.Sheets[wb.SheetNames[0]];
-      const rows = XLSX.utils.sheet_to_json(ws, {header:1, defval:""}); 
-      
-      if (!rows.length || rows.length < 2) { toast('err','الملف فارغ أو لا يحتوي على بيانات',''); return; }
+      const normalizeHeader = value => String(value ?? '').replace(/^\uFEFF/, '').trim().toLowerCase();
+      let matched = null;
 
-      batchHeaders = rows[0].map(h => String(h).trim());
-      batchData = [];
-      for(let i=1; i<rows.length; i++) {
-        let rowObj = {};
-        batchHeaders.forEach((h, colIdx) => { rowObj[h] = String(rows[i][colIdx]).trim(); });
-        if(Object.values(rowObj).some(val => val !== '')) batchData.push(rowObj);
+      for (const sheetName of wb.SheetNames) {
+        const rows = XLSX.utils.sheet_to_json(wb.Sheets[sheetName], {
+          header: 1,
+          defval: '',
+          raw: false,
+          blankrows: false
+        });
+        const scanLimit = Math.min(rows.length, 50);
+        for (let rowIndex = 0; rowIndex < scanLimit; rowIndex++) {
+          const codeColumn = rows[rowIndex].findIndex(cell => normalizeHeader(cell) === 'code');
+          if (codeColumn !== -1) {
+            matched = {rows, rowIndex, codeColumn};
+            break;
+          }
+        }
+        if (matched) break;
       }
+
+      if (!matched) {
+        toast('err','لم يتم العثور على عمود Code','تأكد من وجود كلمة Code فوق قائمة الأكواد.');
+        e.target.value = '';
+        return;
+      }
+
+      batchHeaders = matched.rows[matched.rowIndex].map((header, index) => {
+        const clean = String(header ?? '').replace(/^\uFEFF/, '').trim();
+        return index === matched.codeColumn ? 'Code' : clean;
+      });
+      batchData = matched.rows.slice(matched.rowIndex + 1).reduce((items, row) => {
+        const code = String(row[matched.codeColumn] ?? '').trim();
+        if (!code) return items;
+        const rowObj = {};
+        batchHeaders.forEach((header, colIdx) => {
+          if (header) rowObj[header] = String(row[colIdx] ?? '').trim();
+        });
+        rowObj.Code = code;
+        items.push(rowObj);
+        return items;
+      }, []);
 
       if (batchData.length > 0) {
         D.batchFName.textContent = file.name;
@@ -1256,12 +1291,16 @@ D.batchFile.addEventListener('change', e => {
         D.batchBadgeWrap.style.display = 'block';
         D.batchBadgeNum.textContent = batchData.length;
         D.btnGenBatch.disabled = false;
-        toast('ok', 'تم الاستيراد بنجاح', `تم استيراد ${batchData.length} صف للبيانات.`);
+        toast('ok', 'تم استيراد الأكواد بنجاح', `تم العثور على ${batchData.length} كود.`);
       } else {
-        toast('err','لا توجد بيانات صالحة','');
+        toast('err','عمود Code لا يحتوي على أكواد','أضف الأكواد أسفل كلمة Code ثم حاول مرة أخرى.');
       }
-    } catch(err) { console.error(err); toast('err','خطأ في الملف','تأكد من أنه ملف Excel صالح.'); }
+    } catch(err) {
+      console.error('Excel import failed:', err);
+      toast('err','تعذر قراءة ملف Excel','جرّب حفظ الملف بصيغة XLSX أو XLS ثم أعد المحاولة.');
+    }
   };
+  reader.onerror = () => toast('err','تعذر فتح الملف','أعد اختيار الملف وحاول مرة أخرى.');
   reader.readAsArrayBuffer(file);
 });
 
