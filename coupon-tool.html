@@ -618,6 +618,7 @@ const D = {
 
 let activeEl = null;
 let couponCodes = [];
+let editingReadyTemplateId = '';
 let orientation = 'landscape';
 const locks = {};
 let suppressSync = false;
@@ -1327,18 +1328,92 @@ try {
 } catch (_) { localStorage.removeItem('sweaterCouponAutosaveV2'); }
 setTimeout(() => Hist.push(), 300);
 
-window.addEventListener('sweater:apply-admin-template',event=>{
-  const payload=event.detail?.payload||{};
-  if(!payload.url)return;
-  const orientation=payload.orientation==='portrait'?'portrait':'landscape';
-  setOrientation(orientation,false);
-  applyTemplate(payload.url,event.detail?.id||`admin-${Date.now()}`);
-  toast('ok','تم تطبيق القالب','تم تحميل القالب المختار من مكتبة الإدارة.');
+function applyReadyCouponTemplate(template, editMode=false) {
+  const payload=template?.payload||{};
+  const templateOrientation=payload.orientation==='portrait'?'portrait':'landscape';
+  setOrientation(templateOrientation,false);
+  const background=payload.background||payload.url||template?.preview||'';
+  if(background) applyTemplate(background,template?.id||`ready-${Date.now()}`,false);
+  if(payload.html) D.elementsContainer.innerHTML=payload.html;
+  selectEl(null);
+  Hist.push();
+  editingReadyTemplateId=editMode?String(template.id||''):'';
+  const saveButton=$('saveReadyCouponTemplate');
+  if(saveButton) saveButton.style.display=editingReadyTemplateId?'inline-flex':'none';
+  toast('ok',editMode?'القالب جاهز للتعديل':'تم تطبيق القالب',editMode?'عدّل التصميم ثم اضغط حفظ في القوالب الجاهزة.':'تم تحميل القالب المختار.');
+}
+
+async function uploadTemplateDataImage(src,name) {
+  if(!String(src||'').startsWith('data:image/')) return src;
+  const response=await fetch(src);
+  const blob=await response.blob();
+  const extension=(blob.type.split('/')[1]||'png').replace('jpeg','jpg');
+  return window.SweaterAdmin.uploadAsset(new File([blob],`${name}.${extension}`,{type:blob.type||'image/png'}),'templates');
+}
+
+async function buildReadyCouponPayload() {
+  const clone=D.elementsContainer.cloneNode(true);
+  const embeddedImages=[...clone.querySelectorAll('img')].filter(image=>String(image.getAttribute('src')||'').startsWith('data:image/'));
+  for(let index=0;index<embeddedImages.length;index++){
+    const image=embeddedImages[index];
+    image.setAttribute('src',await uploadTemplateDataImage(image.getAttribute('src'),`coupon-element-${index+1}`));
+  }
+  const background=await uploadTemplateDataImage(D.bgImg.src,'coupon-background');
+  return {orientation,background,url:background,html:clone.innerHTML};
+}
+
+async function saveReadyCouponTemplate() {
+  if(!editingReadyTemplateId||!window.SweaterAuth?.isAdmin?.())return;
+  const button=$('saveReadyCouponTemplate');
+  const original=button.innerHTML;
+  button.disabled=true;
+  button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i><span>جارٍ الحفظ</span>';
+  try{
+    selectEl(null);
+    const config=window.SweaterAdmin.load();
+    const index=config.templates.findIndex(template=>template.id===editingReadyTemplateId);
+    if(index<0)throw new Error('تعذر العثور على القالب');
+    const payload=await buildReadyCouponPayload();
+    let preview=config.templates[index].preview||payload.background;
+    try{
+      const canvas=await html2canvas(D.canvasContainer,{scale:2,useCORS:true,backgroundColor:null,allowTaint:true});
+      const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('preview')),'image/png',0.94));
+      preview=await window.SweaterAdmin.uploadAsset(new File([blob],`coupon-preview-${Date.now()}.png`,{type:'image/png'}),'templates');
+    }catch(error){console.warn('تعذر تحديث معاينة القالب',error)}
+    config.templates[index]={...config.templates[index],payload,preview,status:'active',updatedAt:new Date().toISOString()};
+    await window.SweaterAdmin.save(config);
+    editingReadyTemplateId='';
+    button.style.display='none';
+    toast('ok','تم حفظ القالب','تم تحديثه في القوالب الجاهزة لجميع الموظفين.');
+  }catch(error){
+    console.error(error);
+    toast('err','تعذر حفظ القالب',error.message||'حاول مرة أخرى.');
+  }finally{
+    button.disabled=false;
+    button.innerHTML=original;
+  }
+}
+
+window.addEventListener('sweater:apply-admin-template',event=>applyReadyCouponTemplate(event.detail,false));
+window.addEventListener('sweater:edit-ready-template',event=>applyReadyCouponTemplate(event.detail,true));
+
+window.addEventListener('load',async()=>{
+  const user=await window.SweaterAuthReady?.catch(()=>null);
+  if(user?.role!=='admin'||!window.SweaterAdmin)return;
+  const actions=document.querySelector('body > header > div:last-child');
+  if(!actions||$('saveReadyCouponTemplate'))return;
+  const button=document.createElement('button');
+  button.id='saveReadyCouponTemplate';
+  button.className='h-10 px-3 rounded-xl bg-sweater-500 hover:bg-sweater-600 text-white items-center gap-2 text-xs font-black transition-all shadow-lg';
+  button.style.display='none';
+  button.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i><span>حفظ في القوالب الجاهزة</span>';
+  button.addEventListener('click',saveReadyCouponTemplate);
+  actions.prepend(button);
 });
 
 })();
 </script>
-<script src="./site-config.js?v=10"></script>
+<script src="./site-config.js?v=11"></script>
 <script src="./sweater-ui.js?v=9"></script>
 <script src="./local-studio.js?v=8"></script>
 </body>
