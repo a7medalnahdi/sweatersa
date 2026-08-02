@@ -185,10 +185,20 @@
     const nums=document.querySelector('#company-numbers h2');if(nums)nums.textContent=data.content.numbersTitle;
     data.tools.forEach(tool=>{
       const card=document.querySelector(`a[href="${tool.href}"]`);if(!card)return;
-      const isHidden=tool.enabled===false||(tool.adminOnly===true&&window.SweaterAuth?.isAdmin?.()!==true);
+      const isAdmin=window.SweaterAuth?.isAdmin?.()===true;
+      const isHidden=tool.adminOnly===true&&!isAdmin;
+      const isLocked=tool.enabled===false&&!isAdmin;
       card.classList.toggle('tool-card-hidden',isHidden);
+      card.classList.toggle('tool-locked',isLocked);
       if(isHidden)card.style.setProperty('display','none','important');
       else card.style.removeProperty('display');
+      card.setAttribute('aria-disabled',String(isLocked));
+      card.setAttribute('href',tool.href);
+      card.onclick=isLocked?event=>event.preventDefault():null;
+      if(!card.querySelector('.tool-lock-notice')){
+        const copy=card.querySelector('.simple-copy,.tool-card-copy');
+        if(copy)copy.insertAdjacentHTML('beforeend','<span class="tool-lock-notice"><i class="fa-solid fa-lock"></i> قريبًا ستكون متاحة</span>');
+      }
       if(tool.id==='html-pages'){
         const adminZone=document.querySelector('#admin-tools-zone');
         if(adminZone)adminZone.style.setProperty('display',isHidden?'none':'block',isHidden?'important':'');
@@ -225,7 +235,8 @@
     document.documentElement.dataset.siteConfig='ready';
     if(current.settings.siteName)document.title=document.title.replace(/SWEATER Workspace|مغاسل سويتر/g,current.settings.siteName);
     const activeTool=toolId?current.tools.find(t=>t.id===toolId):null;
-    if(activeTool&&(activeTool.enabled===false||(activeTool.adminOnly===true&&window.SweaterAuth&&window.SweaterAuth.isAdmin()!==true)))location.replace('./index.html?tool=disabled');
+    const isAdmin=window.SweaterAuth?.isAdmin?.()===true;
+    if(activeTool&&((activeTool.enabled===false&&!isAdmin)||(activeTool.adminOnly===true&&!isAdmin)))location.replace('./index.html?tool=locked');
   }
 
   async function maintenanceGate(){
