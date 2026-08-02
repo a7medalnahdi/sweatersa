@@ -109,7 +109,7 @@
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
   const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards','employee-card-tool.html':'employee-cards','content-writer.html':'content-writer','html-editor-tool.html':'html-pages'}[page];
   const adapters={};
-  let authenticatedUser=null;
+  let authenticatedUser=null,authResolved=false;
 
   async function loadCloud(){
     if(!client)return current;
@@ -125,6 +125,7 @@
 
   const ready=(async()=>{
     if(window.SweaterAuthReady)authenticatedUser=await window.SweaterAuthReady.catch(()=>null);
+    authResolved=true;
     const result=await loadCloud();
     if(client){
       client.channel('sweater-global-site-config')
@@ -240,6 +241,7 @@
     document.documentElement.dataset.siteConfig='ready';
     if(current.settings.siteName)document.title=document.title.replace(/SWEATER Workspace|مغاسل سويتر/g,current.settings.siteName);
     const activeTool=toolId?current.tools.find(t=>t.id===toolId):null;
+    if(activeTool&&!authResolved)return;
     const isAdmin=authenticatedUser?.role==='admin'||window.SweaterAuth?.isAdmin?.()===true;
     if(activeTool&&((activeTool.enabled===false&&!isAdmin)||(activeTool.adminOnly===true&&!isAdmin)))location.replace('./index.html?tool=locked');
   }
