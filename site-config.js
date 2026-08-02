@@ -219,7 +219,7 @@
     document.documentElement.dataset.siteConfig='ready';
     if(current.settings.siteName)document.title=document.title.replace(/SWEATER Workspace|مغاسل سويتر/g,current.settings.siteName);
     const activeTool=toolId?current.tools.find(t=>t.id===toolId):null;
-    if(activeTool&&(activeTool.enabled===false||(activeTool.adminOnly===true&&window.SweaterAuth?.isAdmin?.()!==true)))location.replace('./index.html?tool=disabled');
+    if(activeTool&&(activeTool.enabled===false||(activeTool.adminOnly===true&&window.SweaterAuth&&window.SweaterAuth.isAdmin()!==true)))location.replace('./index.html?tool=disabled');
   }
 
   async function maintenanceGate(){
