@@ -16,7 +16,7 @@
   </style>
 </head>
 <body>
-  <header class="head"><div class="brand"><a class="back" href="./index.html"><i class="fa-solid fa-arrow-right"></i></a><span class="mark"><i class="fa-solid fa-language"></i></span><div><strong>بوابة الملفات ثنائية اللغة</strong><small>انشر نسختين عربية وإنجليزية في رابط واحد</small></div></div><div class="actions"><button class="btn" id="copyBtn" hidden><i class="fa-regular fa-copy"></i><span>نسخ الرابط</span></button><button class="btn primary" id="openBtn" hidden><i class="fa-solid fa-arrow-up-right-from-square"></i><span>فتح الصفحة</span></button></div></header>
+  <header class="head"><div class="brand"><a class="back" href="./index.html"><i class="fa-solid fa-arrow-right"></i></a><span class="mark"><i class="fa-solid fa-language"></i></span><div><strong>بوابة الملفات ثنائية اللغة</strong><small>انشر نسختين عربية وإنجليزية في رابط واحد</small></div></div><div class="actions"><button class="btn" id="copyBtn" hidden><i class="fa-regular fa-copy"></i><span>نسخ الرابط</span></button><a class="btn primary" id="openBtn" hidden href="#"><i class="fa-solid fa-arrow-up-right-from-square"></i><span>فتح الصفحة</span></a></div></header>
   <main class="app"><section class="card"><h2>إعداد الصفحة</h2><p class="intro">ارفع النسختين وحدد اسم الرابط. عند استبدال ملف ثم النشر سيبقى الرابط نفسه ويتغير المحتوى مباشرة.</p><div class="form"><div class="field"><label>عنوان الصفحة</label><input id="title" value="ملفات الشركة"></div><div class="field"><label>الرابط المختصر</label><input id="slug" dir="ltr" value="documents" maxlength="40"></div><div class="drop" id="arDrop"><div><i class="fa-regular fa-file-pdf"></i><strong>النسخة العربية</strong><span id="arName">اختر ملف PDF العربي</span></div><input id="arFile" type="file" accept="application/pdf"></div><div class="drop" id="enDrop"><div><i class="fa-regular fa-file-pdf"></i><strong>English version</strong><span id="enName">Choose the English PDF</span></div><input id="enFile" type="file" accept="application/pdf"></div></div><button class="btn primary publish" id="publish"><i class="fa-solid fa-cloud-arrow-up"></i> رفع النسختين ونشر الصفحة</button><div class="result" id="result"><strong>تم نشر الصفحة والتحقق منها</strong><a id="publicLink" target="_blank" rel="noopener"></a></div></section><aside class="card preview"><div class="phone"><img src="./assets/sweater-logo.png" alt="SWEATER"><h3 id="previewTitle">ملفات الشركة</h3><p>اختر اللغة لفتح الملف المناسب</p><div class="languages"><div class="language">العربية <i class="fa-solid fa-arrow-left"></i></div><div class="language">English <i class="fa-solid fa-arrow-right"></i></div></div></div></aside></main>
   <div class="toast" id="toast"></div>
   <script>
@@ -25,9 +25,9 @@
     let arUrl='',enUrl='';
     const toast=m=>{const e=$('toast');e.textContent=m;e.classList.add('show');clearTimeout(e.t);e.t=setTimeout(()=>e.classList.remove('show'),3600)};
     const slugify=s=>String(s||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'').slice(0,40);
-    const publicUrl=slug=>`${location.origin}${location.pathname.replace(/bilingual-pdf-tool\.html$/,'p.html')}?v=25#${slug}`;
+    const publicUrl=slug=>`${location.origin}${location.pathname.replace(/bilingual-pdf-tool\.html$/,'p.html')}?v=26#${slug}`;
     const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-    function setPublishedLink(slug){const url=publicUrl(slug);$('publicLink').href=url;$('publicLink').textContent=url;$('result').classList.add('show');$('copyBtn').hidden=false;$('openBtn').hidden=false}
+    function setPublishedLink(slug){const url=publicUrl(slug);$('publicLink').href=url;$('publicLink').textContent=url;$('openBtn').href=url;$('result').classList.add('show');$('copyBtn').hidden=false;$('openBtn').hidden=false}
     function choose(id,lang){$(id).addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;if(f.type!=='application/pdf'&&!f.name.toLowerCase().endsWith('.pdf')){e.target.value='';return toast('اختر ملف PDF صحيحًا')}$(`${lang}Name`).textContent=f.name;$(`${lang}Drop`).classList.add('ready')})}
     choose('arFile','ar');choose('enFile','en');
     $('title').addEventListener('input',()=>{$('previewTitle').textContent=$('title').value||'ملفات الشركة'});
@@ -60,9 +60,8 @@
       }catch(e){console.error(e);toast(`تعذر النشر: ${e.message||'حاول مرة أخرى'}`)}finally{button.disabled=false;button.innerHTML=old}
     });
     $('copyBtn').addEventListener('click',()=>navigator.clipboard.writeText($('publicLink').href).then(()=>toast('تم نسخ الرابط')));
-    $('openBtn').addEventListener('click',()=>window.open($('publicLink').href,'_blank','noopener'));
     loadExisting();
   })();
   </script>
-  <script src="./site-config.js?v=25"></script><script src="./sweater-ui.js?v=9"></script>
+  <script src="./site-config.js?v=26"></script><script src="./sweater-ui.js?v=9"></script>
 </body></html>
