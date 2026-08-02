@@ -8,7 +8,6 @@
 </head>
 <body>
   <div class="state" id="state"><div><strong>جارٍ تحميل الصفحة…</strong></div></div>
-  <iframe id="page" title="الصفحة المنشورة" sandbox="allow-scripts allow-forms allow-modals allow-popups allow-popups-to-escape-sandbox" hidden></iframe>
-  <script>(()=>{'use strict';const client=window.SweaterCloud?.client,slug=decodeURIComponent(location.hash.slice(1));window.addEventListener('load',async()=>{if(!slug)return fail('الرابط غير مكتمل');const{data,error}=await client.from('html_pages').select('title,html_code').eq('slug',slug).eq('status','published').maybeSingle();if(error||!data)return fail('الصفحة غير موجودة أو غير منشورة');document.title=`${data.title} | SWEATER`;document.getElementById('page').srcdoc=data.html_code;document.getElementById('page').hidden=false;document.getElementById('state').remove()});function fail(message){document.getElementById('state').innerHTML=`<div><strong>${message}</strong><p>تأكد من الرابط أو تواصل مع مدير النظام.</p><a href="./index.html">العودة للمنصة</a></div>`}})();</script>
+  <script>(()=>{'use strict';const client=window.SweaterCloud?.client,slug=decodeURIComponent(location.hash.slice(1));window.addEventListener('load',async()=>{if(!slug)return fail('الرابط غير مكتمل');const{data,error}=await client.from('html_pages').select('title,html_code').eq('slug',slug).eq('status','published').maybeSingle();if(error||!data||!String(data.html_code||'').trim())return fail('الصفحة غير موجودة أو غير منشورة');document.open();document.write(data.html_code);document.close()});function fail(message){document.getElementById('state').innerHTML=`<div><strong>${message}</strong><p>تأكد من الرابط أو تواصل مع مدير النظام.</p><a href="./index.html">العودة للمنصة</a></div>`}})();</script>
 </body>
 </html>

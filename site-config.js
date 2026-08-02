@@ -34,7 +34,7 @@
       ,{id:'package-cards',href:'./package-card-tool.html',name:'صانع كروت الباقات',description:'عدّل أسماء الباقات والأسعار والصلاحية وصدّر الكرت بالعربية أو الإنجليزية.',image:'./assets/package-card-tool.svg',enabled:true}
       ,{id:'employee-cards',href:'./employee-card-tool.html',name:'إصدار كروت الموظفين',description:'أنشئ بطاقة الموظف الرسمية بوجهين، وعدّل الصورة والبيانات ثم صدّرها بجودة عالية.',image:'./assets/employee-card-tool.svg',enabled:true}
       ,{id:'content-writer',href:'./content-writer.html',name:'كاتب المحتوى',description:'مساعد ذكي يكتب محتوى سويتر ويحفظ محادثات كل موظف في حسابه.',image:'./assets/content-writer.svg',enabled:true}
-      ,{id:'bilingual-pdf',href:'./bilingual-pdf-tool.html',name:'بوابة الملفات ثنائية اللغة',description:'ارفع نسختين عربية وإنجليزية وانشرهما في رابط عام واحد قابل للتحديث.',image:'./assets/bilingual-pdf-tool.svg',enabled:true,adminOnly:true}
+      ,{id:'bilingual-pdf',href:'./bilingual-pdf-tool.html?v=25',name:'بوابة الملفات ثنائية اللغة',description:'ارفع نسختين عربية وإنجليزية وانشرهما في رابط عام واحد قابل للتحديث.',image:'./assets/bilingual-pdf-tool.svg',enabled:true,adminOnly:true}
       ,{id:'html-pages',href:'./html-editor-tool.html',name:'مستعرض صفحات HTML',description:'أنشئ صفحات HTML داخلية واحفظها أو انشرها بروابط مستقلة.',image:'./assets/html-pages-tool.svg',enabled:true,adminOnly:true}
     ],
     stats:[

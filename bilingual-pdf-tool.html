@@ -25,7 +25,7 @@
     let arUrl='',enUrl='';
     const toast=m=>{const e=$('toast');e.textContent=m;e.classList.add('show');clearTimeout(e.t);e.t=setTimeout(()=>e.classList.remove('show'),3600)};
     const slugify=s=>String(s||'').trim().toLowerCase().replace(/[^a-z0-9-]/g,'-').replace(/-+/g,'-').replace(/^-|-$/g,'').slice(0,40);
-    const publicUrl=slug=>`${location.origin}${location.pathname.replace(/bilingual-pdf-tool\.html$/,'p.html')}#${slug}`;
+    const publicUrl=slug=>`${location.origin}${location.pathname.replace(/bilingual-pdf-tool\.html$/,'p.html')}?v=25#${slug}`;
     const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
     function setPublishedLink(slug){const url=publicUrl(slug);$('publicLink').href=url;$('publicLink').textContent=url;$('result').classList.add('show');$('copyBtn').hidden=false;$('openBtn').hidden=false}
     function choose(id,lang){$(id).addEventListener('change',e=>{const f=e.target.files[0];if(!f)return;if(f.type!=='application/pdf'&&!f.name.toLowerCase().endsWith('.pdf')){e.target.value='';return toast('اختر ملف PDF صحيحًا')}$(`${lang}Name`).textContent=f.name;$(`${lang}Drop`).classList.add('ready')})}
@@ -64,5 +64,5 @@
     loadExisting();
   })();
   </script>
-  <script src="./site-config.js?v=23"></script><script src="./sweater-ui.js?v=9"></script>
+  <script src="./site-config.js?v=25"></script><script src="./sweater-ui.js?v=9"></script>
 </body></html>
