@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
-  const publicPages=new Set(['login.html','forgot-password.html']);
+  const publicPages=new Set(['login.html','forgot-password.html','html-page.html']);
   if(publicPages.has(page))return;
   document.documentElement.style.visibility='hidden';
 
