@@ -189,6 +189,10 @@
       card.classList.toggle('tool-card-hidden',isHidden);
       if(isHidden)card.style.setProperty('display','none','important');
       else card.style.removeProperty('display');
+      if(tool.id==='html-pages'){
+        const adminZone=document.querySelector('#admin-tools-zone');
+        if(adminZone)adminZone.style.setProperty('display',isHidden?'none':'block',isHidden?'important':'');
+      }
       const title=card.querySelector('h3'),desc=card.querySelector('p'),visual=card.querySelector('.bg-cover');
       if(title)title.textContent=tool.name;if(desc)desc.textContent=tool.description;
       if(visual&&tool.image)visual.style.backgroundImage=`url("${String(tool.image).replace(/"/g,'%22')}")`;
