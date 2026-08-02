@@ -6,7 +6,7 @@
   const BUCKET='site-assets';
   const clone=value=>JSON.parse(JSON.stringify(value));
   const defaults={
-    version:8,
+    version:9,
     content:{
       heroTitle:'أدواتك في منصة واحدة متكاملة',
       heroDescription:'مجموعة أدوات مبنية خصيصاً لفريق SWEATER. صُممت لتسريع سير العمل اليومي، أتمتة المهام المتكررة، وضمان أعلى جودة في المخرجات.',
@@ -33,6 +33,7 @@
       ,{id:'document-logo',href:'./document-logo-tool.html',name:'ختم الملفات بالشعار',description:'أضف شعاراً إلى جميع صفحات PDF أو شرائح PowerPoint وصدّر الملف كاملاً.',image:'./assets/document-logo-tool.svg',enabled:true}
       ,{id:'package-cards',href:'./package-card-tool.html',name:'صانع كروت الباقات',description:'عدّل أسماء الباقات والأسعار والصلاحية وصدّر الكرت بالعربية أو الإنجليزية.',image:'./assets/package-card-tool.svg',enabled:true}
       ,{id:'content-writer',href:'./content-writer.html',name:'كاتب المحتوى',description:'مساعد ذكي يكتب محتوى سويتر ويحفظ محادثات كل موظف في حسابه.',image:'./assets/content-writer.svg',enabled:true}
+      ,{id:'html-pages',href:'./html-editor-tool.html',name:'مستعرض صفحات HTML',description:'أنشئ صفحات HTML داخلية واحفظها أو انشرها بروابط مستقلة.',image:'./assets/html-pages-tool.svg',enabled:true,adminOnly:true}
     ],
     stats:[
       {id:'washes',value:'3M',label:'غسلة'},
@@ -104,7 +105,7 @@
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const safeLink=value=>{try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:''}catch(_){return ''}};
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
-  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards','content-writer.html':'content-writer'}[page];
+  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards','content-writer.html':'content-writer','html-editor-tool.html':'html-pages'}[page];
   const adapters={};
 
   async function loadCloud(){
@@ -182,7 +183,7 @@
     const nums=document.querySelector('#company-numbers h2');if(nums)nums.textContent=data.content.numbersTitle;
     data.tools.forEach(tool=>{
       const card=document.querySelector(`a[href="${tool.href}"]`);if(!card)return;
-      const isHidden=tool.enabled===false;
+      const isHidden=tool.enabled===false||(tool.adminOnly===true&&window.SweaterAuth?.isAdmin?.()!==true);
       card.classList.toggle('tool-card-hidden',isHidden);
       if(isHidden)card.style.setProperty('display','none','important');
       else card.style.removeProperty('display');
@@ -217,7 +218,8 @@
   function applyGlobal(){
     document.documentElement.dataset.siteConfig='ready';
     if(current.settings.siteName)document.title=document.title.replace(/SWEATER Workspace|مغاسل سويتر/g,current.settings.siteName);
-    if(toolId&&current.tools.find(t=>t.id===toolId)?.enabled===false)location.replace('./index.html?tool=disabled');
+    const activeTool=toolId?current.tools.find(t=>t.id===toolId):null;
+    if(activeTool&&(activeTool.enabled===false||(activeTool.adminOnly===true&&window.SweaterAuth?.isAdmin?.()!==true)))location.replace('./index.html?tool=disabled');
   }
 
   async function maintenanceGate(){
