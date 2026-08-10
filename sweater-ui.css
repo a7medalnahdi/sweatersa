@@ -86,6 +86,83 @@ body.sw-dashboard{background:#f6f6f3!important}
   .sw-dashboard .tool-search{height:52px}
   .sw-dashboard .home-brand{min-width:0}.sw-dashboard .home-header .sw-user-trigger{padding:4px}.sw-dashboard .home-header .ls-launcher.in-header{width:40px;padding:0;justify-content:center}
 }
+
+/* ================================================================
+   SWEATER UI 3.0 — unified product system
+   ================================================================ */
+:root{
+  --sw-orange:#ff5a0a;--sw-orange-2:#ff7a2f;--sw-navy:#111827;
+  --sw-text:#172033;--sw-subtle:#667085;--sw-border:#e6e8ec;
+  --sw-surface:#fff;--sw-canvas:#f4f5f7;--sw-radius:20px;
+  --sw-shadow:0 16px 45px rgba(20,28,45,.07);
+}
+html{background:var(--sw-canvas)}
+body{color:var(--sw-text);background:radial-gradient(circle at 92% -10%,rgba(255,90,10,.09),transparent 28%),var(--sw-canvas)!important}
+::selection{background:rgba(255,90,10,.2);color:#9a3412}
+::-webkit-scrollbar{width:10px;height:10px}::-webkit-scrollbar-track{background:#f2f3f5}::-webkit-scrollbar-thumb{background:#c9cdd3;border:3px solid #f2f3f5;border-radius:99px}::-webkit-scrollbar-thumb:hover{background:#ff7a2f}
+
+/* Product chrome */
+.sw-tool>header,.sw-tool>.top-bar,.sw-legacy>.top-bar{
+  position:static!important;top:auto!important;z-index:80!important;
+  min-height:76px!important;padding:11px 22px!important;
+  background:rgba(255,255,255,.94)!important;border:0!important;border-bottom:1px solid var(--sw-border)!important;
+  box-shadow:0 8px 28px rgba(20,28,45,.04)!important;backdrop-filter:blur(22px)!important;
+}
+.sw-tool header :is(.back,.back-link,.icon-btn),.sw-legacy .top-bar :is(.back,.back-link){border:1px solid #e7e9ed!important;background:#f6f7f9!important;color:#475467!important;border-radius:13px!important}
+.sw-tool header :is(.brand strong,.title strong,.brand-title strong),.sw-legacy .top-bar .title{font-weight:900!important;color:#182230!important}
+.sw-tool .sw-workspace-root{padding:20px!important;gap:18px!important}
+.sw-tool :is(.panel,.card,.preview-panel,.side,.left-panel,.right-panel,.controls-panel-menu,.text-controls-panel,.inspector,.canvas-wrapper),
+.sw-legacy :is(.controls-panel-menu,.left-panel,.right-panel,.text-properties-panel,.canvas-wrapper){
+  border:1px solid var(--sw-border)!important;border-radius:var(--sw-radius)!important;background:rgba(255,255,255,.96)!important;box-shadow:var(--sw-shadow)!important;
+}
+.sw-tool :is(input:not([type=range]):not([type=color]):not([type=file]),select,textarea),.sw-legacy :is(input:not([type=range]):not([type=color]):not([type=file]),select,textarea){
+  border-color:#dfe3e8!important;border-radius:12px!important;background:#fbfcfd!important;color:#182230!important;transition:border-color .18s,box-shadow .18s,background .18s!important;
+}
+.sw-tool :is(input,select,textarea):focus,.sw-legacy :is(input,select,textarea):focus{border-color:#ff8a4c!important;background:#fff!important;box-shadow:0 0 0 4px rgba(255,90,10,.11)!important;outline:0!important}
+.sw-tool :is(.btn,.primary-btn,button.primary,button[class*="primary"]),.sw-legacy :is(.btn-primary,.primary-btn){box-shadow:0 8px 18px rgba(255,90,10,.17);transition:transform .18s,box-shadow .18s,filter .18s}
+.sw-tool :is(.btn,.primary-btn,button):hover,.sw-legacy button:hover{transform:translateY(-1px)}
+.sw-tool :is(.drop,.drop-zone,.upload-zone,.dropzone){border-radius:16px!important;border-width:1.5px!important;background:linear-gradient(145deg,#fff,#fafbfc)!important}
+.sw-focus-btn,.sw-power-trigger.in-header{background:#f4f6f8!important;border-color:#e3e6ea!important;color:#475467!important}
+.sw-power-card{border-radius:28px}.sw-command{padding:13px 14px}.sw-command-icon{border-radius:13px}
+
+/* Dashboard: editorial landing instead of a card wall */
+.sw-dashboard{background:radial-gradient(circle at 12% 5%,rgba(255,90,10,.08),transparent 24%),#f5f6f7!important}
+.sw-dashboard .home-header{position:static!important;background:rgba(255,255,255,.96)!important;border:0!important;border-bottom:1px solid #e9eaed!important;box-shadow:0 8px 32px rgba(23,32,51,.035)!important}
+.sw-dashboard .home-header>div{height:82px!important;max-width:1320px!important}
+.sw-dashboard .home-brand img{height:46px!important;max-width:180px;object-fit:contain}
+.sw-dashboard .home-header .header-actions{gap:10px!important}.sw-dashboard #themeBtn{width:44px!important;height:44px!important;border:1px solid #e4e7ec!important;background:#f7f8fa!important}
+.sw-dashboard .home-header .sw-user-trigger{height:48px!important;border-color:#e4e7ec!important;border-radius:15px!important;background:#fff!important;box-shadow:0 7px 20px rgba(20,28,45,.06)!important}
+.sw-dashboard .home-header .sw-user-avatar{background:linear-gradient(145deg,var(--sw-orange),var(--sw-orange-2));box-shadow:0 7px 16px rgba(255,90,10,.22)}
+.sw-dashboard .home-hero{position:relative;display:grid!important;grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr)!important;max-width:1320px!important;min-height:390px;margin-top:32px!important;padding:54px 60px!important;border-radius:34px;background:linear-gradient(120deg,#11151d 0%,#1d2634 64%,#29231e 100%);overflow:hidden;color:#fff;box-shadow:0 30px 80px rgba(17,24,39,.17)}
+.sw-dashboard .home-hero:before{content:"";position:absolute;left:-80px;bottom:-210px;width:430px;height:430px;border:72px solid rgba(255,105,24,.16);border-radius:50%}.sw-dashboard .home-hero:after{content:"";position:absolute;right:44%;top:-190px;width:310px;height:310px;border-radius:50%;background:radial-gradient(circle,rgba(255,101,20,.16),transparent 70%)}
+.sw-dashboard .home-hero>*{position:relative;z-index:2}.sw-dashboard .home-hero-copy{max-width:720px!important}
+.sw-dashboard .release-mark{margin-bottom:22px;background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.12);box-shadow:none!important;color:#ffd4bc!important}
+.sw-dashboard .home-hero h1{margin:0 0 18px!important;color:#fff!important;font-size:clamp(2.65rem,5vw,4.75rem)!important;letter-spacing:-.035em!important}.sw-dashboard .home-hero h1 span{background:linear-gradient(90deg,#ff7a2f,#ffb080)!important;background-clip:text!important;-webkit-background-clip:text!important}
+.sw-dashboard .home-hero p{max-width:620px!important;color:#c5ccd6!important;font-size:16px!important;line-height:2!important}
+.sw-dashboard .search-wrap{width:min(100%,620px)!important;margin-top:25px!important}.sw-dashboard .tool-search{height:58px!important;border:1px solid rgba(255,255,255,.12)!important;background:rgba(255,255,255,.09)!important;color:#fff!important;box-shadow:none!important}.sw-dashboard .tool-search::placeholder{color:#aeb8c6}.sw-dashboard .search-wrap i{color:#ff8c4c!important}
+.sw-dashboard main>section:first-child>div:last-child{display:block!important}.sw-dashboard .home-hero-side>div{min-width:280px!important;min-height:260px!important;border:1px solid rgba(255,255,255,.12)!important;background:rgba(255,255,255,.07)!important;color:#fff!important;box-shadow:none!important;backdrop-filter:blur(12px)}
+.sw-dashboard .tools-section{max-width:1320px!important;padding-top:62px!important}.sw-dashboard .tools-section>div:first-child{margin-bottom:26px!important}.sw-dashboard .tools-section h2{font-size:28px!important}.sw-dashboard .tools-section>div:first-child p{font-size:14px!important}
+.sw-dashboard .tools-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}
+.sw-dashboard .tool-card-simple{display:flex!important;flex-direction:column!important;min-height:330px!important;border:1px solid #e4e7eb!important;border-radius:24px!important;background:#fff!important;box-shadow:0 10px 30px rgba(23,32,51,.045)!important;transition:transform .25s,border-color .25s,box-shadow .25s!important}
+.sw-dashboard .tool-card-simple:hover{transform:translateY(-6px)!important;border-color:color-mix(in srgb,var(--c) 45%,#e4e7eb)!important;box-shadow:0 24px 50px rgba(23,32,51,.11)!important}
+.sw-dashboard .tool-card-simple .simple-visual{width:100%;min-height:175px!important;height:175px!important}.sw-dashboard .tool-card-simple .simple-shade{background:linear-gradient(180deg,transparent 38%,rgba(10,17,29,.52))}.sw-dashboard .tool-card-simple .simple-icon{right:16px;bottom:16px;width:44px;height:44px;border-radius:14px}
+.sw-dashboard .tool-card-simple .simple-copy{min-height:155px;padding:20px 21px!important}.sw-dashboard .tool-card-simple h3{font-size:18px!important}.sw-dashboard .tool-card-simple p{font-size:12.5px!important;line-height:1.8!important}.sw-dashboard .tool-card-simple .simple-open{margin-top:auto;padding-top:13px;border-top:1px solid #f0f1f3;font-size:11px!important}
+.sw-dashboard .reference-card{border-color:#e4e7eb!important;border-radius:22px!important;box-shadow:0 9px 25px rgba(23,32,51,.04)}.sw-dashboard .reference-card:hover{border-color:var(--ref-color)!important;box-shadow:0 20px 45px rgba(23,32,51,.1)!important}.sw-dashboard .reference-icon{border-radius:16px!important}
+.sw-dashboard .numbers-shell{border:0!important;border-radius:32px!important;box-shadow:0 25px 65px rgba(23,32,51,.1)!important}.sw-dashboard .numbers-head{padding:38px 42px!important;background:linear-gradient(115deg,#ed4f00,#ff6b18 65%,#ff8a45)!important}.sw-dashboard .numbers-grid{padding:12px 28px 28px!important}
+.sw-dashboard footer{border:0!important;background:#11151d!important}.sw-dashboard footer *{color:#aeb7c4!important}.sw-dashboard footer img{filter:brightness(0) invert(1)!important}
+
+/* Admin, auth and profile surfaces */
+.sw-tool .login-card,.sw-tool .profile-card,.sw-tool .dialog,.sw-tool .modal-card{border:1px solid rgba(255,255,255,.9)!important;border-radius:26px!important;box-shadow:0 28px 80px rgba(23,32,51,.13)!important}
+body:has(.login-gate),body:has(.auth-shell){background:radial-gradient(circle at 80% 5%,rgba(255,90,10,.15),transparent 28%),linear-gradient(145deg,#f7f8fa,#eef0f3)!important}
+body:has(.shell) .side{background:linear-gradient(180deg,#11151d,#1b2431)!important;border-left:1px solid rgba(255,255,255,.07)}
+body:has(.shell) .side .nav button{border-radius:12px!important;font-size:12px!important}body:has(.shell) .side .nav button.active{background:linear-gradient(90deg,rgba(255,90,10,.18),rgba(255,90,10,.06))!important;color:#fff!important;box-shadow:inset -3px 0 var(--sw-orange)}
+body:has(.shell) .main{background:transparent!important}body:has(.shell) :is(.stat,.section,.tool-admin-card){border-color:#e4e7eb!important;border-radius:19px!important;box-shadow:0 9px 26px rgba(23,32,51,.04)!important}
+
+/* Dark system */
+.dark body{--sw-surface:#111827;--sw-canvas:#090d15;--sw-text:#f8fafc;--sw-subtle:#94a3b8;--sw-border:#263244;background:#090d15!important;color:#f8fafc}.dark .sw-tool>header,.dark .sw-tool>.top-bar,.dark .sw-dashboard .home-header{background:rgba(13,18,28,.96)!important;border-color:#263244!important}.dark .sw-tool :is(.panel,.card,.preview-panel,.side,.left-panel,.right-panel,.controls-panel-menu,.text-controls-panel,.inspector,.canvas-wrapper),.dark .sw-dashboard .tool-card-simple{background:#111827!important;border-color:#263244!important}.dark .sw-tool header :is(.brand strong,.title strong,.brand-title strong){color:#f8fafc!important}.dark .sw-tool :is(input:not([type=range]),select,textarea){background:#0d1420!important;color:#f8fafc!important;border-color:#334155!important}
+
+@media(max-width:1000px){.sw-dashboard .home-hero{grid-template-columns:1fr!important}.sw-dashboard .home-hero-side{display:none!important}.sw-dashboard .tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:700px){.sw-tool .sw-workspace-root{padding:10px!important;gap:10px!important}.sw-dashboard .home-header>div{height:70px!important}.sw-dashboard .home-brand img{height:38px!important}.sw-dashboard .home-hero{min-height:0;margin:16px 10px 0!important;padding:34px 24px!important;border-radius:25px}.sw-dashboard .home-hero h1{font-size:2.55rem!important}.sw-dashboard .home-hero p{font-size:13px!important}.sw-dashboard .tools-section{padding:38px 14px!important}.sw-dashboard .tools-grid{grid-template-columns:1fr!important}.sw-dashboard .tool-card-simple{display:grid!important;grid-template-columns:120px 1fr!important;min-height:150px!important}.sw-dashboard .tool-card-simple .simple-visual{width:auto;height:auto!important;min-height:150px!important}.sw-dashboard .tool-card-simple .simple-copy{min-height:150px;padding:16px!important}.sw-dashboard .tool-card-simple h3{font-size:15px!important}.sw-dashboard .tool-card-simple p{font-size:11px!important}.sw-dashboard .numbers-head{padding:28px 24px!important}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important;transition-duration:.01ms!important}}
 
 /* Power center */
@@ -174,3 +251,23 @@ body.sw-tool{font-size:14px;line-height:1.55}
   .sw-dashboard .tool-card-simple h3{font-size:16px!important}
   .sw-dashboard .tool-card-simple p{font-size:12px!important}
 }
+
+/* UI 3 final cascade — intentionally last */
+body.sw-dashboard main>section.home-hero{display:grid!important;grid-template-columns:minmax(0,1.45fr) minmax(280px,.55fr)!important;min-height:390px!important;margin-top:32px!important;padding:54px 60px!important;border-radius:34px!important;background:linear-gradient(120deg,#11151d 0%,#1d2634 64%,#29231e 100%)!important;overflow:hidden!important;color:#fff!important;box-shadow:0 30px 80px rgba(17,24,39,.17)!important}
+body.sw-dashboard main>section.home-hero>div:last-child{display:block!important}
+body.sw-dashboard .home-hero h1{color:#fff!important;font-size:clamp(2.65rem,5vw,4.75rem)!important;line-height:1.08!important}
+body.sw-dashboard .home-hero p{color:#c5ccd6!important;font-size:16px!important;line-height:2!important}
+body.sw-dashboard .tools-section{padding-top:62px!important}
+body.sw-dashboard .tools-grid{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:16px!important}
+body.sw-dashboard .tools-grid>.tool-card-simple{display:flex!important;flex-direction:column!important;grid-template-columns:none!important;min-height:330px!important;border-radius:24px!important}
+body.sw-dashboard .tools-grid>.tool-card-simple .simple-visual{width:100%!important;height:175px!important;min-height:175px!important}
+body.sw-dashboard .tools-grid>.tool-card-simple .simple-copy{min-height:155px!important;padding:20px 21px!important}
+body.sw-dashboard .tools-grid>.tool-card-simple h3{font-size:18px!important}
+body.sw-dashboard .tools-grid>.tool-card-simple p{font-size:12.5px!important;line-height:1.8!important}
+body.sw-dashboard .admin-tools-grid>.tool-card-simple{display:grid!important;grid-template-columns:220px minmax(0,1fr)!important;min-height:180px!important}
+@media(max-width:1000px){body.sw-dashboard main>section.home-hero{grid-template-columns:1fr!important}body.sw-dashboard main>section.home-hero>.home-hero-side{display:none!important}body.sw-dashboard .tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:700px){body.sw-dashboard main>section.home-hero{min-height:0!important;margin:16px 10px 0!important;padding:34px 24px!important;border-radius:25px!important}body.sw-dashboard .home-hero h1{font-size:2.55rem!important}body.sw-dashboard .home-hero p{font-size:13px!important}body.sw-dashboard .tools-grid{grid-template-columns:1fr!important}body.sw-dashboard .tools-grid>.tool-card-simple{display:grid!important;grid-template-columns:120px 1fr!important;min-height:150px!important}body.sw-dashboard .tools-grid>.tool-card-simple .simple-visual{width:auto!important;height:auto!important;min-height:150px!important}body.sw-dashboard .tools-grid>.tool-card-simple .simple-copy{min-height:150px!important;padding:16px!important}}
+html.dark body.sw-dashboard{background:radial-gradient(circle at 12% 5%,rgba(255,90,10,.08),transparent 24%),#090d15!important}
+html.dark body.sw-dashboard .tools-grid>.tool-card-simple,html.dark body.sw-dashboard .reference-card{background:#141c2a!important;border-color:#2a3547!important}
+html.dark body.sw-dashboard .tools-grid>.tool-card-simple h3,html.dark body.sw-dashboard .tools-section h2{color:#fff!important}
+html.dark body.sw-dashboard .tools-grid>.tool-card-simple p,html.dark body.sw-dashboard .tools-section>div:first-child p{color:#94a3b8!important}
