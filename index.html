@@ -2,12 +2,12 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>مساحة عمل سويتر</title><meta name="description" content="أدوات ومراجع فريق سويتر في مساحة عمل واحدة."><meta name="theme-color" content="#101319">
-  <link rel="stylesheet" href="./sweater-ui.css?v=13"><link rel="stylesheet" href="./home-v4.css?v=1"><link rel="stylesheet" href="./home-v5.css?v=1"><link rel="stylesheet" href="./local-studio.css?v=6"><link rel="stylesheet" href="./home-layout-fix.css?v=1">
+  <title>مساحة عمل سويتر</title><meta name="description" content="أدوات ومراجع فريق سويتر في مساحة عمل واحدة."><meta name="theme-color" content="#17352d">
+  <link rel="stylesheet" href="./home-editorial.css?v=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=3"></script><script src="./auth-gateway.js?v=4"></script>
 </head>
-<body class="home-v4">
+<body class="home-v4 editorial-home">
 <header class="v4-header"><a class="v4-brand" href="./index.html"><img src="./assets/sweater-logo.png" alt="SWEATER"><span><b>مساحة العمل</b><small>كل ما يحتاجه الفريق</small></span></a><nav><a href="#tools">الأدوات</a><a href="#company-references">مراجع الشركة</a><a href="#company-numbers">أرقامنا</a></nav><div class="header-actions"></div></header>
 <main>
   <section class="v4-hero"><div class="v4-hero-copy"><span class="v4-eyebrow"><i class="fa-solid fa-circle"></i> مساحة عمل سويتر</span><h1>كل ما تحتاجه،<br><em>دون تعقيد.</em></h1><p>أدوات الفريق ومراجع الشركة في مكان واحد صُمم ليجعل العمل اليومي أبسط وأسرع.</p><div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="toolSearch" class="tool-search" type="search" placeholder="عن ماذا تبحث؟" autocomplete="off"></div></div><div class="v4-hero-panel"><span class="panel-number">12</span><strong>أداة في مكان واحد</strong><p>من أول فكرة إلى الملف النهائي.</p><div class="panel-line"></div><small>داخلي · سريع · متزامن</small></div></section>
@@ -32,5 +32,5 @@
 
   <section class="v4-section" id="company-numbers"><div class="numbers-shell"><div class="numbers-head"><span>03 — أثرنا بالأرقام</span><h2>سويتر أقرب مما تتخيّل.</h2><p>أرقام نبني عليها تجربة أفضل كل يوم.</p></div><div class="numbers-grid"><div class="stat-card"><i class="fa-solid fa-droplet"></i><strong>3M</strong><span>غسلة</span></div><div class="stat-card"><i class="fa-solid fa-users"></i><strong>600K</strong><span>عميل</span></div><div class="stat-card"><i class="fa-solid fa-location-dot"></i><strong>12</strong><span>مدينة</span></div><div class="stat-card"><i class="fa-solid fa-heart"></i><strong>96%</strong><span>نسبة رضا العملاء</span></div><div class="stat-card"><i class="fa-solid fa-handshake"></i><strong>500</strong><span>شراكة</span></div></div></div></section>
  </main><footer><img src="./assets/sweater-logo.png" alt="SWEATER"><span>مساحة عمل فريق سويتر</span></footer>
-<script src="./site-config.js?v=26"></script><script src="./sweater-ui.js?v=10"></script><script src="./local-studio.js?v=8"></script>
+<script src="./site-config.js?v=27"></script><script>(()=>{const input=document.querySelector('#toolSearch'),cards=[...document.querySelectorAll('.tools-grid>a')];if(!input)return;cards.forEach(c=>c.dataset.search=c.textContent.replace(/\s+/g,' ').toLowerCase());input.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();cards.forEach(c=>c.hidden=!!q&&!c.dataset.search.includes(q))})})();</script>
 </body></html>
