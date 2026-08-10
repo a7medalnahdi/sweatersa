@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>لوحة التحكم | مغاسل سويتر</title>
-  <link rel="stylesheet" href="./sweater-ui.css?v=12">
+  <link rel="stylesheet" href="./sweater-ui.css?v=13">
   <link rel="stylesheet" href="./local-studio.css?v=6">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
   <style>
@@ -26,6 +26,7 @@
     .tool-admin-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}.tool-admin-card{overflow:hidden;border:1px solid var(--line);border-radius:18px;background:#fff;transition:.2s}.tool-admin-card.locked{border-color:#cbd5e1;background:#f8fafc}.tool-admin-head{display:grid;grid-template-columns:108px 1fr;gap:15px;align-items:center;padding:15px;border-bottom:1px solid var(--line)}.tool-admin-head img{width:108px;height:82px;border-radius:12px;object-fit:cover;background:#eef1f5}.tool-admin-card.locked .tool-admin-head img{filter:grayscale(1);opacity:.6}.tool-admin-title strong{display:block;font-size:16px;margin-bottom:5px}.tool-admin-title span{display:block;color:var(--muted);font-size:11px;direction:ltr;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tool-admin-body{padding:15px;display:grid;gap:12px}.tool-admin-body .field textarea{height:76px}.tool-admin-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 15px;border-top:1px solid var(--line);background:#fafbfc}.availability{display:flex;align-items:center;gap:10px;cursor:pointer}.availability input{position:absolute;opacity:0}.availability-track{position:relative;width:48px;height:27px;border-radius:999px;background:#111827;transition:.2s}.availability-track::after{content:"";position:absolute;top:4px;right:4px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 2px 5px #0002;transition:.2s}.availability input:checked+.availability-track{background:#10b981}.availability input:checked+.availability-track::after{transform:translateX(-21px)}.availability-copy strong{display:block;font-size:12px}.availability-copy small{display:block;margin-top:2px;color:var(--muted);font-size:10px}.tool-admin-card.locked .availability-copy strong{color:#111827}@media(max-width:900px){.tool-admin-grid{grid-template-columns:1fr}}@media(max-width:500px){.tool-admin-head{grid-template-columns:82px 1fr}.tool-admin-head img{width:82px;height:68px}}
     .tool-admin-card.admin-only{border-color:#93c5fd;box-shadow:inset 0 3px #2563eb}.admin-placement{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid #dbeafe;border-radius:10px;background:#eff6ff;color:#1d4ed8;font-size:11px;font-weight:900;cursor:pointer}.admin-placement input{width:17px;height:17px;accent-color:#2563eb}.admin-placement input:disabled{opacity:.55}.admin-placement:has(input:disabled){cursor:not-allowed;opacity:.75}
   </style>
+  <link rel="stylesheet" href="./admin-v4.css?v=1">
 </head>
 <body class="admin-locked">
 <section class="login-gate">

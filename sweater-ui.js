@@ -26,21 +26,18 @@
   }
 
   if (isDashboard) {
-    const heroText = document.querySelector('section p');
+    const heroText = document.querySelector('.v4-hero-copy > p, section p');
     const hero = heroText?.parentElement;
-    if (hero) {
+    if (hero && !hero.querySelector('.release-mark')) {
       const release = document.createElement('span');
       release.className = 'release-mark';
       release.innerHTML = '<i class="fa-solid fa-sparkles"></i> تحديث صيف 2026';
       hero.insertBefore(release, hero.firstElementChild);
 
-      const wrap = document.createElement('div');
-      wrap.className = 'search-wrap';
-      wrap.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i><input id="toolSearch" class="tool-search" type="search" placeholder="ابحث عن أداة أو مهمة…" autocomplete="off" aria-label="البحث في الأدوات">';
-      hero.appendChild(wrap);
+      if (!document.getElementById('toolSearch')) { const wrap = document.createElement('div'); wrap.className = 'search-wrap'; wrap.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i><input id="toolSearch" class="tool-search" type="search" placeholder="ابحث عن أداة أو مهمة…" autocomplete="off" aria-label="البحث في الأدوات">'; hero.appendChild(wrap); }
     }
 
-    const grid = document.querySelector('.grid.grid-cols-1');
+    const grid = document.querySelector('.tools-grid');
     const cards = grid ? [...grid.querySelectorAll(':scope > a[href$=".html"]')] : [];
     if (grid && cards.length) {
       cards.forEach(card => {

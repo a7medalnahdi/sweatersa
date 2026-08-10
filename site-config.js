@@ -178,7 +178,7 @@
     const data=current;
     const h1=document.querySelector('main section h1');
     const heroP=h1?.parentElement?.querySelector('p');
-    if(h1&&data.content.heroTitle)h1.textContent=data.content.heroTitle;
+    if(h1&&data.content.heroTitle){const words=String(data.content.heroTitle).trim().split(/\s+/);const last=words.pop()||'';h1.innerHTML=`${escape(words.join(' '))}${words.length?'<br>':''}<em>${escape(last)}</em>`}
     if(heroP&&data.content.heroDescription)heroP.textContent=data.content.heroDescription;
     const sections=[...document.querySelectorAll('main section')];
     const toolsSection=sections.find(s=>s.querySelector('a[href="./framing-tool.html"]'));
@@ -210,9 +210,9 @@
         const adminZone=document.querySelector('#admin-tools-zone');
         if(adminZone)adminZone.style.setProperty('display',isHidden?'none':'block',isHidden?'important':'');
       }
-      const title=card.querySelector('h3'),desc=card.querySelector('p'),visual=card.querySelector('.bg-cover');
+      const title=card.querySelector('h3'),desc=card.querySelector('p'),visual=card.querySelector('.bg-cover,.simple-visual');
       if(title)title.textContent=tool.name;if(desc)desc.textContent=tool.description;
-      if(visual&&tool.image)visual.style.backgroundImage=`url("${String(tool.image).replace(/"/g,'%22')}")`;
+      if(visual&&tool.image){visual.style.setProperty('background-image',`linear-gradient(#10131922,#10131922),url("${String(tool.image).replace(/"/g,'%22')}")`,'important');visual.style.backgroundSize='cover';visual.style.backgroundPosition='center'}
     });
     data.references.forEach(reference=>{
       const card=document.querySelector(`[data-reference-id="${reference.id}"]`);if(!card)return;
