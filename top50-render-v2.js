@@ -203,7 +203,7 @@
       const sourceY = 294;
       const sourceWidth = 1073;
       const sourceHeight = 1522;
-      const drawWidth = radius * 2.55;
+      const drawWidth = radius * 2.25;
       const drawHeight = drawWidth * (sourceHeight / sourceWidth);
       const circleCenterRatio = 476 / sourceHeight;
       ctx.save();
@@ -368,34 +368,34 @@
     ctx.restore();
 
     const cx = x + width / 2;
-    drawMedal(cx, y + 4, rank, rank === 1 ? 100 : 88);
+    drawMedal(cx, y - (rank === 1 ? 65 : 55), rank, rank === 1 ? 100 : 88);
     ctx.textAlign = 'center';
     ctx.fillStyle = '#a9adb2';
     ctx.font = '900 25px LamaSans, Arial, sans-serif';
-    ctx.fillText('BIKER ID', cx, y + 175);
+    ctx.fillText('BIKER ID', cx, y + 190);
     ctx.fillStyle = INK;
     ctx.font = '900 108px LamaSans, Arial, sans-serif';
-    ctx.fillText(person.id, cx, y + 285);
+    ctx.fillText(person.id, cx, y + 300);
     ctx.fillStyle = '#6b6b6b';
     ctx.font = `900 ${fitFont(person.name.toUpperCase(), width - 70, 48, 900, 28)}px LamaSans, Arial, sans-serif`;
-    ctx.fillText(person.name.toUpperCase(), cx, y + 365);
+    ctx.fillText(person.name.toUpperCase(), cx, y + 382);
 
     ctx.fillStyle = ORANGE;
-    round(x + 48, y + 408, width - 96, 112, 56);
+    round(x + 48, y + 425, width - 96, 112, 56);
     ctx.fill();
-    drawPrice(winner.prize, cx, y + 484, 65, '#fff');
+    drawPrice(winner.prize, cx, y + 501, 65, '#fff');
 
     ctx.fillStyle = '#f2f3f5';
-    round(x + 48, y + 548, width - 96, 90, 28);
+    round(x + 48, y + 565, width - 96, 90, 28);
     ctx.fill();
     ctx.textAlign = 'left';
     ctx.fillStyle = '#6d7278';
     ctx.font = '800 28px LamaSans, Arial, sans-serif';
-    ctx.fillText('RATING', x + 78, y + 605);
+    ctx.fillText('RATING', x + 78, y + 622);
     ctx.textAlign = 'right';
     ctx.fillStyle = INK;
     ctx.font = '900 44px LamaSans, Arial, sans-serif';
-    ctx.fillText(`${winner.rating.toFixed(2)}  ★`, x + width - 74, y + 607);
+    ctx.fillText(`${winner.rating.toFixed(2)}  ★`, x + width - 74, y + 624);
   };
 
   const drawCover = () => {
