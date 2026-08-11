@@ -213,7 +213,8 @@
       }
       const title=card.querySelector('h3'),desc=card.querySelector('p'),visual=card.querySelector('.bg-cover,.simple-visual');
       if(title)title.textContent=tool.name;if(desc)desc.textContent=tool.description;
-      if(visual&&tool.image){visual.style.setProperty('background-image',`linear-gradient(#10131922,#10131922),url("${String(tool.image).replace(/"/g,'%22')}")`,'important');visual.style.backgroundSize='cover';visual.style.backgroundPosition='center'}
+      if(visual?.classList.contains('simple-visual')){visual.style.removeProperty('background-image');visual.style.removeProperty('background-size');visual.style.removeProperty('background-position')}
+      else if(visual&&tool.image){visual.style.setProperty('background-image',`linear-gradient(#10131922,#10131922),url("${String(tool.image).replace(/"/g,'%22')}")`,'important');visual.style.backgroundSize='cover';visual.style.backgroundPosition='center'}
     });
     data.references.forEach(reference=>{
       const card=document.querySelector(`[data-reference-id="${reference.id}"]`);if(!card)return;
