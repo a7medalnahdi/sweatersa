@@ -200,8 +200,9 @@
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#fff';
-    ctx.font = '900 72px LamaSans, Arial, sans-serif';
-    ctx.fillText(`أضف صورة ${rank}`, cx, top + h * .83);
+    const placeholderLabel = `صورة المركز ${rank}`;
+    ctx.font = `900 ${fitFont(placeholderLabel, w - 80, 54, 900, 34)}px LamaSans, Arial, sans-serif`;
+    ctx.fillText(placeholderLabel, cx, top + h * .83);
   };
 
   const imageHasTransparency = (image) => {
