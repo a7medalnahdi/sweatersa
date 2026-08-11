@@ -415,25 +415,40 @@
     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   };
 
-  $('#sheetFile').addEventListener('change', async (event) => {
+  const sheetInput = $('#sheetFile');
+  sheetInput.onchange = null;
+  sheetInput.addEventListener('change', async (event) => {
     if (!event.target.files[0]) return;
     try {
       state.rows = await parseSheet(event.target.files[0]);
+      $('#fileStatus').textContent = `تمت قراءة ${state.rows.length} سجل بنجاح.`;
+      $('#rowCount').textContent = state.rows.length;
+      $('#topRating').textContent = state.rows.length ? Math.max(...state.rows.map((row) => row.rating)).toFixed(2) : '—';
+      $('#totalPrize').textContent = state.rows.reduce((sum, row) => sum + row.prize, 0).toLocaleString('en-US');
       render();
-    } catch (_) {}
+    } catch (error) {
+      $('#fileStatus').textContent = error.message;
+    }
   });
 
   document.querySelectorAll('[data-photo]').forEach((input) => {
+    input.onchange = null;
     input.addEventListener('change', () => {
       if (!input.files[0]) return;
+      const previewUrl = URL.createObjectURL(input.files[0]);
       const image = new Image();
       image.onload = () => {
         const rank = Number(input.dataset.photo);
         state.photos[rank] = image;
         state.photoMeta[rank] = { transparent: imageHasTransparency(image) };
+        const preview = input.parentElement.querySelector('img');
+        if (preview) {
+          preview.src = previewUrl;
+          preview.hidden = false;
+        }
         render();
       };
-      image.src = URL.createObjectURL(input.files[0]);
+      image.src = previewUrl;
     });
   });
 
