@@ -18,6 +18,8 @@
   };
   const ORANGE = '#f96714';
   const INK = '#151515';
+  const MAX_EXPORT_BYTES = 300 * 1024;
+  const TARGET_EXPORT_BYTES = 295 * 1024;
   const THEMES = {
     celebration: {
       label: 'احتفالي', description: 'هوية سويتر الحيوية',
@@ -41,7 +43,7 @@
   } catch (_) {}
   const templateStyles = document.createElement('style');
   templateStyles.textContent = `
-    .template-picker{display:grid;gap:9px}.template-option{width:100%;min-height:72px;padding:8px;border:1px solid #e4e7ec;border-radius:14px;background:#fff;display:grid;grid-template-columns:76px 1fr 26px;align-items:center;gap:10px;text-align:right;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}.template-option:hover{border-color:#f5a274;transform:translateY(-1px)}.template-option.active{border-color:#f96714;box-shadow:0 0 0 3px #f9671415}.template-thumb{height:52px;border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:flex-end;justify-content:center;gap:4px;padding:6px}.template-thumb:before{content:'';position:absolute;inset:6px 8px auto;height:6px;border-radius:6px;background:currentColor;opacity:.9}.template-thumb i{position:relative;width:18px;border-radius:5px 5px 2px 2px;background:currentColor;opacity:.92}.template-thumb i:nth-child(1){height:18px}.template-thumb i:nth-child(2){height:27px}.template-thumb i:nth-child(3){height:20px}.template-thumb-celebration{color:#fff;background:linear-gradient(145deg,#ff9254,#ed4f00)}.template-thumb-editorial{color:#121212;background:linear-gradient(90deg,#f5f1eb 0 82%,#f96714 82%)}.template-thumb-midnight{color:#f96714;background:radial-gradient(circle at 80% 10%,#47200e,#111 70%)}.template-copy strong,.template-copy small{display:block}.template-copy strong{color:#101828;font-size:12px}.template-copy small{margin-top:3px;color:#98a2b3;font-size:9px}.template-check{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#f2f4f7;color:transparent;font-size:9px}.template-option.active .template-check{background:#f96714;color:#fff}@media(max-width:520px){.template-option{grid-template-columns:66px 1fr 24px}.template-thumb{height:48px}}
+    .template-picker{display:grid;gap:9px}.template-option{width:100%;min-height:72px;padding:8px;border:1px solid #e4e7ec;border-radius:14px;background:#fff;display:grid;grid-template-columns:76px 1fr 26px;align-items:center;gap:10px;text-align:right;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}.template-option:hover{border-color:#f5a274;transform:translateY(-1px)}.template-option.active{border-color:#f96714;box-shadow:0 0 0 3px #f9671415}.template-thumb{height:52px;border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:flex-end;justify-content:center;gap:4px;padding:6px}.template-thumb:before{content:'';position:absolute;inset:6px 8px auto;height:6px;border-radius:6px;background:currentColor;opacity:.9}.template-thumb i{position:relative;width:18px;border-radius:5px 5px 2px 2px;background:currentColor;opacity:.92}.template-thumb i:nth-child(1){height:18px}.template-thumb i:nth-child(2){height:27px}.template-thumb i:nth-child(3){height:20px}.template-thumb-celebration{color:#fff;background:linear-gradient(145deg,#ff9254,#ed4f00)}.template-thumb-editorial{color:#121212;background:linear-gradient(90deg,#f5f1eb 0 82%,#f96714 82%)}.template-thumb-midnight{color:#f96714;background:radial-gradient(circle at 80% 10%,#47200e,#111 70%)}.template-copy strong,.template-copy small{display:block}.template-copy strong{color:#101828;font-size:12px}.template-copy small{margin-top:3px;color:#98a2b3;font-size:9px}.template-check{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#f2f4f7;color:transparent;font-size:9px}.template-option.active .template-check{background:#f96714;color:#fff}.export-limit-note{margin:10px 0 0;color:#667085;font-size:10px;text-align:center}.export-limit-note i{margin-left:5px;color:#15803d}@media(max-width:520px){.template-option{grid-template-columns:66px 1fr 24px}.template-thumb{height:48px}}
   `;
   document.head.append(templateStyles);
   const PHOTO_PROMPT = `أنت محرر صور احترافي متخصص في تنقية وتحسين صور الأشخاص.
@@ -716,7 +718,52 @@
     state.page === 1 ? drawCover() : drawList();
   };
 
-  const canvasBlob = () => new Promise((resolve) => canvas.toBlob(resolve, 'image/png', 1));
+  const jpegBlob = (source, quality) => new Promise((resolve, reject) => {
+    source.toBlob((blob) => blob ? resolve(blob) : reject(new Error('تعذر تجهيز الصورة')), 'image/jpeg', quality);
+  });
+  const scaledCanvas = (scale) => {
+    if (scale === 1) return canvas;
+    const output = document.createElement('canvas');
+    output.width = Math.round(canvas.width * scale);
+    output.height = Math.round(canvas.height * scale);
+    const outputContext = output.getContext('2d');
+    outputContext.imageSmoothingEnabled = true;
+    outputContext.imageSmoothingQuality = 'high';
+    outputContext.drawImage(canvas, 0, 0, output.width, output.height);
+    return output;
+  };
+  const optimizedImage = async () => {
+    const scales = [1, .9, .8, .7, .6, .5, .4];
+    for (const scale of scales) {
+      const source = scaledCanvas(scale);
+      let best = await jpegBlob(source, .22);
+      if (best.size > TARGET_EXPORT_BYTES) continue;
+      let low = .22;
+      let high = .95;
+      for (let attempt = 0; attempt < 9; attempt += 1) {
+        const quality = (low + high) / 2;
+        const candidate = await jpegBlob(source, quality);
+        if (candidate.size <= TARGET_EXPORT_BYTES) {
+          best = candidate;
+          low = quality;
+        } else {
+          high = quality;
+        }
+      }
+      return { blob: best, width: source.width, height: source.height, size: best.size };
+    }
+    const fallback = scaledCanvas(.4);
+    const blob = await jpegBlob(fallback, .08);
+    if (blob.size > MAX_EXPORT_BYTES) throw new Error('تعذر ضغط الصورة لأقل من 300KB');
+    return { blob, width: fallback.width, height: fallback.height, size: blob.size };
+  };
+  const notify = (message) => {
+    const toast = $('#toast');
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2600);
+  };
   const save = (blob, name) => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -724,6 +771,9 @@
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 1000);
   };
+
+  const actions = document.querySelector('.actions');
+  if (actions) actions.insertAdjacentHTML('afterend', '<p class="export-limit-note"><i class="fa-solid fa-circle-check"></i>ضغط تلقائي: كل صورة أقل من 300KB</p>');
 
   const sheetInput = $('#sheetFile');
   sheetInput.onchange = null;
@@ -793,22 +843,48 @@
   });
 
   $('#downloadPage').onclick = async () => {
-    render();
-    save(await canvasBlob(), `best-50-page-${state.page}.png`);
+    const button = $('#downloadPage');
+    const original = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري الضغط';
+    try {
+      render();
+      const output = await optimizedImage();
+      save(output.blob, `best-50-page-${state.page}.jpg`);
+      notify(`تم التصدير بحجم ${Math.ceil(output.size / 1024)}KB`);
+    } catch (error) {
+      notify(error.message);
+    } finally {
+      button.disabled = false;
+      button.innerHTML = original;
+    }
   };
 
   $('#downloadAll').onclick = async () => {
     if (!state.rows.length) return;
+    const button = $('#downloadAll');
+    const original = button.innerHTML;
+    button.disabled = true;
+    button.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> جاري ضغط الصفحات';
     const zip = new JSZip();
     const oldPage = state.page;
-    for (let page = 1; page <= 5; page += 1) {
-      state.page = page;
+    try {
+      for (let page = 1; page <= 5; page += 1) {
+        state.page = page;
+        render();
+        const output = await optimizedImage();
+        zip.file(`best-50-page-${page}.jpg`, output.blob);
+      }
+      save(await zip.generateAsync({ type: 'blob' }), `best-50-${$('#month').value}-${$('#year').value}.zip`);
+      notify('تم تجهيز 5 صور، كل صورة أقل من 300KB');
+    } catch (error) {
+      notify(error.message);
+    } finally {
+      state.page = oldPage;
       render();
-      zip.file(`best-50-page-${page}.png`, await canvasBlob());
+      button.disabled = false;
+      button.innerHTML = original;
     }
-    state.page = oldPage;
-    render();
-    save(await zip.generateAsync({ type: 'blob' }), `best-50-${$('#month').value}-${$('#year').value}.zip`);
   };
 
   document.fonts.ready.then(render);
