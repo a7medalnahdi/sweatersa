@@ -8,8 +8,9 @@
   canvas.setAttribute('dir', 'ltr');
   const $ = (selector) => document.querySelector(selector);
   const state = {
-    rows: [], page: 1, photos: {}, photoMeta: {},
+    rows: [], page: 1, photos: {}, photoFiles: {}, photoMeta: {},
     template: 'celebration',
+    projectId: null, projectName: '',
     photoAdjust: {
       1: { zoom: 1, offsetY: 0 },
       2: { zoom: 1, offsetY: 0 },
@@ -46,6 +47,11 @@
     .template-picker{display:grid;gap:9px}.template-option{width:100%;min-height:72px;padding:8px;border:1px solid #e4e7ec;border-radius:14px;background:#fff;display:grid;grid-template-columns:76px 1fr 26px;align-items:center;gap:10px;text-align:right;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}.template-option:hover{border-color:#f5a274;transform:translateY(-1px)}.template-option.active{border-color:#f96714;box-shadow:0 0 0 3px #f9671415}.template-thumb{height:52px;border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:flex-end;justify-content:center;gap:4px;padding:6px}.template-thumb:before{content:'';position:absolute;inset:6px 8px auto;height:6px;border-radius:6px;background:currentColor;opacity:.9}.template-thumb i{position:relative;width:18px;border-radius:5px 5px 2px 2px;background:currentColor;opacity:.92}.template-thumb i:nth-child(1){height:18px}.template-thumb i:nth-child(2){height:27px}.template-thumb i:nth-child(3){height:20px}.template-thumb-celebration{color:#fff;background:linear-gradient(145deg,#ff9254,#ed4f00)}.template-thumb-editorial{color:#121212;background:linear-gradient(90deg,#f5f1eb 0 82%,#f96714 82%)}.template-thumb-midnight{color:#f96714;background:radial-gradient(circle at 80% 10%,#47200e,#111 70%)}.template-copy strong,.template-copy small{display:block}.template-copy strong{color:#101828;font-size:12px}.template-copy small{margin-top:3px;color:#98a2b3;font-size:9px}.template-check{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#f2f4f7;color:transparent;font-size:9px}.template-option.active .template-check{background:#f96714;color:#fff}.export-limit-note{margin:10px 0 0;color:#667085;font-size:10px;text-align:center}.export-limit-note i{margin-left:5px;color:#15803d}@media(max-width:520px){.template-option{grid-template-columns:66px 1fr 24px}.template-thumb{height:48px}}
   `;
   document.head.append(templateStyles);
+  const projectStyles = document.createElement('style');
+  projectStyles.textContent = `
+    .project-manager-btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-color:#f96714;background:#f96714;color:#fff}.project-manager-btn:hover{background:#e85b0b}.project-modal{position:fixed;inset:0;z-index:10050;padding:20px;display:none;place-items:center;background:#1018288f;backdrop-filter:blur(8px)}.project-modal.open{display:grid}.project-dialog{width:min(680px,100%);max-height:min(760px,92vh);overflow:hidden;border-radius:22px;background:#fff;box-shadow:0 30px 90px #10182845;display:flex;flex-direction:column}.project-head{padding:20px 22px;border-bottom:1px solid #eaecf0;display:flex;align-items:center;justify-content:space-between}.project-head h2{margin:0;font-size:17px}.project-close{width:38px;height:38px;border:0;border-radius:11px;background:#f2f4f7;color:#667085;cursor:pointer}.project-save-box{padding:18px 22px;border-bottom:1px solid #eaecf0;background:#fffaf7}.project-save-box label{display:block;margin-bottom:7px;color:#475467;font-size:11px;font-weight:900}.project-save-row{display:grid;grid-template-columns:1fr auto;gap:8px}.project-save-row input{height:45px;padding:0 13px;border:1px solid #d0d5dd;border-radius:11px;outline:0}.project-save-row input:focus{border-color:#f96714;box-shadow:0 0 0 3px #f9671415}.project-save-row button,.project-new{height:45px;padding:0 16px;border:0;border-radius:11px;background:#f96714;color:#fff;font-weight:900;cursor:pointer}.project-list-head{padding:16px 22px 10px;display:flex;align-items:center;justify-content:space-between}.project-list-head strong{font-size:12px}.project-new{height:36px;background:#fff4ed;color:#c2410c;font-size:10px}.project-list{padding:0 22px 22px;overflow:auto;display:grid;gap:8px}.project-card{padding:12px;border:1px solid #eaecf0;border-radius:14px;display:grid;grid-template-columns:40px 1fr auto;align-items:center;gap:10px}.project-card-icon{width:40px;height:40px;border-radius:11px;display:grid;place-items:center;background:#fff1e8;color:#f96714}.project-card-copy strong,.project-card-copy small{display:block}.project-card-copy strong{font-size:11px}.project-card-copy small{margin-top:4px;color:#98a2b3;font-size:9px}.project-card-actions{display:flex;gap:5px}.project-card-actions button{width:35px;height:35px;border:1px solid #e4e7ec;border-radius:9px;background:#fff;color:#667085;cursor:pointer}.project-card-actions button[data-open-project]{color:#f96714}.project-card-actions button[data-delete-project]{color:#dc2626}.project-empty{padding:38px 15px;border:1px dashed #d0d5dd;border-radius:14px;color:#98a2b3;text-align:center;font-size:11px}@media(max-width:620px){.project-modal{padding:8px}.project-dialog{border-radius:17px}.project-save-row{grid-template-columns:1fr}.project-save-row button{width:100%}.project-card{grid-template-columns:38px 1fr}.project-card-actions{grid-column:1/-1}.project-manager-btn{min-width:44px;width:44px;padding:0}.project-manager-btn span{display:none}}
+  `;
+  document.head.append(projectStyles);
   const PHOTO_PROMPT = `أنت محرر صور احترافي متخصص في تنقية وتحسين صور الأشخاص.
 
 عندما أرفع لك أي صورة تحتوي على شخص، نفّذ التعديلات التالية مباشرة على الصورة باستخدام أداة تعديل الصور، ولا تكتفِ بإعطائي برومبت أو شرح لما ستفعله:
@@ -119,7 +125,7 @@
 
   const headerSide = document.querySelector('.head-side');
   if (headerSide) {
-    headerSide.innerHTML = '<button type="button" class="btn copy-prompt-btn"><i class="fa-regular fa-copy"></i><span>انسخ البرومبت</span></button>';
+    headerSide.innerHTML = '<button type="button" class="btn project-manager-btn"><i class="fa-regular fa-floppy-disk"></i><span>حفظ المشروع</span></button><button type="button" class="btn copy-prompt-btn"><i class="fa-regular fa-copy"></i><span>انسخ البرومبت</span></button>';
     const copyButton = headerSide.querySelector('.copy-prompt-btn');
     copyButton.addEventListener('click', async () => {
       try {
@@ -173,6 +179,19 @@
       requestAnimationFrame(render);
     }));
   }
+
+  document.body.insertAdjacentHTML('beforeend', `
+    <div class="project-modal" id="top50ProjectModal" aria-hidden="true">
+      <section class="project-dialog" role="dialog" aria-modal="true" aria-labelledby="top50ProjectTitle">
+        <header class="project-head"><h2 id="top50ProjectTitle">مشاريع Top 50</h2><button type="button" class="project-close" aria-label="إغلاق"><i class="fa-solid fa-xmark"></i></button></header>
+        <div class="project-save-box">
+          <label for="top50ProjectName">اسم المشروع</label>
+          <div class="project-save-row"><input id="top50ProjectName" maxlength="80" placeholder="مثال: أفضل 50 — يوليو 2026"><button type="button" id="saveTop50Project"><i class="fa-regular fa-floppy-disk"></i> حفظ المشروع</button></div>
+        </div>
+        <div class="project-list-head"><strong>المشاريع المحفوظة</strong><button type="button" class="project-new" id="newTop50Project"><i class="fa-solid fa-copy"></i> حفظ كنسخة جديدة</button></div>
+        <div class="project-list" id="top50ProjectList"></div>
+      </section>
+    </div>`);
 
   const norm = (value) => String(value || '').trim().toLowerCase().replace(/[^a-z0-9$]/g, '');
   const columnIndex = (headers, names) => {
@@ -764,6 +783,180 @@
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 2600);
   };
+  const projectRequest = (request) => new Promise((resolve, reject) => {
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  const openProjectDb = () => new Promise((resolve, reject) => {
+    const request = indexedDB.open('sweater-top50-projects', 1);
+    request.onupgradeneeded = () => {
+      if (!request.result.objectStoreNames.contains('projects')) {
+        const store = request.result.createObjectStore('projects', { keyPath: 'id' });
+        store.createIndex('updatedAt', 'updatedAt');
+      }
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  const projectTransaction = async (mode, action) => {
+    const db = await openProjectDb();
+    const transaction = db.transaction('projects', mode);
+    const completed = new Promise((resolve, reject) => {
+      transaction.oncomplete = resolve;
+      transaction.onerror = () => reject(transaction.error);
+      transaction.onabort = () => reject(transaction.error || new Error('تعذر حفظ المشروع'));
+    });
+    const result = await action(transaction.objectStore('projects'));
+    await completed;
+    db.close();
+    return result;
+  };
+  const allProjects = () => projectTransaction('readonly', (store) => projectRequest(store.getAll()));
+  const putProject = (project) => projectTransaction('readwrite', (store) => projectRequest(store.put(project)));
+  const deleteProject = (id) => projectTransaction('readwrite', (store) => projectRequest(store.delete(id)));
+  const escapeProjectText = (value) => String(value ?? '').replace(/[&<>"']/g, (character) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+  const projectModal = $('#top50ProjectModal');
+  const projectNameInput = $('#top50ProjectName');
+  const defaultProjectName = () => `أفضل 50 — ${$('#month').value || 'الشهر'} ${$('#year').value || ''}`.trim();
+  const updateProjectButton = () => {
+    const label = document.querySelector('.project-manager-btn span');
+    if (label) label.textContent = state.projectName ? 'حفظ التعديلات' : 'حفظ المشروع';
+  };
+  const renderProjectList = async () => {
+    const list = $('#top50ProjectList');
+    const projects = (await allProjects()).sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)));
+    list.innerHTML = projects.length ? projects.map((project) => `
+      <article class="project-card">
+        <span class="project-card-icon"><i class="fa-regular fa-folder-open"></i></span>
+        <span class="project-card-copy"><strong>${escapeProjectText(project.name)}</strong><small>${new Intl.DateTimeFormat('ar-SA', { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(project.updatedAt))} · ${project.data?.rows?.length || 0} فائز</small></span>
+        <span class="project-card-actions"><button type="button" data-open-project="${project.id}" title="فتح المشروع"><i class="fa-solid fa-arrow-up-right-from-square"></i></button><button type="button" data-delete-project="${project.id}" title="حذف المشروع"><i class="fa-regular fa-trash-can"></i></button></span>
+      </article>`).join('') : '<div class="project-empty"><i class="fa-regular fa-folder-open"></i><p>لا توجد مشاريع محفوظة بعد.</p></div>';
+    list.querySelectorAll('[data-open-project]').forEach((button) => button.addEventListener('click', () => restoreProject(button.dataset.openProject)));
+    list.querySelectorAll('[data-delete-project]').forEach((button) => button.addEventListener('click', async () => {
+      if (!confirm('هل تريد حذف هذا المشروع؟')) return;
+      await deleteProject(button.dataset.deleteProject);
+      if (state.projectId === button.dataset.deleteProject) {
+        state.projectId = null;
+        state.projectName = '';
+        updateProjectButton();
+      }
+      await renderProjectList();
+      notify('تم حذف المشروع');
+    }));
+  };
+  const openProjectManager = async () => {
+    projectNameInput.value = state.projectName || defaultProjectName();
+    projectModal.classList.add('open');
+    projectModal.setAttribute('aria-hidden', 'false');
+    await renderProjectList();
+    setTimeout(() => projectNameInput.focus(), 60);
+  };
+  const closeProjectManager = () => {
+    projectModal.classList.remove('open');
+    projectModal.setAttribute('aria-hidden', 'true');
+  };
+  const saveCurrentProject = async () => {
+    const name = projectNameInput.value.trim();
+    if (!name) {
+      projectNameInput.focus();
+      return;
+    }
+    const now = new Date().toISOString();
+    const id = state.projectId || crypto.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const previous = state.projectId ? (await allProjects()).find((project) => project.id === state.projectId) : null;
+    await putProject({
+      id,
+      name,
+      createdAt: previous?.createdAt || now,
+      updatedAt: now,
+      data: {
+        rows: state.rows,
+        page: state.page,
+        template: state.template,
+        photoAdjust: state.photoAdjust,
+        photos: state.photoFiles,
+        month: $('#month').value,
+        year: $('#year').value,
+        title: $('#title').value
+      }
+    });
+    state.projectId = id;
+    state.projectName = name;
+    updateProjectButton();
+    await renderProjectList();
+    notify(`تم حفظ مشروع «${name}»`);
+  };
+  const loadProjectPhoto = (rank, blob) => new Promise((resolve) => {
+    const url = URL.createObjectURL(blob);
+    const image = new Image();
+    image.onload = () => {
+      state.photos[rank] = image;
+      state.photoFiles[rank] = blob;
+      state.photoMeta[rank] = { transparent: imageHasTransparency(image) };
+      const preview = document.querySelector(`[data-photo="${rank}"]`)?.parentElement.querySelector('img');
+      if (preview) { preview.src = url; preview.hidden = false; }
+      resolve();
+    };
+    image.onerror = resolve;
+    image.src = url;
+  });
+  const restoreProject = async (id) => {
+    const project = (await allProjects()).find((entry) => entry.id === id);
+    if (!project) return;
+    const data = project.data || {};
+    state.projectId = project.id;
+    state.projectName = project.name;
+    state.rows = Array.isArray(data.rows) ? data.rows : [];
+    state.page = Number(data.page) || 1;
+    state.template = THEMES[data.template] ? data.template : 'celebration';
+    state.photoAdjust = data.photoAdjust || state.photoAdjust;
+    state.photos = {};
+    state.photoFiles = {};
+    state.photoMeta = {};
+    $('#month').value = data.month || 'June';
+    $('#year').value = data.year || '2026';
+    $('#title').value = data.title || 'TOP 50';
+    $('#rowCount').textContent = state.rows.length;
+    $('#topRating').textContent = state.rows.length ? Math.max(...state.rows.map((row) => row.rating)).toFixed(2) : '—';
+    $('#totalPrize').textContent = state.rows.reduce((sum, row) => sum + row.prize, 0).toLocaleString('en-US');
+    $('#fileStatus').textContent = state.rows.length ? `تم استرجاع ${state.rows.length} سجل من المشروع.` : 'المشروع لا يحتوي بيانات فائزين.';
+    document.querySelectorAll('[data-template]').forEach((option) => {
+      const selected = option.dataset.template === state.template;
+      option.classList.toggle('active', selected);
+      option.setAttribute('aria-checked', String(selected));
+    });
+    document.querySelectorAll('.photo img').forEach((preview) => { preview.hidden = true; preview.removeAttribute('src'); });
+    Object.entries(state.photoAdjust).forEach(([rank, adjustment]) => {
+      const zoom = document.querySelector(`[data-photo-zoom="${rank}"]`);
+      const offset = document.querySelector(`[data-photo-offset="${rank}"]`);
+      if (zoom) zoom.value = Math.round((adjustment.zoom || 1) * 100);
+      if (offset) offset.value = adjustment.offsetY || 0;
+    });
+    await Promise.all(Object.entries(data.photos || {}).filter(([, blob]) => blob instanceof Blob).map(([rank, blob]) => loadProjectPhoto(Number(rank), blob)));
+    try { localStorage.setItem('sweater_top50_template', state.template); } catch (_) {}
+    updateProjectButton();
+    closeProjectManager();
+    render();
+    notify(`تم فتح مشروع «${project.name}»`);
+  };
+  document.querySelector('.project-manager-btn')?.addEventListener('click', openProjectManager);
+  projectModal.querySelector('.project-close')?.addEventListener('click', closeProjectManager);
+  projectModal.addEventListener('click', (event) => { if (event.target === projectModal) closeProjectManager(); });
+  $('#saveTop50Project').addEventListener('click', saveCurrentProject);
+  $('#newTop50Project').addEventListener('click', () => {
+    state.projectId = null;
+    state.projectName = '';
+    projectNameInput.value = defaultProjectName();
+    updateProjectButton();
+    projectNameInput.focus();
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && projectModal.classList.contains('open')) closeProjectManager();
+    if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 's') {
+      event.preventDefault();
+      openProjectManager();
+    }
+  });
   const save = (blob, name) => {
     const link = document.createElement('a');
     link.href = URL.createObjectURL(blob);
@@ -800,6 +993,7 @@
       image.onload = () => {
         const rank = Number(input.dataset.photo);
         state.photos[rank] = image;
+        state.photoFiles[rank] = input.files[0];
         state.photoMeta[rank] = { transparent: imageHasTransparency(image) };
         const preview = input.parentElement.querySelector('img');
         if (preview) {
