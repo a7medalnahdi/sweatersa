@@ -5,6 +5,7 @@
   if (!canvas || !window.XLSX || !window.JSZip) return;
 
   const ctx = canvas.getContext('2d');
+  canvas.setAttribute('dir', 'ltr');
   const $ = (selector) => document.querySelector(selector);
   const state = {
     rows: [], page: 1, photos: {}, photoMeta: {},
@@ -238,7 +239,7 @@
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillStyle = '#fff';
-    const placeholderLabel = `صورة المركز ${rank}`;
+    const placeholderLabel = `PLACE ${rank} PHOTO`;
     ctx.font = `900 ${fitFont(placeholderLabel, w - 80, 54, 900, 34)}px LamaSans, Arial, sans-serif`;
     ctx.fillText(placeholderLabel, cx, top + h * .83);
   };
@@ -435,6 +436,7 @@
   };
 
   const render = () => {
+    ctx.direction = 'ltr';
     document.querySelectorAll('#pages button').forEach((button, index) => {
       button.classList.toggle('active', index + 1 === state.page);
     });
