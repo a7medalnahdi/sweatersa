@@ -6,7 +6,14 @@
 
   const ctx = canvas.getContext('2d');
   const $ = (selector) => document.querySelector(selector);
-  const state = { rows: [], page: 1, photos: {} };
+  const state = {
+    rows: [], page: 1, photos: {}, photoMeta: {},
+    photoAdjust: {
+      1: { zoom: 1, offsetY: 0 },
+      2: { zoom: 1, offsetY: 0 },
+      3: { zoom: 1, offsetY: 0 }
+    }
+  };
   const ORANGE = '#f96714';
   const INK = '#151515';
 
@@ -197,8 +204,22 @@
     ctx.fillText(`أضف صورة ${rank}`, cx, top + h * .83);
   };
 
+  const imageHasTransparency = (image) => {
+    try {
+      const sample = document.createElement('canvas');
+      sample.width = 12;
+      sample.height = 12;
+      const sampleContext = sample.getContext('2d', { willReadFrequently: true });
+      sampleContext.drawImage(image, 0, 0, 12, 12);
+      const pixels = sampleContext.getImageData(0, 0, 12, 12).data;
+      for (let index = 3; index < pixels.length; index += 4) if (pixels[index] < 245) return true;
+    } catch (_) {}
+    return false;
+  };
+
   const drawPortrait = (rank, cx, bottom, width, height) => {
     const image = state.photos[rank];
+    const adjustment = state.photoAdjust[rank];
     ctx.save();
     ctx.shadowColor = '#8b260055';
     ctx.shadowBlur = 42;
@@ -208,18 +229,59 @@
       ctx.restore();
       return;
     }
+    const scale = Math.min(width / image.width, height / image.height) * adjustment.zoom;
+    const drawWidth = image.width * scale;
+    const drawHeight = image.height * scale;
+    const drawX = cx - drawWidth / 2;
+    const drawY = bottom - drawHeight + adjustment.offsetY;
+    if (state.photoMeta[rank]?.transparent) {
+      ctx.drawImage(image, drawX, drawY, drawWidth, drawHeight);
+      ctx.restore();
+      return;
+    }
     const top = bottom - height;
     round(cx - width / 2, top, width, height, 150);
     ctx.clip();
-    const scale = Math.max(width / image.width, height / image.height);
-    const drawWidth = image.width * scale;
-    const drawHeight = image.height * scale;
-    ctx.drawImage(image, cx - drawWidth / 2, top + height - drawHeight, drawWidth, drawHeight);
+    const coverScale = Math.max(width / image.width, height / image.height) * adjustment.zoom;
+    const coverWidth = image.width * coverScale;
+    const coverHeight = image.height * coverScale;
+    ctx.drawImage(image, cx - coverWidth / 2, top + height - coverHeight + adjustment.offsetY, coverWidth, coverHeight);
     ctx.restore();
     ctx.save();
     ctx.strokeStyle = '#ffffff75';
     ctx.lineWidth = 8;
     round(cx - width / 2, top, width, height, 150);
+    ctx.stroke();
+    ctx.restore();
+  };
+
+  const drawTrophyBackdrop = () => {
+    ctx.save();
+    ctx.globalAlpha = .16;
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 38;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    ctx.beginPath();
+    ctx.moveTo(690, 910);
+    ctx.lineTo(750, 1480);
+    ctx.quadraticCurveTo(805, 1810, 1000, 1850);
+    ctx.quadraticCurveTo(1195, 1810, 1250, 1480);
+    ctx.lineTo(1310, 910);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(700, 1040);
+    ctx.quadraticCurveTo(430, 980, 380, 1240);
+    ctx.quadraticCurveTo(350, 1480, 690, 1580);
+    ctx.moveTo(1300, 1040);
+    ctx.quadraticCurveTo(1570, 980, 1620, 1240);
+    ctx.quadraticCurveTo(1650, 1480, 1310, 1580);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(1000, 1850);
+    ctx.lineTo(1000, 1990);
+    ctx.moveTo(820, 1990);
+    ctx.lineTo(1180, 1990);
     ctx.stroke();
     ctx.restore();
   };
@@ -281,9 +343,11 @@
     ctx.lineWidth = 4;
     ctx.stroke();
 
-    drawPortrait(2, 520, 1960, 520, 1020);
-    drawPortrait(3, 1480, 1960, 520, 1020);
-    drawPortrait(1, 1000, 1980, 650, 1240);
+    drawTrophyBackdrop();
+
+    drawPortrait(2, 500, 2030, 590, 1120);
+    drawPortrait(3, 1500, 2030, 590, 1120);
+    drawPortrait(1, 1000, 2070, 760, 1410);
 
     const fade = ctx.createLinearGradient(0, 1680, 0, 2090);
     fade.addColorStop(0, '#f9671400');
@@ -364,12 +428,36 @@
       if (!input.files[0]) return;
       const image = new Image();
       image.onload = () => {
-        state.photos[Number(input.dataset.photo)] = image;
+        const rank = Number(input.dataset.photo);
+        state.photos[rank] = image;
+        state.photoMeta[rank] = { transparent: imageHasTransparency(image) };
         render();
       };
       image.src = URL.createObjectURL(input.files[0]);
     });
   });
+
+  const photosStep = document.querySelector('.photos')?.closest('.step');
+  if (photosStep) {
+    photosStep.insertAdjacentHTML('beforeend', `
+      <div class="photo-adjustments">
+        <div class="adjustments-title"><strong>ضبط الصور</strong><span>عدّل الحجم والارتفاع لكل فائز</span></div>
+        ${[[1, 'الأول'], [2, 'الثاني'], [3, 'الثالث']].map(([rank, label]) => `
+          <div class="adjust-row">
+            <b>${label}</b>
+            <label><span>الحجم</span><input type="range" min="70" max="145" value="100" data-photo-zoom="${rank}"></label>
+            <label><span>الارتفاع</span><input type="range" min="-180" max="180" value="0" data-photo-offset="${rank}"></label>
+          </div>`).join('')}
+      </div>`);
+    document.querySelectorAll('[data-photo-zoom]').forEach((input) => input.addEventListener('input', () => {
+      state.photoAdjust[Number(input.dataset.photoZoom)].zoom = Number(input.value) / 100;
+      requestAnimationFrame(render);
+    }));
+    document.querySelectorAll('[data-photo-offset]').forEach((input) => input.addEventListener('input', () => {
+      state.photoAdjust[Number(input.dataset.photoOffset)].offsetY = Number(input.value);
+      requestAnimationFrame(render);
+    }));
+  }
 
   ['month', 'year', 'title'].forEach((id) => $('#' + id).addEventListener('input', () => requestAnimationFrame(render)));
   document.querySelectorAll('#pages button').forEach((button, index) => {
