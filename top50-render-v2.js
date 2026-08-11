@@ -9,6 +9,7 @@
   const $ = (selector) => document.querySelector(selector);
   const state = {
     rows: [], page: 1, photos: {}, photoMeta: {},
+    template: 'celebration',
     photoAdjust: {
       1: { zoom: 1, offsetY: 0 },
       2: { zoom: 1, offsetY: 0 },
@@ -17,6 +18,32 @@
   };
   const ORANGE = '#f96714';
   const INK = '#151515';
+  const THEMES = {
+    celebration: {
+      label: 'احتفالي', description: 'هوية سويتر الحيوية',
+      background: '#f96714', surface: '#fffaf5', text: '#151515', muted: '#6b6b6b',
+      hero: '#ffffff', accent: '#f96714', row: '#fff8f0e8', footer: '#ffffffb8', radius: 82
+    },
+    editorial: {
+      label: 'تحريري', description: 'أبيض، جريء وواضح',
+      background: '#f5f1eb', surface: '#ffffff', text: '#101010', muted: '#68635d',
+      hero: '#101010', accent: '#f96714', row: '#ffffff', footer: '#10101099', radius: 34
+    },
+    midnight: {
+      label: 'ليلي', description: 'أسود فاخر وبارز',
+      background: '#111111', surface: '#202020', text: '#ffffff', muted: '#b9b9b9',
+      hero: '#ffffff', accent: '#ff7627', row: '#202020', footer: '#ffffff9c', radius: 52
+    }
+  };
+  try {
+    const savedTemplate = localStorage.getItem('sweater_top50_template');
+    if (THEMES[savedTemplate]) state.template = savedTemplate;
+  } catch (_) {}
+  const templateStyles = document.createElement('style');
+  templateStyles.textContent = `
+    .template-picker{display:grid;gap:9px}.template-option{width:100%;min-height:72px;padding:8px;border:1px solid #e4e7ec;border-radius:14px;background:#fff;display:grid;grid-template-columns:76px 1fr 26px;align-items:center;gap:10px;text-align:right;cursor:pointer;transition:border-color .18s,box-shadow .18s,transform .18s}.template-option:hover{border-color:#f5a274;transform:translateY(-1px)}.template-option.active{border-color:#f96714;box-shadow:0 0 0 3px #f9671415}.template-thumb{height:52px;border-radius:10px;overflow:hidden;position:relative;display:flex;align-items:flex-end;justify-content:center;gap:4px;padding:6px}.template-thumb:before{content:'';position:absolute;inset:6px 8px auto;height:6px;border-radius:6px;background:currentColor;opacity:.9}.template-thumb i{position:relative;width:18px;border-radius:5px 5px 2px 2px;background:currentColor;opacity:.92}.template-thumb i:nth-child(1){height:18px}.template-thumb i:nth-child(2){height:27px}.template-thumb i:nth-child(3){height:20px}.template-thumb-celebration{color:#fff;background:linear-gradient(145deg,#ff9254,#ed4f00)}.template-thumb-editorial{color:#121212;background:linear-gradient(90deg,#f5f1eb 0 82%,#f96714 82%)}.template-thumb-midnight{color:#f96714;background:radial-gradient(circle at 80% 10%,#47200e,#111 70%)}.template-copy strong,.template-copy small{display:block}.template-copy strong{color:#101828;font-size:12px}.template-copy small{margin-top:3px;color:#98a2b3;font-size:9px}.template-check{width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:#f2f4f7;color:transparent;font-size:9px}.template-option.active .template-check{background:#f96714;color:#fff}@media(max-width:520px){.template-option{grid-template-columns:66px 1fr 24px}.template-thumb{height:48px}}
+  `;
+  document.head.append(templateStyles);
   const PHOTO_PROMPT = `أنت محرر صور احترافي متخصص في تنقية وتحسين صور الأشخاص.
 
 عندما أرفع لك أي صورة تحتوي على شخص، نفّذ التعديلات التالية مباشرة على الصورة باستخدام أداة تعديل الصور، ولا تكتفِ بإعطائي برومبت أو شرح لما ستفعله:
@@ -115,6 +142,36 @@
     });
   }
 
+  const designStep = $('#month')?.closest('.step');
+  if (designStep) {
+    designStep.insertAdjacentHTML('beforebegin', `
+      <section class="step template-step">
+        <h2><b>2</b>اختر قالب التصميم</h2>
+        <div class="template-picker" role="radiogroup" aria-label="قالب التصميم">
+          ${Object.entries(THEMES).map(([key, theme]) => `
+            <button type="button" class="template-option${key === state.template ? ' active' : ''}" data-template="${key}" role="radio" aria-checked="${key === state.template}">
+              <span class="template-thumb template-thumb-${key}" aria-hidden="true"><i></i><i></i><i></i></span>
+              <span class="template-copy"><strong>${theme.label}</strong><small>${theme.description}</small></span>
+              <span class="template-check"><i class="fa-solid fa-check"></i></span>
+            </button>`).join('')}
+        </div>
+      </section>`);
+    const designNumber = designStep.querySelector('h2 b');
+    if (designNumber) designNumber.textContent = '3';
+    const photosNumber = document.querySelector('.photos')?.closest('.step')?.querySelector('h2 b');
+    if (photosNumber) photosNumber.textContent = '4';
+    document.querySelectorAll('[data-template]').forEach((button) => button.addEventListener('click', () => {
+      state.template = button.dataset.template;
+      try { localStorage.setItem('sweater_top50_template', state.template); } catch (_) {}
+      document.querySelectorAll('[data-template]').forEach((option) => {
+        const selected = option === button;
+        option.classList.toggle('active', selected);
+        option.setAttribute('aria-checked', String(selected));
+      });
+      requestAnimationFrame(render);
+    }));
+  }
+
   const norm = (value) => String(value || '').trim().toLowerCase().replace(/[^a-z0-9$]/g, '');
   const columnIndex = (headers, names) => {
     const normalized = headers.map(norm);
@@ -196,6 +253,45 @@
   };
 
   const drawBackground = () => {
+    const theme = THEMES[state.template];
+    if (state.template === 'editorial') {
+      ctx.fillStyle = theme.background;
+      ctx.fillRect(0, 0, 2000, 3000);
+      ctx.fillStyle = '#f96714';
+      ctx.fillRect(1770, 0, 230, 3000);
+      ctx.fillStyle = '#101010';
+      ctx.fillRect(0, 0, 34, 3000);
+      ctx.save();
+      ctx.globalAlpha = .055;
+      ctx.strokeStyle = '#101010';
+      ctx.lineWidth = 3;
+      for (let x = 150; x < 1800; x += 165) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 3000); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.fillStyle = '#f9671410';
+      ctx.beginPath(); ctx.arc(250, 2520, 500, 0, Math.PI * 2); ctx.fill();
+      return;
+    }
+    if (state.template === 'midnight') {
+      const dark = ctx.createRadialGradient(1550, 350, 80, 1000, 1500, 2100);
+      dark.addColorStop(0, '#44200f');
+      dark.addColorStop(.42, '#1d1714');
+      dark.addColorStop(1, '#090909');
+      ctx.fillStyle = dark;
+      ctx.fillRect(0, 0, 2000, 3000);
+      ctx.save();
+      ctx.globalAlpha = .2;
+      ctx.strokeStyle = theme.accent;
+      ctx.lineWidth = 5;
+      for (let radius = 360; radius < 1500; radius += 170) {
+        ctx.beginPath(); ctx.arc(1740, 300, radius, 0, Math.PI * 2); ctx.stroke();
+      }
+      ctx.restore();
+      ctx.fillStyle = '#f96714';
+      ctx.fillRect(0, 0, 2000, 20);
+      return;
+    }
     const gradient = ctx.createRadialGradient(930, 330, 80, 1020, 1440, 1900);
     gradient.addColorStop(0, '#ff9254');
     gradient.addColorStop(.44, '#ff721f');
@@ -252,8 +348,40 @@
   const drawHeroTitle = () => {
     const month = $('#month').value || 'June';
     const year = $('#year').value || '2026';
+    const theme = THEMES[state.template];
     ctx.textAlign = 'center';
     ctx.textBaseline = 'alphabetic';
+    if (state.template === 'editorial') {
+      ctx.textAlign = 'left';
+      ctx.fillStyle = theme.accent;
+      round(145, 116, 190, 52, 26); ctx.fill();
+      ctx.fillStyle = '#fff';
+      ctx.font = '900 25px LamaSans, Arial, sans-serif';
+      ctx.fillText('TOP PERFORMERS', 175, 152);
+      ctx.fillStyle = theme.hero;
+      ctx.font = `900 ${fitFont('BEST 3 BIKERS', 1420, 214, 900, 140)}px LamaSans, Arial, sans-serif`;
+      ctx.fillText('BEST 3 BIKERS', 145, 365);
+      ctx.fillStyle = theme.accent;
+      ctx.fillRect(145, 410, 690, 11);
+      ctx.fillStyle = theme.muted;
+      ctx.font = '600 61px LamaSans, Arial, sans-serif';
+      ctx.fillText(`${month} ${year}  /  Congratulations`, 145, 505);
+      return;
+    }
+    if (state.template === 'midnight') {
+      ctx.fillStyle = theme.accent;
+      ctx.font = '900 34px LamaSans, Arial, sans-serif';
+      ctx.fillText('SWEATER PERFORMANCE AWARDS', 1000, 118);
+      ctx.fillStyle = theme.hero;
+      ctx.font = '900 218px LamaSans, Arial, sans-serif';
+      ctx.fillText('BEST 3 BIKERS', 1000, 345);
+      ctx.fillStyle = '#ffffffb5';
+      ctx.font = '500 66px LamaSans, Arial, sans-serif';
+      ctx.fillText(`${month} ${year}  •  Congratulations`, 1000, 455);
+      ctx.fillStyle = theme.accent;
+      round(850, 500, 300, 12, 6); ctx.fill();
+      return;
+    }
     ctx.font = '900 214px LamaSans, Arial, sans-serif';
     ctx.fillStyle = '#9d2b00';
     ctx.fillText('BEST 3 BIKERS', 1000, 344);
@@ -407,8 +535,8 @@
 
   const drawTrophyBackdrop = () => {
     ctx.save();
-    ctx.globalAlpha = .16;
-    ctx.strokeStyle = '#fff';
+    ctx.globalAlpha = state.template === 'editorial' ? .1 : .16;
+    ctx.strokeStyle = state.template === 'editorial' ? '#f96714' : '#fff';
     ctx.lineWidth = 38;
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
@@ -437,57 +565,67 @@
   };
 
   const drawWinnerCard = (rank, x, y, width, height) => {
+    const theme = THEMES[state.template];
     const winner = state.rows.find((row) => row.place === rank) || { name: `Winner ${rank}`, prize: 0, rating: 0 };
     const person = splitName(winner.name, rank);
     ctx.save();
     ctx.shadowColor = '#8f2b0028';
     ctx.shadowBlur = 34;
     ctx.shadowOffsetY = 22;
-    ctx.fillStyle = '#fffaf5';
-    round(x, y, width, height, 56);
+    ctx.fillStyle = theme.surface;
+    round(x, y, width, height, state.template === 'editorial' ? 30 : 56);
     ctx.fill();
     ctx.restore();
+
+    if (state.template === 'editorial') {
+      ctx.fillStyle = theme.accent;
+      round(x, y, 16, height, 8); ctx.fill();
+    } else if (state.template === 'midnight') {
+      ctx.strokeStyle = '#ffffff18'; ctx.lineWidth = 3;
+      round(x, y, width, height, 56); ctx.stroke();
+    }
 
     const cx = x + width / 2;
     drawMedal(cx, y - (rank === 1 ? 65 : 55), rank, rank === 1 ? 100 : 88);
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#a9adb2';
+    ctx.fillStyle = theme.muted;
     ctx.font = '900 25px LamaSans, Arial, sans-serif';
     ctx.fillText('BIKER ID', cx, y + 190);
-    ctx.fillStyle = INK;
+    ctx.fillStyle = theme.text;
     ctx.font = '900 108px LamaSans, Arial, sans-serif';
     ctx.fillText(person.id, cx, y + 300);
-    ctx.fillStyle = '#6b6b6b';
+    ctx.fillStyle = theme.muted;
     ctx.font = `900 ${fitFont(person.name.toUpperCase(), width - 70, 48, 900, 28)}px LamaSans, Arial, sans-serif`;
     ctx.fillText(person.name.toUpperCase(), cx, y + 382);
 
-    ctx.fillStyle = ORANGE;
+    ctx.fillStyle = theme.accent;
     round(x + 48, y + 425, width - 96, 112, 56);
     ctx.fill();
     drawPrice(winner.prize, cx, y + 501, 65, '#fff');
 
-    ctx.fillStyle = '#f2f3f5';
+    ctx.fillStyle = state.template === 'midnight' ? '#ffffff12' : '#f2f3f5';
     round(x + 48, y + 565, width - 96, 90, 28);
     ctx.fill();
     ctx.textAlign = 'left';
-    ctx.fillStyle = '#6d7278';
+    ctx.fillStyle = theme.muted;
     ctx.font = '800 28px LamaSans, Arial, sans-serif';
     ctx.fillText('RATING', x + 78, y + 622);
     ctx.textAlign = 'right';
-    ctx.fillStyle = INK;
+    ctx.fillStyle = theme.text;
     ctx.font = '900 44px LamaSans, Arial, sans-serif';
     ctx.fillText(`${winner.rating.toFixed(2)}  ★`, x + width - 74, y + 624);
   };
 
   const drawCover = () => {
+    const theme = THEMES[state.template];
     drawBackground();
-    confetti();
+    if (state.template === 'celebration') confetti();
     drawHeroTitle();
 
-    ctx.fillStyle = '#ffffff16';
+    ctx.fillStyle = state.template === 'editorial' ? '#f967140c' : state.template === 'midnight' ? '#ffffff08' : '#ffffff16';
     round(120, 660, 1760, 1270, 110);
     ctx.fill();
-    ctx.strokeStyle = '#ffffff25';
+    ctx.strokeStyle = state.template === 'editorial' ? '#10101018' : '#ffffff25';
     ctx.lineWidth = 4;
     ctx.stroke();
 
@@ -498,8 +636,8 @@
     drawPortrait(1, 1000, 2070, 760, 1410);
 
     const fade = ctx.createLinearGradient(0, 1680, 0, 2090);
-    fade.addColorStop(0, '#f9671400');
-    fade.addColorStop(1, '#f96714');
+    fade.addColorStop(0, `${theme.background}00`);
+    fade.addColorStop(1, theme.background);
     ctx.fillStyle = fade;
     ctx.fillRect(0, 1660, 2000, 450);
 
@@ -508,39 +646,64 @@
     drawWinnerCard(3, 1335, 2130, 550, 710);
 
     ctx.textAlign = 'center';
-    ctx.fillStyle = '#ffffffb8';
+    ctx.fillStyle = theme.footer;
     ctx.font = '700 29px LamaSans, Arial, sans-serif';
     ctx.fillText('SWEATER • TOP PERFORMANCE RECOGNITION', 1000, 2940);
   };
 
   const drawList = () => {
     drawBackground();
+    const theme = THEMES[state.template];
     const month = $('#month').value || 'June';
     const year = $('#year').value || '2026';
-    ctx.textAlign = 'center';
-    ctx.fillStyle = '#fff';
-    ctx.font = '900 250px LamaSans, Arial, sans-serif';
-    ctx.fillText($('#title').value || 'TOP 50', 1000, 270);
-    ctx.font = '500 74px LamaSans, Arial, sans-serif';
-    ctx.fillText(`in ${month} ${year}  •  Congratulations`, 1000, 390);
+    if (state.template === 'editorial') {
+      ctx.textAlign = 'left';
+      ctx.fillStyle = theme.hero;
+      ctx.font = '900 240px LamaSans, Arial, sans-serif';
+      ctx.fillText($('#title').value || 'TOP 50', 145, 285);
+      ctx.fillStyle = theme.accent;
+      ctx.fillRect(145, 335, 460, 12);
+      ctx.fillStyle = theme.muted;
+      ctx.font = '600 58px LamaSans, Arial, sans-serif';
+      ctx.fillText(`${month} ${year}  /  Congratulations`, 145, 430);
+    } else {
+      ctx.textAlign = 'center';
+      ctx.fillStyle = theme.hero;
+      ctx.font = '900 250px LamaSans, Arial, sans-serif';
+      ctx.fillText($('#title').value || 'TOP 50', 1000, 270);
+      ctx.font = '500 74px LamaSans, Arial, sans-serif';
+      ctx.fillText(`in ${month} ${year}  •  Congratulations`, 1000, 390);
+      if (state.template === 'midnight') {
+        ctx.fillStyle = theme.accent;
+        round(880, 425, 240, 10, 5); ctx.fill();
+      }
+    }
     const start = 3 + (state.page - 2) * 12;
     state.rows.slice(start, start + 12).forEach((row, index) => {
       const y = 500 + index * 195;
-      ctx.fillStyle = '#fff8f0e8';
-      round(190, y, 1620, 165, 82);
+      ctx.fillStyle = theme.row;
+      round(190, y, 1620, 165, theme.radius);
       ctx.fill();
+      if (state.template !== 'celebration') {
+        ctx.strokeStyle = state.template === 'editorial' ? '#10101016' : '#ffffff12';
+        ctx.lineWidth = 3; round(190, y, 1620, 165, theme.radius); ctx.stroke();
+      }
+      if (state.template === 'editorial') {
+        ctx.fillStyle = theme.accent;
+        round(190, y, 18, 165, 9); ctx.fill();
+      }
       ctx.textBaseline = 'middle';
       ctx.textAlign = 'left';
-      ctx.fillStyle = ORANGE;
+      ctx.fillStyle = theme.accent;
       ctx.font = '900 68px LamaSans, Arial, sans-serif';
       ctx.fillText(`${row.place}-`, 235, y + 82);
-      ctx.fillStyle = INK;
+      ctx.fillStyle = theme.text;
       ctx.font = `600 ${fitFont(row.name, 790, 57, 600, 34)}px LamaSans, Arial, sans-serif`;
       ctx.fillText(row.name, 390, y + 82);
       ctx.textAlign = 'right';
       ctx.font = '900 55px LamaSans, Arial, sans-serif';
       ctx.fillText(row.rating.toFixed(2), 1430, y + 82);
-      drawPrice(row.prize, 1750, y + 105, 75, ORANGE, 'right');
+      drawPrice(row.prize, 1750, y + 105, 75, theme.accent, 'right');
       ctx.textBaseline = 'alphabetic';
     });
   };
