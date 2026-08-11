@@ -21,6 +21,13 @@
   const riyalCanvases = new Map();
   riyalImage.onload = () => render();
   riyalImage.src = './assets/saudi-riyal-symbol.svg';
+  const medalImages = {};
+  [1, 2, 3].forEach((rank) => {
+    const image = new Image();
+    image.onload = () => render();
+    image.src = `./assets/top50-medal-${rank}.png`;
+    medalImages[rank] = image;
+  });
 
   const round = (x, y, w, h, r) => {
     ctx.beginPath();
@@ -190,6 +197,28 @@
     : rank === 2 ? ['#f4f7fb', '#8e9aa7'] : ['#ffb07a', '#a9491c'];
 
   const drawMedal = (cx, cy, rank, radius = 92) => {
+    const suppliedMedal = medalImages[rank];
+    if (suppliedMedal?.complete && suppliedMedal.naturalWidth) {
+      const sourceX = 528;
+      const sourceY = 294;
+      const sourceWidth = 1073;
+      const sourceHeight = 1522;
+      const drawWidth = radius * 2.55;
+      const drawHeight = drawWidth * (sourceHeight / sourceWidth);
+      const circleCenterRatio = 476 / sourceHeight;
+      ctx.save();
+      ctx.shadowColor = '#5d210038';
+      ctx.shadowBlur = radius * .22;
+      ctx.shadowOffsetY = radius * .12;
+      ctx.drawImage(
+        suppliedMedal,
+        sourceX, sourceY, sourceWidth, sourceHeight,
+        cx - drawWidth / 2, cy - drawHeight * circleCenterRatio,
+        drawWidth, drawHeight
+      );
+      ctx.restore();
+      return;
+    }
     const [light, dark] = medalColor(rank);
     ctx.save();
     ctx.translate(cx, cy);
