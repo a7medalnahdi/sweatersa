@@ -16,6 +16,10 @@
   };
   const ORANGE = '#f96714';
   const INK = '#151515';
+  const riyalImage = new Image();
+  const riyalCanvases = new Map();
+  riyalImage.onload = () => render();
+  riyalImage.src = './assets/saudi-riyal-symbol.svg';
 
   const round = (x, y, w, h, r) => {
     ctx.beginPath();
@@ -66,6 +70,40 @@
       size -= 2;
     } while (size > min);
     return size;
+  };
+
+  const tintedRiyal = (color) => {
+    if (!riyalImage.complete || !riyalImage.naturalWidth) return null;
+    if (riyalCanvases.has(color)) return riyalCanvases.get(color);
+    const icon = document.createElement('canvas');
+    icon.width = 90;
+    icon.height = 101;
+    const iconContext = icon.getContext('2d');
+    iconContext.drawImage(riyalImage, 0, 0, icon.width, icon.height);
+    iconContext.globalCompositeOperation = 'source-in';
+    iconContext.fillStyle = color;
+    iconContext.fillRect(0, 0, icon.width, icon.height);
+    riyalCanvases.set(color, icon);
+    return icon;
+  };
+
+  const drawPrice = (value, anchorX, baselineY, fontSize, color, align = 'center') => {
+    ctx.save();
+    ctx.textBaseline = 'alphabetic';
+    const text = Number(value || 0).toLocaleString('en-US');
+    ctx.font = `900 ${fontSize}px LamaSans, Arial, sans-serif`;
+    const textWidth = ctx.measureText(text).width;
+    const iconHeight = fontSize * .82;
+    const iconWidth = iconHeight * .895;
+    const gap = fontSize * .18;
+    const totalWidth = iconWidth + gap + textWidth;
+    const startX = align === 'right' ? anchorX - totalWidth : anchorX - totalWidth / 2;
+    const icon = tintedRiyal(color);
+    if (icon) ctx.drawImage(icon, startX, baselineY - iconHeight + fontSize * .08, iconWidth, iconHeight);
+    ctx.textAlign = 'left';
+    ctx.fillStyle = color;
+    ctx.fillText(text, startX + iconWidth + gap, baselineY);
+    ctx.restore();
   };
 
   const drawBackground = () => {
@@ -315,9 +353,7 @@
     ctx.fillStyle = ORANGE;
     round(x + 48, y + 408, width - 96, 112, 56);
     ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = '900 65px LamaSans, Arial, sans-serif';
-    ctx.fillText(`SAR ${winner.prize.toLocaleString('en-US')}`, cx, y + 484);
+    drawPrice(winner.prize, cx, y + 484, 65, '#fff');
 
     ctx.fillStyle = '#f2f3f5';
     round(x + 48, y + 548, width - 96, 90, 28);
@@ -393,9 +429,7 @@
       ctx.textAlign = 'right';
       ctx.font = '900 55px LamaSans, Arial, sans-serif';
       ctx.fillText(row.rating.toFixed(2), 1430, y + 82);
-      ctx.fillStyle = ORANGE;
-      ctx.font = '900 75px LamaSans, Arial, sans-serif';
-      ctx.fillText(`SAR ${row.prize.toLocaleString('en-US')}`, 1750, y + 82);
+      drawPrice(row.prize, 1750, y + 105, 75, ORANGE, 'right');
       ctx.textBaseline = 'alphabetic';
     });
   };
