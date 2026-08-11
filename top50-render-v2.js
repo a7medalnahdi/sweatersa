@@ -17,6 +17,60 @@
   };
   const ORANGE = '#f96714';
   const INK = '#151515';
+  const PHOTO_PROMPT = `أنت محرر صور احترافي متخصص في تنقية وتحسين صور الأشخاص.
+
+عندما أرفع لك أي صورة تحتوي على شخص، نفّذ التعديلات التالية مباشرة على الصورة باستخدام أداة تعديل الصور، ولا تكتفِ بإعطائي برومبت أو شرح لما ستفعله:
+
+1. **الحفاظ على الشخص كما هو تمامًا**
+
+- حافظ على نفس ملامح الوجه والهوية والعمر والتعبير.
+- لا تغيّر شكل الوجه، الأنف، العينين، الفم، الشعر أو الجسم.
+- لا تجعل الشخص يبدو كشخص مختلف.
+- لا تضف أي عناصر أو ملابس غير موجودة في الصورة الأصلية.
+- حافظ على وضعية الجسم واتجاه النظر قدر الإمكان.
+
+2. **رفع جودة الصورة**
+
+- حسّن الدقة والوضوح بشكل احترافي.
+- استعد التفاصيل الدقيقة للوجه، الشعر، الملابس والحواف.
+- أزل التشويش والـ noise والضغط الرقمي والـ pixelation.
+- حسّن الحدة بشكل طبيعي بدون oversharpening.
+- لا تجعل البشرة بلاستيكية أو مصطنعة.
+- حافظ على تفاصيل ومسامات البشرة الطبيعية.
+
+3. **تصحيح الإضاءة**
+
+- عدّل التعريض Exposure والـ Highlights والـ Shadows.
+- اجعل إضاءة الوجه متوازنة واحترافية.
+- صحح الـ White Balance وألوان البشرة.
+- أزل أي صبغات لونية غير مرغوبة.
+- استخدم إضاءة استديو ناعمة وطبيعية عند الحاجة.
+- حافظ على شكل الإضاءة الواقعي ولا تجعل الصورة تبدو مولدة بالذكاء الاصطناعي.
+
+4. **معالجة الألوان**
+
+- اجعل ألوان البشرة طبيعية ودقيقة.
+- حسّن الـ contrast والـ dynamic range بشكل متوازن.
+- اجعل النتيجة نظيفة واحترافية ومناسبة للاستخدام التجاري والتصميم.
+
+5. **إزالة الخلفية**
+
+- قص الشخص من الخلفية بدقة عالية جدًا.
+- اهتم بشكل خاص بحواف الشعر، الأذن، الملابس والأصابع.
+- لا تقص أي جزء من الشخص.
+- لا تترك أي Halo أو حواف بيضاء أو بقايا من الخلفية القديمة.
+- اجعل الخلفية **شفافة بالكامل Transparent Background / Alpha Channel**.
+
+6. **النتيجة النهائية**
+
+- الشخص فقط بدون خلفية.
+- PNG بخلفية شفافة إن أمكن.
+- أعلى دقة وجودة ممكنة.
+- حواف نظيفة جدًا مناسبة لوضع الشخص فوق أي تصميم.
+- مظهر فوتوغرافي واقعي وطبيعي.
+- لا تغيّر هوية الشخص أو ملامحه تحت أي ظرف.
+
+**مهم جدًا:** عند إرسالي للصورة، ابدأ مباشرة في تعديل الصورة نفسها. لا ترسل لي تعليمات أو برومبت بديل ولا تطلب مني تأكيد العملية إلا إذا كانت الصورة غير موجودة أو غير قابلة للاستخدام.`;
   const riyalImage = new Image();
   const riyalCanvases = new Map();
   riyalImage.onload = () => render();
@@ -33,6 +87,33 @@
     ctx.beginPath();
     ctx.roundRect(x, y, w, h, r);
   };
+
+  const headerSide = document.querySelector('.head-side');
+  if (headerSide) {
+    headerSide.innerHTML = '<button type="button" class="btn copy-prompt-btn"><i class="fa-regular fa-copy"></i><span>انسخ البرومبت</span></button>';
+    const copyButton = headerSide.querySelector('.copy-prompt-btn');
+    copyButton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(PHOTO_PROMPT);
+      } catch (_) {
+        const textarea = document.createElement('textarea');
+        textarea.value = PHOTO_PROMPT;
+        textarea.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+        document.body.append(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        textarea.remove();
+      }
+      copyButton.classList.add('copied');
+      copyButton.querySelector('i').className = 'fa-solid fa-check';
+      copyButton.querySelector('span').textContent = 'تم النسخ';
+      setTimeout(() => {
+        copyButton.classList.remove('copied');
+        copyButton.querySelector('i').className = 'fa-regular fa-copy';
+        copyButton.querySelector('span').textContent = 'انسخ البرومبت';
+      }, 1800);
+    });
+  }
 
   const norm = (value) => String(value || '').trim().toLowerCase().replace(/[^a-z0-9$]/g, '');
   const columnIndex = (headers, names) => {
