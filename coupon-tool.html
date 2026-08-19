@@ -624,6 +624,77 @@ const locks = {};
 let suppressSync = false;
 let idCounter = 100;
 
+function bindCanvasImages() {
+  let logo = $('logoPreview');
+  if (!logo) {
+    logo = document.createElement('img');
+    logo.id = 'logoPreview';
+    logo.dataset.type = 'logo';
+    logo.dataset.name = 'الشعار';
+    logo.className = 'movable hidden';
+    logo.alt = '';
+    logo.draggable = false;
+    logo.style.cssText = 'z-index:14;width:90px;top:15%;left:15%';
+    D.elementsContainer.appendChild(logo);
+  }
+  D.logoPreview = logo;
+  [...D.elementsContainer.querySelectorAll('img')].forEach(image => {
+    const src = image.getAttribute('src') || '';
+    if (/^https?:/i.test(src) && !image.crossOrigin) {
+      image.crossOrigin = 'anonymous';
+      image.src = src;
+    }
+  });
+  return logo;
+}
+
+function readImageFile(file) {
+  return new Promise((resolve, reject) => {
+    if (!file?.type?.startsWith('image/')) {
+      reject(new Error('اختر ملف صورة صالحًا'));
+      return;
+    }
+    if (file.size > 20 * 1024 * 1024) {
+      reject(new Error('حجم الصورة أكبر من 20MB'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('تعذر قراءة الصورة'));
+    reader.onload = () => {
+      const image = new Image();
+      image.onerror = () => reject(new Error('ملف الصورة غير صالح أو غير مدعوم'));
+      image.onload = () => resolve({ dataUrl: String(reader.result), image });
+      image.src = String(reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function waitForDesignAssets() {
+  if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
+  const images = [D.bgImg, ...D.elementsContainer.querySelectorAll('img')].filter(image => image?.src && image.style.display !== 'none');
+  await Promise.all(images.map(image => {
+    if (image.complete && image.naturalWidth > 0) return Promise.resolve();
+    if (typeof image.decode === 'function') return image.decode().catch(() => {});
+    return new Promise(resolve => {
+      const done = () => resolve();
+      image.addEventListener('load', done, { once: true });
+      image.addEventListener('error', done, { once: true });
+      setTimeout(done, 12000);
+    });
+  }));
+  await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+}
+
+const captureOptions = scale => ({
+  scale,
+  useCORS: true,
+  allowTaint: false,
+  imageTimeout: 15000,
+  backgroundColor: null,
+  logging: false
+});
+
 D.themeToggle.addEventListener('click', () => {
   document.documentElement.classList.toggle('dark');
   const dk = document.documentElement.classList.contains('dark');
@@ -697,10 +768,11 @@ const Hist = (() => {
     D.bgImg.src = state.bg;
     if (state.orientation !== orientation) setOrientation(state.orientation, false);
     
-    // Restore elements HTML
+    // Restore elements HTML and reconnect cached references to the new DOM nodes.
     D.elementsContainer.innerHTML = state.html;
+    bindCanvasImages();
     
-    // Re-bind specific inner instances like QR codes if necessary (Usually HTML capture holds the img src of generated QR, which works fine visually).
+    // QR images are preserved in the snapshot and remain editable through delegation.
     
     // Try to re-select
     if (activeEl) {
@@ -1123,22 +1195,39 @@ function renderQR(el) {
   }, 10);
 }
 
-D.bgUpload.addEventListener('change', e => {
+D.bgUpload.addEventListener('change', async e => {
   const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => { D.bgImg.src = ev.target.result; $$('.tpl-thumb').forEach(t => t.classList.remove('active')); Hist.push(); };
-  reader.readAsDataURL(file);
+  try {
+    const { dataUrl } = await readImageFile(file);
+    D.bgImg.src = dataUrl;
+    await D.bgImg.decode?.().catch(() => {});
+    $('.tpl-thumb').forEach(t => t.classList.remove('active'));
+    Hist.push();
+    toast('ok', 'تمت إضافة الخلفية', 'ظهرت الصورة في مساحة العمل وأصبحت جاهزة للتصدير.');
+  } catch (error) {
+    toast('err', 'تعذر إضافة الصورة', error.message || 'اختر صورة أخرى.');
+  } finally {
+    e.target.value = '';
+  }
 });
 
-D.logoUpload.addEventListener('change', e => {
+D.logoUpload.addEventListener('change', async e => {
   const file = e.target.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = ev => {
-    D.logoPreview.src = ev.target.result; D.logoPreview.style.display = 'block';
-    D.logoPreview.classList.remove('hidden');
-    selectEl(D.logoPreview); Hist.push();
-  };
-  reader.readAsDataURL(file);
+  try {
+    const { dataUrl } = await readImageFile(file);
+    const logo = bindCanvasImages();
+    logo.src = dataUrl;
+    logo.style.display = 'block';
+    logo.classList.remove('hidden');
+    await logo.decode?.().catch(() => {});
+    selectEl(logo);
+    Hist.push();
+    toast('ok', 'تمت إضافة الشعار', 'يمكنك سحبه وتغيير حجمه وشفافيته من لوحة الخصائص.');
+  } catch (error) {
+    toast('err', 'تعذر إضافة الشعار', error.message || 'اختر صورة أخرى.');
+  } finally {
+    e.target.value = '';
+  }
 });
 
 function setOrientation(o, saveHist = true) {
@@ -1198,6 +1287,7 @@ D.btnModeBatch.addEventListener('click', () => {
 
 async function doExport(fn, msg='جاري التصدير...') {
   selectEl(null);
+  await waitForDesignAssets();
   await new Promise(r => setTimeout(r, 70));
   showLoading(msg);
   const origR = D.canvasContainer.style.borderRadius;
@@ -1215,7 +1305,7 @@ async function doExport(fn, msg='جاري التصدير...') {
 }
 
 D.btnPng.addEventListener('click', () => doExport(async () => {
-  const cv = await html2canvas(D.canvasContainer, {scale:4,useCORS:true,backgroundColor:null,allowTaint:true});
+  const cv = await html2canvas(D.canvasContainer, captureOptions(4));
   const a = document.createElement('a');
   a.download = `sweater-coupon-${Date.now()}.png`; a.href = cv.toDataURL('image/png'); a.click();
 }));
@@ -1225,7 +1315,7 @@ D.btnPdf.addEventListener('click', () => doExport(async () => {
   const isP = D.canvasContainer.classList.contains('portrait');
   const w = D.canvasContainer.offsetWidth, h = D.canvasContainer.offsetHeight;
   const pdf = new jsPDF({orientation:isP?'p':'l',unit:'px',format:[w,h]});
-  const cv = await html2canvas(D.canvasContainer, {scale:4,useCORS:true,backgroundColor:null,allowTaint:true});
+  const cv = await html2canvas(D.canvasContainer, captureOptions(4));
   pdf.addImage(cv.toDataURL('image/jpeg',0.96),'JPEG',0,0,w,h);
   pdf.save(`sweater-coupon-${Date.now()}.pdf`);
 }));
@@ -1303,7 +1393,7 @@ D.btnGenBatch.addEventListener('click', () => {
       codeElement.textContent = couponCodes[i];
       showLoading('جاري إنشاء الملفات...', `${Math.round(((i + 1) / couponCodes.length) * 100)}%`);
       await new Promise(r=>setTimeout(r, 40));
-      const cv = await html2canvas(D.canvasContainer, {scale:4,useCORS:true,backgroundColor:null,allowTaint:true});
+      const cv = await html2canvas(D.canvasContainer, captureOptions(4));
       if (i > 0) pdf.addPage([w,h], isP?'p':'l');
       pdf.addImage(cv.toDataURL('image/jpeg', 0.96), 'JPEG', 0, 0, w, h);
     }
@@ -1314,6 +1404,7 @@ D.btnGenBatch.addEventListener('click', () => {
 });
 
 // Initialization
+bindCanvasImages();
 renderTemplates();
 setOrientation('landscape', false);
 selectEl(null);
@@ -1323,6 +1414,7 @@ try {
     D.bgImg.src = savedCoupon.bg || '';
     setOrientation(savedCoupon.orientation || 'landscape', false);
     D.elementsContainer.innerHTML = savedCoupon.html;
+    bindCanvasImages();
     toast('ok', 'تمت استعادة المسودة', 'يمكنك متابعة آخر كوبون من حيث توقفت.');
   }
 } catch (_) { localStorage.removeItem('sweaterCouponAutosaveV2'); }
@@ -1334,7 +1426,10 @@ function applyReadyCouponTemplate(template, editMode=false) {
   setOrientation(templateOrientation,false);
   const background=payload.background||payload.url||template?.preview||'';
   if(background) applyTemplate(background,template?.id||`ready-${Date.now()}`,false);
-  if(payload.html) D.elementsContainer.innerHTML=payload.html;
+  if(payload.html) {
+    D.elementsContainer.innerHTML=payload.html;
+    bindCanvasImages();
+  }
   selectEl(null);
   Hist.push();
   editingReadyTemplateId=editMode?String(template.id||''):'';
@@ -1376,7 +1471,7 @@ async function saveReadyCouponTemplate() {
     const payload=await buildReadyCouponPayload();
     let preview=config.templates[index].preview||payload.background;
     try{
-      const canvas=await html2canvas(D.canvasContainer,{scale:2,useCORS:true,backgroundColor:null,allowTaint:true});
+      const canvas=await html2canvas(D.canvasContainer,captureOptions(2));
       const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('preview')),'image/png',0.94));
       preview=await window.SweaterAdmin.uploadAsset(new File([blob],`coupon-preview-${Date.now()}.png`,{type:'image/png'}),'templates');
     }catch(error){console.warn('تعذر تحديث معاينة القالب',error)}
