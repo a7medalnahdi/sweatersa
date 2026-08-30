@@ -6,7 +6,7 @@
     auth:{persistSession:true,autoRefreshToken:true,detectSessionInUrl:true}
   });
   const CLOUD_KEYS=new Set([
-    'sweaterQuoteStudioV3','sweaterQuotationAutosaveV2','sweaterQuoteSequenceV3',
+    'sweaterQuoteStudioV3','sweaterQuotationAutosaveV2','sweaterQuotationAutosaveV3','sweaterQuoteSequenceV3',
     'sweaterDesignProjectsV3','sweaterDesignAutosaveV3','sweaterCouponAutosaveV2',
     'sweaterQrHistoryV1'
   ]);
