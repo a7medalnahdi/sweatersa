@@ -20,7 +20,7 @@
     if(Array.isArray(value))return value.map(clean);
     return Object.fromEntries(Object.entries(value).filter(([,v])=>v!==undefined).map(([k,v])=>[k,clean(v)]));
   };
-  const publicUser=user=>user?{id:user.uid,uid:user.uid,email:user.email||'',email_confirmed_at:user.emailVerified?new Date().toISOString():null}:null;
+  const publicUser=user=>user?{id:user.uid,uid:user.uid,email:user.email||'',name:user.displayName||'',displayName:user.displayName||'',photoURL:user.photoURL||'',email_confirmed_at:user.emailVerified?new Date().toISOString():null}:null;
   const sessionFor=user=>user?{user:publicUser(user),access_token:'firebase-session'}:null;
 
   const ready=(async()=>{
@@ -137,6 +137,23 @@
     async signInWithPassword({email,password}){
       try{
         const credential=await run(({auth,authApi})=>authApi.signInWithEmailAndPassword(auth,email,password));
+        return {data:{user:publicUser(credential.user),session:sessionFor(credential.user)},error:null};
+      }catch(error){return {data:{user:null,session:null},error}}
+    },
+    async signInWithGoogle(){
+      try{
+        const credential=await run(async({auth,authApi})=>{
+          const provider=new authApi.GoogleAuthProvider();
+          provider.setCustomParameters({hd:'sweater.sa',prompt:'select_account'});
+          return authApi.signInWithPopup(auth,provider);
+        });
+        const email=String(credential.user.email||'').trim().toLowerCase();
+        if(!email.endsWith('@sweater.sa')){
+          await run(({auth,authApi})=>authApi.signOut(auth));
+          const error=new Error('الدخول متاح فقط لحسابات @sweater.sa');
+          error.code='auth/unauthorized-domain-account';
+          throw error;
+        }
         return {data:{user:publicUser(credential.user),session:sessionFor(credential.user)},error:null};
       }catch(error){return {data:{user:null,session:null},error}}
     },
