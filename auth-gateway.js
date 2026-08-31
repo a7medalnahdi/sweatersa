@@ -14,11 +14,26 @@
       location.replace(`./login.html?next=${next}`);
       return null;
     }
+    const email=String(session.user.email||'').trim().toLowerCase();
+    if(!email.endsWith('@sweater.sa')){
+      await client.auth.signOut();
+      location.replace('./login.html?error=domain');
+      return null;
+    }
     window.SweaterCloud.setUser(session.user.id);
     let profile;
     try{profile=await window.SweaterCloud.profile(session.user.id)}
-    catch(_){await client.auth.signOut();location.replace('./login.html?error=profile');return null}
-    if(profile.status==='suspended'){await client.auth.signOut();location.replace('./login.html?error=suspended');return null}
+    catch(_){
+      profile={
+        id:session.user.id,
+        full_name:session.user.name||email.split('@')[0],
+        username:email.split('@')[0],
+        email,
+        department:'',
+        role:'employee',
+        status:'active'
+      };
+    }
     const syncMarker=`swCloudSynced:${session.user.id}`;
     if(!sessionStorage.getItem(syncMarker)){
       const count=await window.SweaterCloud.pull(session.user.id);
@@ -26,7 +41,7 @@
       sessionStorage.setItem(syncMarker,'1');
       if(count){location.reload();return null}
     }
-    const authUser={id:session.user.id,name:profile.full_name||session.user.email,username:profile.username||'',email:session.user.email,role:profile.role,department:profile.department||''};
+    const authUser={id:session.user.id,name:profile.full_name||session.user.name||session.user.email,username:profile.username||'',email:session.user.email,role:profile.role==='admin'?'admin':'employee',department:profile.department||''};
     window.SweaterAuth={
       session:()=>authUser,
       isAdmin:()=>authUser.role==='admin',
