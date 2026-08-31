@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>ترحيل Firebase — SWEATER</title>
+  <meta name="robots" content="noindex,nofollow">
+  <link rel="stylesheet" href="./sweater-ui.css?v=13">
+  <style>
+    @font-face{font-family:LamaSans;src:url('./fonts/LamaSans-Regular.woff2') format('woff2');font-weight:400}
+    @font-face{font-family:LamaSans;src:url('./fonts/LamaSans-Bold.woff2') format('woff2');font-weight:700}
+    @font-face{font-family:LamaSans;src:url('./fonts/LamaSans-Black.woff2') format('woff2');font-weight:900}
+    :root{--orange:#f96714;--ink:#17191d;--muted:#6f7784;--line:#e6e8ec;--soft:#f5f6f8}
+    *{box-sizing:border-box}body{margin:0;min-height:100vh;background:var(--soft);color:var(--ink);font-family:LamaSans,Arial,sans-serif}
+    button,input{font:inherit}.shell{width:min(920px,calc(100% - 28px));margin:28px auto}.head{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}.head a{color:#657080;text-decoration:none;font-size:12px;font-weight:800}.hero{padding:30px;border-radius:24px;background:#17191d;color:#fff}.tag{display:inline-flex;padding:6px 10px;border-radius:99px;background:rgba(249,103,20,.16);color:#ffad7d;font-size:10px;font-weight:900}.hero h1{margin:14px 0 8px;font-size:30px}.hero p{max-width:680px;margin:0;color:#b7bdc7;font-size:12px;line-height:1.8}.card{margin-top:14px;padding:22px;border:1px solid var(--line);border-radius:20px;background:#fff}.card h2{margin:0 0 6px;font-size:16px}.card p{margin:0;color:var(--muted);font-size:11px;line-height:1.7}.login{display:grid;grid-template-columns:1fr 1fr auto;gap:9px;margin-top:17px}.login input{height:43px;padding:0 12px;border:1px solid var(--line);border-radius:11px;outline:0}.login input:focus{border-color:var(--orange);box-shadow:0 0 0 3px rgba(249,103,20,.1)}.btn{height:43px;padding:0 17px;border:0;border-radius:11px;background:var(--orange);color:#fff;font-weight:900;cursor:pointer}.btn:disabled{opacity:.45;cursor:not-allowed}.status{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:15px;padding:13px;border-radius:12px;background:var(--soft);font-size:11px}.status strong{font-weight:900}.status small{color:var(--muted)}.actions{display:flex;gap:8px;margin-top:16px}.secondary{background:#17191d}.progress{height:9px;margin:18px 0 8px;border-radius:99px;background:#eceff3;overflow:hidden}.progress span{display:block;width:0;height:100%;border-radius:inherit;background:var(--orange);transition:.25s}.summary{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.metric{padding:15px;border:1px solid var(--line);border-radius:13px;background:#fff}.metric span,.metric strong{display:block}.metric span{color:var(--muted);font-size:9px}.metric strong{margin-top:5px;font-size:20px}.log{max-height:320px;overflow:auto;margin-top:13px;padding:8px;border:1px solid var(--line);border-radius:13px;background:#fbfcfd}.log-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px;border-radius:8px;font-size:10px}.log-row:nth-child(even){background:#f3f5f7}.ok{color:#078349}.error{color:#c62828}.hidden{display:none!important}
+    @media(max-width:680px){.login{grid-template-columns:1fr}.summary{grid-template-columns:1fr}.hero{padding:23px}.hero h1{font-size:23px}}
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./supabase-config.js?v=1"></script>
+  <script src="./supabase-app.js?v=4"></script>
+  <script src="./firebase-config.js?v=1"></script>
+  <script src="./firebase-app.js?v=1"></script>
+</head>
+<body>
+  <main class="shell">
+    <div class="head"><strong>SWEATER · FIREBASE</strong><a href="./admin.html">العودة إلى لوحة التحكم ←</a></div>
+    <section class="hero">
+      <span class="tag">أداة مدير مؤقتة</span>
+      <h1>ترحيل بيانات الموقع إلى Firebase</h1>
+      <p>تنسخ هذه الصفحة البيانات من Supabase إلى Firestore دون حذف المصدر. لا يمكن تنفيذ النقل إلا بواسطة حساب Firebase المدير المحدد.</p>
+    </section>
+
+    <section class="card" id="loginCard">
+      <h2>تسجيل دخول مدير Firebase</h2>
+      <p>استخدم البريد وكلمة المرور اللذين أنشأتهما في Firebase Authentication.</p>
+      <form class="login" id="loginForm">
+        <input id="email" type="email" autocomplete="username" placeholder="البريد الإلكتروني" required>
+        <input id="password" type="password" autocomplete="current-password" placeholder="كلمة المرور" required>
+        <button class="btn" type="submit">تسجيل الدخول</button>
+      </form>
+    </section>
+
+    <section class="card hidden" id="migrationCard">
+      <h2>جاهز للنقل</h2>
+      <p>سيتم نسخ الجداول والمحتوى المرتبط بالحسابات، ثم مطابقة بيانات المدير الحالية مع UID الجديد.</p>
+      <div class="status"><div><strong id="accountName">مدير Firebase</strong><small id="accountEmail"></small></div><button class="btn secondary" id="logoutBtn">خروج</button></div>
+      <div class="actions"><button class="btn" id="migrateBtn">بدء النقل الآمن</button><button class="btn secondary hidden" id="retryBtn">إعادة المحاولة</button></div>
+      <div class="progress"><span id="progressBar"></span></div>
+      <div class="summary">
+        <div class="metric"><span>الجداول المكتملة</span><strong id="doneCount">0</strong></div>
+        <div class="metric"><span>السجلات المنقولة</span><strong id="recordCount">0</strong></div>
+        <div class="metric"><span>الأخطاء</span><strong id="errorCount">0</strong></div>
+      </div>
+      <div class="log" id="log"></div>
+    </section>
+  </main>
+
+<script>
+(async()=>{
+  'use strict';
+  const ADMIN_UID='LRouOcQoRPNtnMwPa5FSBvLQ9cJ2';
+  const TABLES=[
+    ['profiles','legacy_profiles','id'],
+    ['user_data','legacy_user_data','id'],
+    ['site_config','site_config_legacy','id'],
+    ['site_visits','legacy_site_visits','id'],
+    ['user_presence','legacy_user_presence','user_id'],
+    ['writer_conversations','writer_conversations','id'],
+    ['writer_messages','writer_messages','id'],
+    ['writer_settings','writer_settings','id'],
+    ['html_pages','html_pages','id'],
+    ['gold_wallet_settings','gold_wallet_settings','id'],
+    ['gold_purchases','gold_purchases','id']
+  ];
+  const $=selector=>document.querySelector(selector);
+  const fb=await window.SweaterFirebaseReady;
+  const supa=window.SweaterCloud?.client;
+  let currentUser=null,totalRecords=0,errorTotal=0,doneTotal=0,busy=false;
+
+  function message(text,type='ok'){
+    const row=document.createElement('div');row.className='log-row';
+    row.innerHTML=`<span>${text}</span><strong class="${type}">${type==='ok'?'تم':'خطأ'}</strong>`;
+    $('#log').prepend(row);
+  }
+  function metrics(){
+    $('#doneCount').textContent=String(doneTotal);
+    $('#recordCount').textContent=String(totalRecords);
+    $('#errorCount').textContent=String(errorTotal);
+    $('#progressBar').style.width=`${Math.round((doneTotal/TABLES.length)*100)}%`;
+  }
+  async function sessionView(user){
+    currentUser=user;
+    const admin=user?.uid===ADMIN_UID;
+    $('#loginCard').classList.toggle('hidden',!!user);
+    $('#migrationCard').classList.toggle('hidden',!user);
+    if(user){$('#accountEmail').textContent=user.email||'';$('#accountName').textContent=admin?'مدير Firebase':'حساب غير مصرح';$('#migrateBtn').disabled=!admin}
+  }
+  async function readAll(table){
+    const rows=[];let from=0;
+    while(true){
+      const {data,error}=await supa.from(table).select('*').range(from,from+999);
+      if(error)throw error;
+      rows.push(...(data||[]));
+      if(!data||data.length<1000)break;
+      from+=1000;
+    }
+    return rows;
+  }
+  const clean=value=>JSON.parse(JSON.stringify(value));
+  async function writeRows(collectionName,idKey,rows){
+    for(const row of rows){
+      const id=String(row[idKey]??crypto.randomUUID());
+      await fb.dbApi.setDoc(fb.dbApi.doc(fb.db,collectionName,id),clean(row),{merge:true});
+      totalRecords++;metrics();
+    }
+  }
+  async function migrateAdmin(profiles,userData,supabaseUser){
+    const profile=profiles.find(item=>item.id===supabaseUser.id)||profiles.find(item=>String(item.email||'').toLowerCase()===String(currentUser.email||'').toLowerCase());
+    await fb.dbApi.setDoc(fb.dbApi.doc(fb.db,'users',currentUser.uid),{
+      full_name:profile?.full_name||currentUser.displayName||'مدير النظام',
+      email:currentUser.email||profile?.email||'',
+      username:profile?.username||'',
+      department:profile?.department||'الإدارة',
+      role:'admin',status:'active',
+      supabase_id:profile?.id||supabaseUser.id,
+      migrated_at:fb.dbApi.serverTimestamp()
+    },{merge:true});
+    const sourceId=profile?.id||supabaseUser.id;
+    for(const row of userData.filter(item=>item.user_id===sourceId)){
+      await fb.dbApi.setDoc(fb.dbApi.doc(fb.db,'users',currentUser.uid,'data',String(row.data_key)),{
+        value:clean(row.value),supabase_id:row.id||null,updated_at:row.updated_at||null
+      },{merge:true});
+      totalRecords++;
+    }
+    metrics();message('تم ربط بيانات المدير بالحساب الجديد');
+  }
+  async function migrate(){
+    if(busy||currentUser?.uid!==ADMIN_UID)return;
+    if(!supa){message('تعذر تشغيل اتصال Supabase','error');return}
+    busy=true;$('#migrateBtn').disabled=true;$('#retryBtn').classList.add('hidden');$('#log').innerHTML='';totalRecords=0;errorTotal=0;doneTotal=0;metrics();
+    try{
+      const {data:{session}}=await supa.auth.getSession();
+      if(!session?.user)throw new Error('سجّل الدخول إلى موقع سويتر بحساب المدير أولًا ثم افتح هذه الصفحة مجددًا');
+      const cache={};
+      for(const [source,target,idKey] of TABLES){
+        try{
+          const rows=await readAll(source);cache[source]=rows;
+          await writeRows(target,idKey,rows);
+          doneTotal++;metrics();message(`${source}: ${rows.length} سجل`);
+        }catch(error){
+          errorTotal++;doneTotal++;metrics();message(`${source}: ${error.message||'فشل النقل'}`,'error');
+        }
+      }
+      await migrateAdmin(cache.profiles||[],cache.user_data||[],session.user);
+      const config=(cache.site_config||[]).find(item=>item.id==='global');
+      if(config)await fb.dbApi.setDoc(fb.dbApi.doc(fb.db,'site','config'),{value:clean(config.value),migrated_at:fb.dbApi.serverTimestamp()},{merge:true});
+      await fb.dbApi.setDoc(fb.dbApi.doc(fb.db,'migration','supabase'),{
+        completed:true,completed_at:fb.dbApi.serverTimestamp(),records:totalRecords,errors:errorTotal,
+        source_project:'gcczowdjkxkcwgbvoeur'
+      },{merge:true});
+      message(errorTotal?'اكتمل النقل مع أخطاء تحتاج مراجعة':'اكتمل النقل بنجاح',errorTotal?'error':'ok');
+      $('#retryBtn').classList.toggle('hidden',!errorTotal);
+    }catch(error){
+      errorTotal++;metrics();message(error.message||'تعذر بدء النقل','error');$('#retryBtn').classList.remove('hidden');
+    }finally{busy=false;$('#migrateBtn').disabled=false}
+  }
+
+  $('#loginForm').addEventListener('submit',async event=>{
+    event.preventDefault();const button=event.submitter;button.disabled=true;
+    try{
+      const result=await fb.signIn($('#email').value.trim(),$('#password').value);
+      if(result.user.uid!==ADMIN_UID){await fb.signOut();throw new Error('هذا الحساب ليس حساب المدير المحدد')}
+      sessionView(result.user);
+    }catch(error){alert(error.message||'تعذر تسجيل الدخول')}
+    finally{button.disabled=false}
+  });
+  $('#logoutBtn').onclick=async()=>{await fb.signOut();sessionView(null)};
+  $('#migrateBtn').onclick=migrate;$('#retryBtn').onclick=migrate;
+  sessionView(await fb.waitForUser());
+})().catch(error=>{console.error(error);alert('تعذر تشغيل أداة الترحيل: '+error.message)});
+</script>
+</body>
+</html>
