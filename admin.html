@@ -74,8 +74,8 @@
   <input type="hidden" name="id"><div class="field"><label>اسم القالب</label><input name="name" required></div><div class="field"><label>الأداة</label><select name="tool" id="templateTool" required></select></div><div class="field"><label>التصنيف</label><input name="category" placeholder="مثال: تسويق"></div><div class="field"><label>الحالة</label><select name="status"><option value="active">نشط</option><option value="draft">مسودة</option><option value="archived">مؤرشف</option></select></div><div class="field full"><label>رابط صورة المعاينة</label><input name="preview" placeholder="https://... أو ارفع صورة"><input type="file" id="templateImage" accept="image/*" style="margin-top:7px;padding-top:9px"></div><div class="field full"><label>بيانات القالب JSON</label><textarea name="payload" dir="ltr" placeholder='{"title":"قالب جديد"}'></textarea><div class="hint">هذه البيانات تصل للأداة عند اختيار القالب، ويمكن مواءمتها لاحقًا مع قاعدة البيانات.</div></div><div class="field full"><label>ملاحظات</label><textarea name="notes"></textarea></div>
   </div></div><div class="modal-foot"><button type="button" class="btn close-modal">إلغاء</button><button class="btn primary">حفظ القالب</button></div></form></div></div>
 <div class="toast" id="toast"></div>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="./supabase-config.js?v=1"></script><script src="./supabase-app.js?v=3"></script>
+
+<script src="./supabase-config.js?v=fb2"></script><script src="./supabase-app.js?v=fb2"></script>
 <script src="./site-config.js?v=22"></script>
 <script>
 (async() => {
