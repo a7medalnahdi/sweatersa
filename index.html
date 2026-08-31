@@ -2,36 +2,125 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>مساحة عمل سويتر</title><meta name="description" content="أدوات ومراجع فريق سويتر في مساحة عمل واحدة."><meta name="theme-color" content="#17352d">
-  <link rel="stylesheet" href="./home-editorial.css?v=7"><link rel="stylesheet" href="./home-tools-compact.css?v=1">
+  <title>مساحة عمل سويتر</title>
+  <meta name="description" content="أدوات ومراجع فريق سويتر في مساحة عمل واحدة.">
+  <meta name="theme-color" content="#0d0f10">
+  <link rel="stylesheet" href="./home-2026.css?v=1">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-  <script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script><script src="./auth-gateway.js?v=google1"></script>
+  <script src="./supabase-config.js?v=google1"></script>
+  <script src="./supabase-app.js?v=walletgone1"></script>
+  <script src="./auth-gateway.js?v=walletgone1"></script>
 </head>
-<body class="home-v4 editorial-home">
-<header class="v4-header"><a class="v4-brand" href="./index.html"><img src="./assets/sweater-logo.png" alt="SWEATER"><span><b>مساحة العمل</b><small>كل ما يحتاجه الفريق</small></span></a><nav><a href="#tools">الأدوات</a><a href="#company-references">مراجع الشركة</a><a href="#company-numbers">أرقامنا</a></nav><div class="header-actions"></div></header>
+<body class="editorial-home">
+<header class="v4-header">
+  <a class="v4-brand" href="./index.html"><img src="./assets/sweater-logo.png" alt="SWEATER"><span><b>مساحة العمل</b><small>كل ما يحتاجه الفريق</small></span></a>
+  <nav aria-label="التنقل الرئيسي"><a href="#tools">الأدوات</a><a href="#company-references">مراجع الشركة</a><a href="#company-numbers">أرقامنا</a></nav>
+  <div class="header-actions"></div>
+</header>
 <main>
-  <section class="v4-hero"><div class="v4-hero-copy"><span class="v4-eyebrow"><i class="fa-solid fa-circle"></i> مساحة عمل سويتر</span><h1>كل ما تحتاجه،<br><em>دون تعقيد.</em></h1><p>أدوات الفريق ومراجع الشركة في مكان واحد صُمم ليجعل العمل اليومي أبسط وأسرع.</p><div class="search-wrap"><i class="fa-solid fa-magnifying-glass"></i><input id="toolSearch" class="tool-search" type="search" placeholder="عن ماذا تبحث؟" autocomplete="off"></div></div><div class="v4-hero-panel"><span class="panel-number">12</span><strong>أداة في مكان واحد</strong><p>من أول فكرة إلى الملف النهائي.</p><div class="panel-line"></div><small>داخلي · سريع · متزامن</small></div></section>
+  <section class="v4-hero">
+    <div class="v4-hero-copy">
+      <span class="v4-eyebrow"><i class="fa-solid fa-circle"></i> مساحة عمل فريق سويتر</span>
+      <h1>أنجزها من<br><em>مكان واحد.</em></h1>
+      <p>الأدوات الرسمية، الملفات المعتمدة، وكل ما يسرّع يومك—مرتبة بوضوح وجاهزة للعمل.</p>
+      <div class="hero-actions">
+        <label class="search-wrap" for="toolSearch"><i class="fa-solid fa-magnifying-glass"></i><input id="toolSearch" class="tool-search" type="search" placeholder="ابحث باسم الأداة أو المهمة…" autocomplete="off"></label>
+        <a class="resume-link" id="resumeLastTool" href="#"><i class="fa-solid fa-clock-rotate-left"></i><span>آخر أداة</span></a>
+      </div>
+    </div>
+    <aside class="v4-hero-panel">
+      <div class="panel-top"><span>دليل العمل</span><i class="fa-solid fa-arrow-down"></i></div>
+      <span class="panel-number">12</span>
+      <strong>أداة لفريق أسرع</strong>
+      <p>من الفكرة الأولى إلى الملف النهائي.</p>
+      <div class="panel-line"></div>
+      <small><span>متزامن</span><span>داخلي</span><span>جاهز</span></small>
+    </aside>
+  </section>
 
-  <section class="v4-section tools-section" id="tools"><div class="v4-section-head"><div><span>01 — الأدوات</span><h2>ماذا تريد أن تنجز؟</h2></div><p>اختر مهمتك، وكل أداة مصممة لتوصلك للنتيجة بأقل عدد من الخطوات.</p></div><div class="tools-toolbar"><div class="tool-filters" role="group" aria-label="تصفية الأدوات"><button class="active" data-filter="all">الكل</button><button data-filter="design">التصميم</button><button data-filter="sales">المبيعات والتسويق</button><button data-filter="docs">المستندات والنشر</button></div><span class="tools-count" id="toolsCount">11 أداة</span></div><div class="tools-grid">
-    <a data-category="design" href="./framing-tool.html" class="tool-card-simple" style="--c:#7c3aed"><div class="simple-visual visual-purple"><i class="fa-regular fa-images"></i></div><div class="simple-copy"><small>الصور</small><h3>تركيب الإطارات</h3><p>ضع الصور داخل إطارات سويتر بسرعة ودقة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="sales" href="./coupon-tool.html" class="tool-card-simple" style="--c:#f96714"><div class="simple-visual visual-orange"><i class="fa-solid fa-ticket"></i></div><div class="simple-copy"><small>التسويق</small><h3>صانع الكوبونات</h3><p>أنشئ كوبونات فردية أو دفعات كاملة من Excel.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="sales" href="./Quotation Generator.html" class="tool-card-simple" style="--c:#0284c7"><div class="simple-visual visual-blue"><i class="fa-solid fa-file-invoice-dollar"></i></div><div class="simple-copy"><small>المبيعات</small><h3>عروض الأسعار</h3><p>حرر عرض السعر مباشرة وصدّره بصيغة احترافية.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="design" href="./n_icons.html" class="tool-card-simple" style="--c:#059669"><div class="simple-visual visual-green"><i class="fa-solid fa-pen-ruler"></i></div><div class="simple-copy"><small>التصميم</small><h3>استوديو التصميم</h3><p>تصاميم يومية سهلة مع النصوص والصور والقوالب.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="design" href="./logo-framer-tool.html" class="tool-card-simple" style="--c:#e11d48"><div class="simple-visual visual-red"><i class="fa-solid fa-handshake"></i></div><div class="simple-copy"><small>الشراكات</small><h3>قوالب الشراكات</h3><p>ركّب شعارات الشركاء على القوالب المعتمدة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="docs" href="./qr-generator.html" class="tool-card-simple" style="--c:#0891b2"><div class="simple-visual visual-cyan"><i class="fa-solid fa-qrcode"></i></div><div class="simple-copy"><small>الروابط</small><h3>صانع QR Code</h3><p>حوّل أي رابط أو نص إلى رمز قابل للتنزيل.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="docs" href="./document-logo-tool.html" class="tool-card-simple" style="--c:#6366f1"><div class="simple-visual visual-indigo"><i class="fa-solid fa-file-circle-plus"></i></div><div class="simple-copy"><small>المستندات</small><h3>إضافة شعار للمستند</h3><p>ضع الشعار على غلاف PDF أو العرض ثم صدّر الملف.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="design" href="./package-card-tool.html" class="tool-card-simple" style="--c:#00a86b"><div class="simple-visual visual-mint"><i class="fa-solid fa-layer-group"></i></div><div class="simple-copy"><small>الباقات</small><h3>صانع كروت الباقات</h3><p>عدّل بيانات وأسعار الباقات وصدّرها جاهزة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="design" href="./employee-card-tool.html" class="tool-card-simple" style="--c:#ea580c"><div class="simple-visual visual-peach"><i class="fa-solid fa-id-card"></i></div><div class="simple-copy"><small>الموظفون</small><h3>بطاقات الموظفين</h3><p>أنشئ بطاقة موظف مطابقة للهوية المعتمدة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="sales" href="./top50-tool.html" class="tool-card-simple" style="--c:#f96714"><div class="simple-visual"><i class="fa-solid fa-trophy"></i></div><div class="simple-copy"><small>الموظفون</small><h3>صانع تصاميم أفضل 50</h3><p>استورد بيانات الفائزين وأنشئ الصفحات الخمس تلقائيًا.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="sales" href="./content-writer.html" class="tool-card-simple" style="--c:#f96714"><div class="simple-visual visual-dark"><i class="fa-solid fa-wand-magic-sparkles"></i></div><div class="simple-copy"><small>المحتوى</small><h3>كاتب المحتوى</h3><p>مساعد ذكي يكتب المحتوى وفق أسلوب سويتر.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-    <a data-category="docs" href="./bilingual-pdf-tool.html" class="tool-card-simple" style="--c:#334155"><div class="simple-visual visual-paper"><i class="fa-solid fa-language"></i></div><div class="simple-copy"><small>النشر</small><h3>الملف ثنائي اللغة</h3><p>انشر نسختي PDF العربية والإنجليزية في رابط واحد.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
-  </div><div class="tools-more"><button id="toggleAllTools" type="button"><span>عرض جميع الأدوات</span><i class="fa-solid fa-arrow-down"></i></button></div></section>
+  <section class="v4-section tools-section" id="tools">
+    <div class="v4-section-head"><div><span>01 — مركز الأدوات</span><h2>ماذا تريد أن تنجز؟</h2></div><p>اختر المهمة المناسبة. كل أداة مختصرة وواضحة ومصممة لتوصلك إلى النتيجة بأقل خطوات.</p></div>
+    <div class="tools-toolbar">
+      <div class="tool-filters" role="group" aria-label="تصفية الأدوات"><button class="active" data-filter="all">جميع الأدوات</button><button data-filter="design">التصميم</button><button data-filter="sales">المبيعات والتسويق</button><button data-filter="docs">المستندات والنشر</button></div>
+      <span class="tools-count" id="toolsCount">12 أداة</span>
+    </div>
+    <div class="tools-grid">
+      <a data-category="design" href="./framing-tool.html" class="tool-card-simple" style="--index:'01'"><div class="simple-visual"><i class="fa-regular fa-images"></i></div><div class="simple-copy"><small>الصور</small><h3>تركيب الإطارات</h3><p>ضع الصور داخل إطارات سويتر بسرعة ودقة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="sales" href="./coupon-tool.html" class="tool-card-simple" style="--index:'02'"><div class="simple-visual"><i class="fa-solid fa-ticket"></i></div><div class="simple-copy"><small>التسويق</small><h3>صانع الكوبونات</h3><p>أنشئ كوبونات فردية أو دفعات كاملة من ملف Excel.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="sales" href="./Quotation Generator.html" class="tool-card-simple" style="--index:'03'"><div class="simple-visual"><i class="fa-solid fa-file-invoice-dollar"></i></div><div class="simple-copy"><small>المبيعات</small><h3>عروض الأسعار</h3><p>أنشئ عروض الأسعار واحفظها وصدّرها بصيغة رسمية.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="design" href="./n_icons.html" class="tool-card-simple" style="--index:'04'"><div class="simple-visual"><i class="fa-solid fa-pen-ruler"></i></div><div class="simple-copy"><small>التصميم</small><h3>استوديو التصميم</h3><p>أنشئ التصاميم اليومية بالنصوص والصور والقوالب.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="design" href="./logo-framer-tool.html" class="tool-card-simple" style="--index:'05'"><div class="simple-visual"><i class="fa-solid fa-handshake"></i></div><div class="simple-copy"><small>الشراكات</small><h3>قوالب الشراكات</h3><p>ركّب شعارات الشركاء على القوالب المعتمدة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="docs" href="./qr-generator.html" class="tool-card-simple" style="--index:'06'"><div class="simple-visual"><i class="fa-solid fa-qrcode"></i></div><div class="simple-copy"><small>الروابط</small><h3>صانع QR Code</h3><p>حوّل أي رابط أو نص إلى رمز قابل للتنزيل.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="docs" href="./document-logo-tool.html" class="tool-card-simple" style="--index:'07'"><div class="simple-visual"><i class="fa-solid fa-file-circle-plus"></i></div><div class="simple-copy"><small>المستندات</small><h3>إضافة شعار للمستند</h3><p>ضع الشعار على غلاف PDF أو العرض ثم صدّر الملف.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="design" href="./package-card-tool.html" class="tool-card-simple" style="--index:'08'"><div class="simple-visual"><i class="fa-solid fa-layer-group"></i></div><div class="simple-copy"><small>الباقات</small><h3>صانع كروت الباقات</h3><p>عدّل بيانات وأسعار الباقات وصدّرها جاهزة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="design" href="./employee-card-tool.html" class="tool-card-simple" style="--index:'09'"><div class="simple-visual"><i class="fa-solid fa-id-card"></i></div><div class="simple-copy"><small>الموظفون</small><h3>بطاقات الموظفين</h3><p>أنشئ بطاقة موظف مطابقة للهوية المعتمدة.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="sales" href="./top50-tool.html" class="tool-card-simple" style="--index:'10'"><div class="simple-visual"><i class="fa-solid fa-trophy"></i></div><div class="simple-copy"><small>الأداء</small><h3>تصاميم أفضل 50</h3><p>استورد بيانات الفائزين وأنشئ التصاميم تلقائيًا.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="sales" href="./content-writer.html" class="tool-card-simple" style="--index:'11'"><div class="simple-visual"><i class="fa-solid fa-wand-magic-sparkles"></i></div><div class="simple-copy"><small>المحتوى</small><h3>كاتب المحتوى</h3><p>مساعد ذكي يكتب المحتوى وفق أسلوب سويتر.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+      <a data-category="docs" href="./bilingual-pdf-tool.html?v=26" class="tool-card-simple" style="--index:'12'"><div class="simple-visual"><i class="fa-solid fa-language"></i></div><div class="simple-copy"><small>النشر</small><h3>الملف ثنائي اللغة</h3><p>انشر نسختي PDF العربية والإنجليزية في رابط واحد.</p><span class="simple-open">فتح الأداة <i class="fa-solid fa-arrow-left"></i></span></div></a>
+    </div>
+    <div class="empty-state" id="emptyTools" hidden><i class="fa-regular fa-face-frown-open"></i>لا توجد أداة مطابقة لبحثك.</div>
+    <div class="tools-more"><button id="toggleAllTools" type="button"><span>عرض جميع الأدوات</span><i class="fa-solid fa-arrow-down"></i></button></div>
+  </section>
 
-  <section class="v4-section admin-zone" id="admin-tools-zone"><div class="v4-section-head light"><div><span>خاص بالإدارة</span><h2>أدوات المدير</h2></div><p>مساحة مستقلة للأدوات ذات الصلاحيات الحساسة.</p></div><div class="admin-tools-grid" id="adminToolsGrid"><a href="./html-editor-tool.html" class="tool-card-simple admin-tool-card" style="--c:#60a5fa"><div class="simple-visual visual-admin"><i class="fa-solid fa-code"></i></div><div class="simple-copy"><small>ADMIN TOOL</small><h3>مستعرض صفحات HTML</h3><p>أنشئ صفحات عامة وانشرها من داخل المنصة.</p><span class="simple-open">دخول الإدارة <i class="fa-solid fa-arrow-left"></i></span></div></a></div></section>
+  <section class="v4-section admin-zone" id="admin-tools-zone">
+    <div class="v4-section-head"><div><span>صلاحيات خاصة</span><h2>أدوات الإدارة</h2></div><p>مساحة منفصلة للأدوات الحساسة التي لا تظهر إلا للمدير.</p></div>
+    <div class="admin-tools-grid" id="adminToolsGrid"><a href="./html-editor-tool.html" class="tool-card-simple admin-tool-card" style="--index:'A1'"><div class="simple-visual"><i class="fa-solid fa-code"></i></div><div class="simple-copy"><small>ADMIN TOOL</small><h3>مستعرض صفحات HTML</h3><p>أنشئ صفحات عامة وانشرها مباشرة من داخل المنصة.</p><span class="simple-open">دخول الإدارة <i class="fa-solid fa-arrow-left"></i></span></div></a></div>
+  </section>
 
-  <section class="v4-section" id="company-references"><div class="v4-section-head"><div><span>02 — المراجع</span><h2>مراجع الشركة</h2></div><p>النسخ الرسمية التي يحتاجها الفريق، دائمًا في مكانها الصحيح.</p></div><div class="reference-grid"><a data-reference-id="company-profile" href="#"><i class="fa-regular fa-building"></i><div><h3>الملف التعريفي</h3><p>أحدث نسخة معتمدة</p></div><b>↗</b></a><a data-reference-id="visual-identity" href="#"><i class="fa-solid fa-swatchbook"></i><div><h3>الهوية البصرية</h3><p>الألوان وقواعد الاستخدام</p></div><b>↗</b></a><a data-reference-id="logo-library" href="#"><i class="fa-regular fa-gem"></i><div><h3>الشعار</h3><p>الصيغ والألوان الرسمية</p></div><b>↗</b></a><a data-reference-id="photo-library" href="#"><i class="fa-regular fa-image"></i><div><h3>مكتبة الصور</h3><p>صور العلامة والخدمات</p></div><b>↗</b></a></div></section>
+  <section class="v4-section" id="company-references">
+    <div class="v4-section-head"><div><span>02 — مراجع الشركة</span><h2>النسخ الرسمية، دائمًا قريبة.</h2></div><p>الملفات المعتمدة التي يحتاجها الفريق، محدثة ومجتمعة في مكان واحد.</p></div>
+    <div class="reference-grid">
+      <a data-reference-id="company-profile" href="#"><span class="reference-icon"><i class="fa-regular fa-building"></i></span><div><h3>الملف التعريفي</h3><p>أحدث نسخة معتمدة</p><small data-reference-status>غير متاح</small></div><b>↗</b></a>
+      <a data-reference-id="visual-identity" href="#"><span class="reference-icon"><i class="fa-solid fa-swatchbook"></i></span><div><h3>الهوية البصرية</h3><p>الألوان وقواعد الاستخدام</p><small data-reference-status>غير متاح</small></div><b>↗</b></a>
+      <a data-reference-id="logo-library" href="#"><span class="reference-icon"><i class="fa-regular fa-gem"></i></span><div><h3>مكتبة الشعار</h3><p>الصيغ والألوان الرسمية</p><small data-reference-status>غير متاح</small></div><b>↗</b></a>
+      <a data-reference-id="photo-library" href="#"><span class="reference-icon"><i class="fa-regular fa-image"></i></span><div><h3>مكتبة الصور</h3><p>صور العلامة والخدمات</p><small data-reference-status>غير متاح</small></div><b>↗</b></a>
+    </div>
+  </section>
 
-  <section class="v4-section" id="company-numbers"><div class="numbers-shell"><div class="numbers-head"><span>03 — أثرنا بالأرقام</span><h2>سويتر أقرب مما تتخيّل.</h2><p>أرقام نبني عليها تجربة أفضل كل يوم.</p></div><div class="numbers-grid"><div class="stat-card"><i class="fa-solid fa-droplet"></i><strong>3M</strong><span>غسلة</span></div><div class="stat-card"><i class="fa-solid fa-users"></i><strong>600K</strong><span>عميل</span></div><div class="stat-card"><i class="fa-solid fa-location-dot"></i><strong>12</strong><span>مدينة</span></div><div class="stat-card"><i class="fa-solid fa-heart"></i><strong>96%</strong><span>نسبة رضا العملاء</span></div><div class="stat-card"><i class="fa-solid fa-handshake"></i><strong>500</strong><span>شراكة</span></div></div></div></section>
- </main><footer><img src="./assets/sweater-logo.png" alt="SWEATER"><span>مساحة عمل فريق سويتر</span></footer>
-<script src="./site-config.js?v=fb3"></script><script>(()=>{const input=document.querySelector('#toolSearch'),cards=[...document.querySelectorAll('.tools-grid>a')],buttons=[...document.querySelectorAll('[data-filter]')],count=document.querySelector('#toolsCount'),toggle=document.querySelector('#toggleAllTools'),section=document.querySelector('.tools-section');let filter='all',expanded=false;cards.forEach(c=>{c.dataset.search=c.textContent.replace(/\s+/g,' ').toLowerCase();c.addEventListener('click',()=>localStorage.setItem('swLastTool',c.getAttribute('href')||''))});const update=()=>{const q=(input?.value||'').trim().toLowerCase(),allowed=cards.filter(c=>!c.classList.contains('tool-card-hidden')&&c.style.display!=='none'),matching=allowed.filter(c=>(!q||c.dataset.search.includes(q))&&(filter==='all'||c.dataset.category===filter)),showAll=expanded||!!q||filter!=='all';cards.forEach(c=>c.hidden=true);matching.forEach((c,i)=>c.hidden=!showAll&&i>=6);const visible=matching.filter(c=>!c.hidden).length;count.textContent=showAll?`${visible} ${visible===1?'أداة':'أدوات'}`:`${visible} من ${matching.length}`;toggle.hidden=matching.length<=6||!!q||filter!=='all';toggle.querySelector('span').textContent=expanded?'عرض الأدوات الأساسية':'عرض جميع الأدوات';toggle.querySelector('i').className=`fa-solid fa-arrow-${expanded?'up':'down'}`;section.classList.toggle('tools-expanded',expanded)};toggle.addEventListener('click',()=>{expanded=!expanded;update()});input?.addEventListener('input',update);buttons.forEach(b=>b.addEventListener('click',()=>{filter=b.dataset.filter;buttons.forEach(x=>x.classList.toggle('active',x===b));update()}));window.addEventListener('sweater:config-updated',update);setTimeout(update,500);update()})();</script>
-</body></html>
+  <section class="v4-section" id="company-numbers">
+    <div class="numbers-shell"><div class="numbers-head"><span>03 — أثرنا بالأرقام</span><h2>أرقام تتحرك معنا.</h2><p>محطات تختصر حجم ما ينجزه فريق سويتر كل يوم.</p></div><div class="numbers-grid"><div class="stat-card"><i class="fa-solid fa-droplet"></i><strong>3M</strong><span>غسلة</span></div><div class="stat-card"><i class="fa-solid fa-users"></i><strong>600K</strong><span>عميل</span></div><div class="stat-card"><i class="fa-solid fa-location-dot"></i><strong>12</strong><span>مدينة</span></div><div class="stat-card"><i class="fa-solid fa-heart"></i><strong>96%</strong><span>نسبة رضا العملاء</span></div><div class="stat-card"><i class="fa-solid fa-handshake"></i><strong>500</strong><span>شراكة</span></div></div></div>
+  </section>
+</main>
+<footer><img src="./assets/sweater-logo.png" alt="SWEATER"><span>مساحة عمل فريق سويتر · 2026</span></footer>
+<script src="./site-config.js?v=fb3"></script>
+<script>
+(()=>{
+  const input=document.querySelector('#toolSearch');
+  const grid=document.querySelector('.tools-grid');
+  const cards=[...grid.querySelectorAll(':scope > a')];
+  const buttons=[...document.querySelectorAll('[data-filter]')];
+  const count=document.querySelector('#toolsCount');
+  const toggle=document.querySelector('#toggleAllTools');
+  const empty=document.querySelector('#emptyTools');
+  const resume=document.querySelector('#resumeLastTool');
+  let filter='all',expanded=false;
+  const last=localStorage.getItem('swLastTool');
+  if(last&&cards.some(card=>card.getAttribute('href')===last)){resume.href=last;resume.classList.add('visible')}
+  cards.forEach(card=>{
+    card.dataset.search=card.textContent.replace(/\s+/g,' ').trim().toLowerCase();
+    card.addEventListener('click',()=>localStorage.setItem('swLastTool',card.getAttribute('href')||''));
+  });
+  function update(){
+    const q=(input.value||'').trim().toLowerCase();
+    const eligible=cards.filter(card=>!card.classList.contains('tool-card-hidden')&&card.style.display!=='none');
+    const matches=eligible.filter(card=>(filter==='all'||card.dataset.category===filter)&&(!q||card.dataset.search.includes(q)));
+    const showAll=expanded||filter!=='all'||Boolean(q);
+    cards.forEach(card=>card.hidden=true);
+    matches.forEach((card,index)=>card.hidden=!showAll&&index>=6);
+    const shown=matches.filter(card=>!card.hidden).length;
+    count.textContent=showAll?shown+' أداة':shown+' من '+matches.length;
+    empty.hidden=matches.length>0;
+    toggle.hidden=matches.length<=6||filter!=='all'||Boolean(q);
+    toggle.querySelector('span').textContent=expanded?'عرض الأدوات الأساسية':'عرض جميع الأدوات';
+    toggle.querySelector('i').className='fa-solid fa-arrow-'+(expanded?'up':'down');
+  }
+  toggle.addEventListener('click',()=>{expanded=!expanded;update()});
+  input.addEventListener('input',update);
+  buttons.forEach(button=>button.addEventListener('click',()=>{filter=button.dataset.filter;buttons.forEach(item=>item.classList.toggle('active',item===button));update()}));
+  window.addEventListener('sweater:config-updated',update);
+  setTimeout(update,700);
+  update();
+})();
+</script>
+</body>
+</html>
