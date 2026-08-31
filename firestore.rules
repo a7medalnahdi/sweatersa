@@ -1,0 +1,70 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function own(userId) {
+      return signedIn() && request.auth.uid == userId;
+    }
+
+    function activeAdmin() {
+      return signedIn()
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.status == 'active';
+    }
+
+    match /users/{userId} {
+      allow read: if own(userId) || activeAdmin();
+      allow create, update, delete: if activeAdmin();
+
+      match /data/{dataKey} {
+        allow read, create, update, delete: if own(userId);
+        allow read: if activeAdmin();
+      }
+
+      match /visits/{visitId} {
+        allow create: if own(userId);
+        allow read, delete: if activeAdmin();
+      }
+
+      match /presence/{presenceId} {
+        allow read, create, update: if own(userId) || activeAdmin();
+        allow delete: if activeAdmin();
+      }
+
+      match /writer_conversations/{conversationId} {
+        allow read, create, update, delete: if own(userId);
+
+        match /messages/{messageId} {
+          allow read, create, update, delete: if own(userId);
+        }
+      }
+    }
+
+    match /site/config {
+      allow read: if signedIn();
+      allow write: if activeAdmin();
+    }
+
+    match /writer/settings {
+      allow read: if signedIn();
+      allow write: if activeAdmin();
+    }
+
+    match /html_pages/{pageId} {
+      allow read: if resource.data.status == 'published' || activeAdmin();
+      allow create, update, delete: if activeAdmin();
+    }
+
+    match /gold/{document=**} {
+      allow read, write: if activeAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
