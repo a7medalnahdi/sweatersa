@@ -8,7 +8,10 @@ service cloud.firestore {
 
     function isAdmin() {
       return signedIn()
-        && request.auth.uid == 'LRouOcQoRPNtnMwPa5FSBvLQ9cJ2';
+        && (
+          request.auth.uid == 'LRouOcQoRPNtnMwPa5FSBvLQ9cJ2'
+          || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
+        );
     }
 
     function isOwner(userId) {
@@ -17,12 +20,26 @@ service cloud.firestore {
 
     match /users/{userId} {
       allow read: if isOwner(userId) || isAdmin();
-      allow create, update: if isOwner(userId) || isAdmin();
-      allow delete: if isAdmin();
+      allow create, update, delete: if isAdmin();
 
-      match /{document=**} {
+      match /data/{dataKey} {
         allow read, write: if isOwner(userId) || isAdmin();
       }
+    }
+
+    match /profiles/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /user_data/{recordId} {
+      allow read: if signedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow write: if isAdmin();
+    }
+
+    match /site_config/{configId} {
+      allow read: if signedIn();
+      allow write: if isAdmin();
     }
 
     match /site/{document=**} {
@@ -30,9 +47,38 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /site_visits/{visitId} {
+      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /user_presence/{userId} {
+      allow read: if isOwner(userId) || isAdmin();
+      allow create, update: if isOwner(userId) || isAdmin();
+      allow delete: if isAdmin();
+    }
+
     match /html_pages/{pageId} {
       allow read: if resource.data.status == 'published' || isAdmin();
       allow create, update, delete: if isAdmin();
+    }
+
+    match /gold_purchases/{recordId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /gold_wallet_settings/{recordId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /writer_conversations/{recordId} {
+      allow read, update, delete: if signedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
+    }
+
+    match /writer_messages/{recordId} {
+      allow read, update, delete: if signedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if signedIn() && request.resource.data.user_id == request.auth.uid;
     }
 
     match /{document=**} {
