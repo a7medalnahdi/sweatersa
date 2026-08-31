@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="ar" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>فحص Firebase | SWEATER</title><link rel="stylesheet" href="./sweater-ui.css?v=13">
+<script src="./supabase-config.js?v=fb2"></script><script src="./supabase-app.js?v=fb2"></script>
+<style>*{box-sizing:border-box}body{margin:0;background:#f5f5f3;color:#111;font-family:LamaSans,sans-serif}.wrap{width:min(850px,calc(100% - 30px));margin:40px auto}.hero{padding:30px;border-radius:24px;background:#111;color:#fff}.hero small{color:#ff9c65}.hero h1{margin:8px 0;font-size:30px}.hero p{margin:0;color:#aaa}.card{margin-top:15px;padding:22px;border:1px solid #ddd;border-radius:20px;background:#fff}.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border-bottom:1px solid #eee}.row:last-child{border:0}.row strong{font-size:15px}.state{padding:6px 10px;border-radius:99px;background:#eee;color:#666;font-size:12px;font-weight:800}.ok .state{background:#e8fff0;color:#08783b}.bad .state{background:#fff0f0;color:#b42318}.actions{display:flex;gap:9px;margin-top:16px}.actions a,.actions button{height:46px;padding:0 18px;border:0;border-radius:12px;background:#f96714;color:#fff;text-decoration:none;display:inline-flex;align-items:center;font-weight:800}.actions button{background:#111;cursor:pointer}.note{margin-top:14px;color:#687387;font-size:13px;line-height:1.8}@media(max-width:600px){.wrap{margin:20px auto}.hero,.card{padding:18px}.hero h1{font-size:24px}}</style></head>
+<body><main class="wrap"><section class="hero"><small>فحص الاتصال</small><h1>حالة Firebase</h1><p>يفحص الحساب والبيانات والصلاحيات مباشرة من النسخة المنشورة.</p></section>
+<section class="card" id="tests">
+<div class="row" data-test="runtime"><strong>تشغيل Firebase</strong><span class="state">جارٍ الفحص</span></div>
+<div class="row" data-test="auth"><strong>جلسة تسجيل الدخول</strong><span class="state">جارٍ الفحص</span></div>
+<div class="row" data-test="profile"><strong>ملف المدير وصلاحياته</strong><span class="state">جارٍ الفحص</span></div>
+<div class="row" data-test="config"><strong>قراءة إعدادات الموقع</strong><span class="state">جارٍ الفحص</span></div>
+<div class="row" data-test="write"><strong>الكتابة والحذف في Firestore</strong><span class="state">جارٍ الفحص</span></div>
+<div class="actions"><button id="retry">إعادة الفحص</button><a href="./index.html?build=fb2">فتح الموقع</a><a href="./admin.html?build=fb2">فتح لوحة التحكم</a></div>
+<p class="note" id="summary">لا تغلق الصفحة حتى تظهر النتيجة.</p></section></main>
+<script>
+const row=name=>document.querySelector('[data-test="'+name+'"]');
+const set=(name,ok,text)=>{const el=row(name);el.classList.remove('ok','bad');el.classList.add(ok?'ok':'bad');el.querySelector('.state').textContent=text};
+async function test(){
+  ['runtime','auth','profile','config','write'].forEach(n=>{row(n).className='row';row(n).querySelector('.state').textContent='جارٍ الفحص'});
+  const summary=document.querySelector('#summary');summary.textContent='يتم الآن الاتصال بـ Firebase...';
+  try{await SweaterCloudReady;set('runtime',true,'يعمل')}catch(e){set('runtime',false,'فشل التشغيل');summary.textContent=e.message;return}
+  const session=await SweaterCloud.client.auth.getSession(),user=session.data?.session?.user;
+  if(!user){set('auth',false,'سجّل الدخول أولًا');set('profile',false,'لم يُفحص');set('config',false,'لم يُفحص');set('write',false,'لم يُفحص');summary.innerHTML='لا توجد جلسة للموقع. <a href="./login.html?next=firebase-health.html">اضغط هنا لتسجيل الدخول</a> ثم سيعود الفحص تلقائيًا.';return}
+  set('auth',true,user.email||'متصل');
+  try{const profile=await SweaterCloud.profile(user.id);set('profile',profile.role==='admin',profile.role==='admin'?'مدير':'ليس مديرًا')}catch(e){set('profile',false,e.message)}
+  try{const result=await SweaterCloud.client.from('site_config').select('id,value').eq('id','global').maybeSingle();if(result.error)throw result.error;set('config',true,result.data?'تمت القراءة':'متصل — لا توجد إعدادات')}catch(e){set('config',false,e.message)}
+  const id='health-'+Date.now();
+  try{
+    const add=await SweaterCloud.client.from('firebase_health_checks').insert({id,created_at:new Date().toISOString(),user_id:user.id});
+    if(add.error)throw add.error;
+    const del=await SweaterCloud.client.from('firebase_health_checks').delete().eq('id',id);
+    if(del.error)throw del.error;
+    set('write',true,'تعمل');
+  }catch(e){set('write',false,e.message||'فشل')}
+  const failed=[...document.querySelectorAll('.row.bad')].length;
+  summary.textContent=failed?'يوجد جزء يحتاج معالجة. صوّر هذه الصفحة وأرسلها لي.':'اكتمل الفحص بنجاح. الموقع يعمل الآن على Firebase.';
+}
+document.querySelector('#retry').onclick=test;test();
+</script></body></html>
