@@ -116,8 +116,13 @@
   async function loadCloud(){
     if(!client)return current;
     try{
-      const {data,error}=await client.from('site_config').select('value').eq('id',ROW_ID).maybeSingle();
+      let {data,error}=await client.from('site_config').select('id,value').eq('id',ROW_ID).maybeSingle();
       if(error)throw error;
+      if(!data?.value){
+        const fallback=await client.from('site_config').select('id,value').limit(1).maybeSingle();
+        if(fallback.error)throw fallback.error;
+        data=fallback.data;
+      }
       return data?.value?cache(data.value):current;
     }catch(error){
       console.warn('تعذر تحميل إعدادات الموقع المركزية',error);
