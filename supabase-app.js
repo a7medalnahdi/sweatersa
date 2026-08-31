@@ -60,7 +60,6 @@
     if(table==='user_presence'&&row?.user_id)return String(row.user_id);
     if(table==='user_data'&&row?.user_id&&row?.data_key)return `${row.user_id}__${row.data_key}`;
     if(table==='site_config')return 'global';
-    if(table==='gold_wallet_settings')return 'main';
     return crypto.randomUUID();
   };
 
