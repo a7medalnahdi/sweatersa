@@ -19,32 +19,44 @@
 <main class="auth-page">
     <div class="card">
       <div class="logo"><div class="logo-mark"><i class="fa-solid fa-sparkles"></i></div><div><strong>SWEATER Workspace</strong><span>مساحة العمل الداخلية</span></div></div>
-      <div class="welcome"><h1>تسجيل الدخول</h1><p>أدخل بيانات حسابك للمتابعة.</p></div>
-      <form class="form" id="loginForm">
+      <div class="welcome"><h1>تسجيل الدخول</h1><p>استخدم حساب Google الخاص بالعمل للمتابعة.</p></div>
+      <div class="form" id="googleLogin">
         <div class="error" id="errorBox"></div>
-        <div class="field"><label>البريد الإلكتروني</label><div class="input-wrap"><i class="fa-regular fa-envelope"></i><input name="identity" type="email" autocomplete="username" required autofocus></div></div>
-        <div class="field"><label>كلمة المرور</label><div class="input-wrap"><i class="fa-solid fa-key"></i><input id="password" name="password" type="password" autocomplete="current-password" required><button type="button" class="pass-toggle" id="togglePass" aria-label="إظهار كلمة المرور"><i class="fa-regular fa-eye"></i></button></div></div>
-        <div class="form-row"><label class="remember"><input type="checkbox" name="remember" checked> تذكر تسجيل الدخول</label><a href="./forgot-password.html">نسيت كلمة المرور؟</a></div>
-        <button class="submit" id="submitBtn"><i class="fa-solid fa-arrow-right-to-bracket"></i> تسجيل الدخول</button>
-      </form>
-      <p class="access-note"><i class="fa-solid fa-lock"></i> الدخول مخصص لفريق العمل</p>
+        <button class="submit" id="googleBtn" type="button"><i class="fa-brands fa-google"></i> المتابعة باستخدام Google</button>
+        <p class="access-note" style="margin-top:14px"><i class="fa-solid fa-shield-halved"></i> يُسمح فقط بحسابات <bdi dir="ltr">@sweater.sa</bdi></p>
+      </div>
+      <p class="access-note"><i class="fa-solid fa-lock"></i> مساحة داخلية لفريق سويتر</p>
     </div>
 </main>
 
-<script src="./supabase-config.js?v=fb2"></script><script src="./supabase-app.js?v=fb2"></script>
+<script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script>
 <script>
 (()=>{
   const $=s=>document.querySelector(s),client=window.SweaterCloud.client;
-  client.auth.getSession().then(({data})=>{if(data.session){const next=new URLSearchParams(location.search).get('next');location.replace(next?`./${next}`:'./index.html')}});
-  const queryError=new URLSearchParams(location.search).get('error');if(queryError){$('#errorBox').textContent=queryError==='suspended'?'هذا الحساب موقوف. تواصل مع مدير النظام.':'تعذر تحميل ملف الحساب.';$('#errorBox').classList.add('show')}
-  $('#togglePass').onclick=()=>{const p=$('#password'),show=p.type==='password';p.type=show?'text':'password';$('#togglePass i').className=show?'fa-regular fa-eye-slash':'fa-regular fa-eye'};
-  $('#loginForm').onsubmit=async e=>{
-    e.preventDefault();const f=Object.fromEntries(new FormData(e.currentTarget)),email=f.identity.trim().toLowerCase(),box=$('#errorBox'),button=$('#submitBtn');
-    button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> جارٍ التحقق';
+  const nextPage=()=>new URLSearchParams(location.search).get('next');
+  const allowed=email=>String(email||'').trim().toLowerCase().endsWith('@sweater.sa');
+  const showError=message=>{const box=$('#errorBox');box.textContent=message;box.classList.add('show')};
+  client.auth.getSession().then(async({data})=>{
+    const session=data.session;
+    if(!session)return;
+    if(!allowed(session.user.email)){await client.auth.signOut();showError('الدخول متاح فقط بحساب Google تابع لنطاق @sweater.sa');return}
+    const next=nextPage();location.replace(next?`./${next}`:'./index.html');
+  });
+  const queryError=new URLSearchParams(location.search).get('error');
+  if(queryError==='domain')showError('الدخول متاح فقط بحساب Google تابع لنطاق @sweater.sa');
+  $('#googleBtn').onclick=async()=>{
+    const button=$('#googleBtn'),box=$('#errorBox');
+    button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> جارٍ فتح Google';
     box.classList.remove('show');
-    const result=await client.auth.signInWithPassword({email,password:f.password});
-    if(result.error){box.textContent=result.error.message==='Invalid login credentials'?'البريد الإلكتروني أو كلمة المرور غير صحيحة.':result.error.message;box.classList.add('show');button.disabled=false;button.innerHTML='<i class="fa-solid fa-arrow-right-to-bracket"></i> تسجيل الدخول';return}
-    const next=new URLSearchParams(location.search).get('next');location.replace(next?`./${next}`:'./index.html');
+    const result=await client.auth.signInWithGoogle();
+    if(result.error){
+      const code=result.error.code||'';
+      const message=code==='auth/popup-closed-by-user'?'تم إغلاق نافذة Google قبل إكمال الدخول.':code==='auth/unauthorized-domain-account'?'الدخول متاح فقط لحسابات @sweater.sa.':result.error.message||'تعذر تسجيل الدخول باستخدام Google.';
+      showError(message);
+      button.disabled=false;button.innerHTML='<i class="fa-brands fa-google"></i> المتابعة باستخدام Google';
+      return;
+    }
+    const next=nextPage();location.replace(next?`./${next}`:'./index.html');
   };
 })();
 </script>
