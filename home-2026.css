@@ -67,3 +67,11 @@ main{overflow:visible}
 footer{width:min(1180px,calc(100% - 32px));margin-top:70px;padding:26px 0 32px}
 @media(max-width:900px){.tools-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.reference-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.numbers-grid{grid-template-columns:repeat(3,1fr)}.v4-hero{padding:42px}.admin-tools-grid{grid-template-columns:1fr}}
 @media(max-width:620px){.v4-header{width:calc(100% - 24px)}.v4-hero{width:calc(100% - 24px);min-height:280px;margin-top:18px;padding:32px 22px;border-radius:20px}.v4-hero h1{font-size:42px}.v4-section{width:calc(100% - 24px);padding-top:58px}.v4-section-head{grid-template-columns:1fr}.v4-section-head>p{display:none}.tools-grid{grid-template-columns:1fr}.tool-card-simple,.tool-card-simple:nth-child(6n+1){min-height:132px}.admin-zone{width:calc(100% - 24px);margin-top:58px;padding:20px}.reference-grid{grid-template-columns:1fr}.numbers-grid{grid-template-columns:repeat(2,1fr)}.stat-card{border-bottom:1px solid #eee}.tool-filters button{padding:0 11px}}
+
+/* SWEATER hero: orange-first brand treatment */
+.v4-hero{border-color:var(--orange);background:var(--orange);color:#fff}
+.v4-hero:before{border-color:#fff;opacity:.13}
+.v4-eyebrow,.v4-eyebrow i{color:#fff}
+.v4-hero-copy>p{color:rgba(255,255,255,.86)}
+.resume-link{border-color:rgba(255,255,255,.42);color:#fff}
+.resume-link i{color:#fff}
