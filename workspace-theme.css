@@ -98,3 +98,61 @@ canvas,.canvas,.paper,.quote-paper,.id-card,.package-card,.poster,.artboard{colo
   aside,.panel,.card,.side{border-radius:16px!important}
   button,.btn,a.btn{border-radius:11px!important}
 }
+
+/* Quiet workspace — orange is an accent, never a page surface. */
+.sw-unified-ui body{background:#f7f7f6!important}
+.sw-unified-ui body>header,
+.sw-unified-ui .app-head,
+.sw-unified-ui .topbar,
+.sw-unified-ui .tool-head,
+.sw-unified-ui .qr-head,
+.sw-unified-ui .head,
+.sw-unified-ui .glass-header{
+  position:sticky!important;
+  top:0!important;
+  z-index:100!important;
+  width:100%!important;
+  min-height:68px!important;
+  height:auto!important;
+  padding:10px clamp(14px,2.4vw,28px)!important;
+  border:0!important;
+  border-bottom:1px solid var(--sw-line)!important;
+  border-radius:0!important;
+  background:rgba(255,255,255,.97)!important;
+  color:var(--sw-ink)!important;
+  box-shadow:none!important;
+  backdrop-filter:blur(18px)!important;
+}
+.sw-unified-ui body>header>*,
+.sw-unified-ui .app-head>*,
+.sw-unified-ui .topbar>*,
+.sw-unified-ui .tool-head>*,
+.sw-unified-ui .head>*{min-width:0}
+.sw-unified-ui header .mark,
+.sw-unified-ui header .brand-mark,
+.sw-unified-ui header .logo-mark{background:var(--sw-orange-soft)!important;color:var(--sw-orange)!important;box-shadow:none!important}
+.sw-unified-ui header .back,
+.sw-unified-ui header .icon-btn{border:1px solid var(--sw-line)!important;background:#fff!important;color:var(--sw-ink)!important;box-shadow:none!important}
+.sw-unified-ui .hero,
+.sw-unified-ui .dashboard-hero,
+.sw-unified-ui .admin-zone,
+.sw-unified-ui .numbers-shell,
+.sw-unified-ui .numbers-head{
+  border:1px solid var(--sw-line)!important;
+  background:#fff!important;
+  color:var(--sw-ink)!important;
+  box-shadow:none!important;
+}
+.sw-unified-ui .hero h1,.sw-unified-ui .hero h2,.sw-unified-ui .hero strong,
+.sw-unified-ui .dashboard-hero h1,.sw-unified-ui .dashboard-hero h2,.sw-unified-ui .dashboard-hero strong,
+.sw-unified-ui .admin-zone h1,.sw-unified-ui .admin-zone h2,.sw-unified-ui .admin-zone h3,
+.sw-unified-ui .numbers-head h2{color:var(--sw-ink)!important}
+.sw-unified-ui .hero p,.sw-unified-ui .hero small,
+.sw-unified-ui .dashboard-hero p,.sw-unified-ui .dashboard-hero small,
+.sw-unified-ui .admin-zone p,.sw-unified-ui .numbers-head p{color:var(--sw-muted)!important}
+.sw-unified-ui .dashboard-hero::after,.sw-unified-ui .hero::before,.sw-unified-ui .hero::after{opacity:.06!important}
+@media(max-width:700px){
+  .sw-unified-ui body>header,.sw-unified-ui .app-head,.sw-unified-ui .topbar,.sw-unified-ui .tool-head,.sw-unified-ui .qr-head,.sw-unified-ui .head,.sw-unified-ui .glass-header{min-height:62px!important;padding:8px 11px!important}
+  .sw-unified-ui header .actions,.sw-unified-ui header .top-actions,.sw-unified-ui header .head-actions{gap:5px!important}
+  .sw-unified-ui header .actions .btn span,.sw-unified-ui header .top-actions .btn span,.sw-unified-ui header .head-actions .btn span{display:none!important}
+}
