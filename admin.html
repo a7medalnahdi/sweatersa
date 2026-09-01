@@ -28,6 +28,7 @@
   </style>
   <link rel="stylesheet" href="./admin-v4.css?v=3">
 <style>.template-launch{margin-bottom:22px;padding:18px;border:1px solid #fed7aa;border-radius:18px;background:#fff7ed}.template-launch h3{margin:0 0 5px;font-size:15px}.template-launch>p{margin:0 0 14px;color:var(--muted);font-size:12px}.template-launch-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.template-launch-grid a{min-height:86px;padding:13px;border:1px solid #f1d1bd;border-radius:13px;background:#fff;color:var(--ink);text-decoration:none;display:flex;align-items:center;gap:11px}.template-launch-grid i{width:37px;height:37px;border-radius:10px;background:#fff0e7;color:var(--a);display:grid;place-items:center}.template-launch-grid strong,.template-launch-grid small{display:block}.template-launch-grid strong{font-size:12px}.template-launch-grid small{margin-top:4px;color:var(--muted);font-size:9px}@media(max-width:850px){.template-launch-grid{grid-template-columns:1fr 1fr}}@media(max-width:520px){.template-launch-grid{grid-template-columns:1fr}}</style>
+<style>.feedback-admin-list{display:grid;gap:13px}.feedback-admin-card{padding:19px;border:1px solid var(--line);border-radius:18px;background:#fff}.feedback-admin-card.is-new{border-right:4px solid var(--a)}.feedback-admin-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}.feedback-admin-person{display:flex;align-items:center;gap:11px}.feedback-admin-avatar{width:42px;height:42px;border-radius:13px;background:#fff0e7;color:var(--a);display:grid;place-items:center}.feedback-admin-person strong,.feedback-admin-person span{display:block}.feedback-admin-person strong{font-size:14px}.feedback-admin-person span{margin-top:3px;color:var(--muted);font-size:11px}.feedback-admin-message{margin:15px 0;padding:15px;border-radius:13px;background:#faf8f6;color:#252525;font-size:14px;line-height:1.8;white-space:pre-wrap}.feedback-admin-foot{display:flex;align-items:center;justify-content:space-between;gap:12px}.feedback-admin-source{color:var(--muted);font-size:11px}.feedback-admin-source i{margin-left:5px;color:var(--a)}.feedback-admin-actions{display:flex;gap:7px}@media(max-width:650px){.feedback-admin-top,.feedback-admin-foot{align-items:stretch;flex-direction:column}.feedback-admin-actions .btn{flex:1}.feedback-admin-actions{width:100%}}</style>
 </head>
 <body class="admin-locked">
 <section class="login-gate">
@@ -57,6 +58,7 @@
       </section>
       <section class="view" data-view="employees"><div class="section-head"><div><h2>حسابات الموظفين</h2><p>أنشئ سجلات الموظفين وحدد الأدوار والصلاحيات.</p></div><div class="toolbar"><input class="search" id="employeeSearch" placeholder="ابحث بالاسم أو البريد"><button class="btn primary" id="addEmployee"><i class="fa-solid fa-user-plus"></i> موظف جديد</button></div></div><div class="table-wrap"><table><thead><tr><th>الموظف</th><th>القسم</th><th>الدور</th><th>الحالة</th><th>رمز التفعيل</th><th>إجراءات</th></tr></thead><tbody id="employeeRows"></tbody></table></div></section>
       <section class="view" data-view="analytics"><div class="section-head"><div><h2>سجل استخدام الموقع</h2><p>الزيارات وآخر نشاط للموظفين عبر جميع الأجهزة.</p></div><button class="btn" id="refreshAnalytics"><i class="fa-solid fa-rotate"></i> تحديث الآن</button></div><div class="analytics-stack"><div class="grid4" id="analyticsMetrics"></div><div class="analytics-note"><i class="fa-solid fa-shield-halved"></i> يُسجل اسم الصفحة ووقت الزيارة فقط. لا يتم تسجيل محتوى التصاميم أو الملفات أو كلمات المرور.</div><div class="card"><h3>آخر زيارة لكل موظف</h3><div class="table-wrap"><table><thead><tr><th>الموظف</th><th>الحالة الآن</th><th>آخر زيارة</th><th>الصفحة الحالية/الأخيرة</th><th>عدد الزيارات</th></tr></thead><tbody id="employeeVisitRows"></tbody></table></div></div><div class="card"><h3>أحدث الزيارات</h3><div class="table-wrap"><table><thead><tr><th>الموظف</th><th>الصفحة</th><th>الوقت</th></tr></thead><tbody id="recentVisitRows"></tbody></table></div></div></div></section>
+      <section class="view" data-view="feedback"><div class="section-head"><div><h2>ملاحظات الموظفين</h2><p>الرسائل والاقتراحات الواردة من جميع صفحات مساحة العمل.</p></div><div class="toolbar"><select class="search" id="feedbackFilter"><option value="all">كل الملاحظات</option><option value="new">الجديدة فقط</option><option value="reviewed">تمت مراجعتها</option></select><button class="btn" id="refreshFeedback"><i class="fa-solid fa-rotate"></i> تحديث</button></div></div><div class="grid4" id="feedbackMetrics"></div><div class="feedback-admin-list" id="feedbackList"></div></section>
       <section class="view" data-view="homepage"><div class="section-head"><div><h2>نصوص الصفحة الرئيسية</h2><p>تغيير الرسائل والعناوين الرئيسية مباشرة.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="form-grid" id="contentForm"></div></div></section>
       <section class="view" data-view="references"><div class="section-head"><div><h2>مراجع الشركة</h2><p>تحكم في روابط الملفات الرسمية ومعلومات بطاقاتها.</p></div><button class="btn primary save-view"><i class="fa-solid fa-check"></i> حفظ التغييرات</button></div><div class="card"><div class="editor-list" id="referenceEditors"></div></div></section>
       <section class="view" data-view="tools"><div class="section-head"><div><h2>إدارة الأدوات</h2><p>عدّل معلومات الأداة أو اقفلها مؤقتًا للموظفين. المدير يستطيع فتح الأدوات المقفلة دائمًا.</p></div><button class="btn primary save-view"><i class="fa-solid fa-cloud-arrow-up"></i> حفظ ونشر التغييرات</button></div><div class="tool-admin-grid" id="toolEditors"></div></section>
@@ -77,7 +79,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script>
-<script src="./site-config.js?v=unified1"></script>
+<script src="./site-config.js?v=feedback1"></script>
 <script>
 (async() => {
   const unlock=()=>document.body.classList.remove('admin-locked');
@@ -93,6 +95,7 @@
     ['overview','نظرة عامة','fa-chart-pie','ملخص الموقع وإدارة المحتوى'],
     ['employees','الموظفون','fa-users','إدارة الحسابات والصلاحيات'],
     ['analytics','سجل الموقع','fa-chart-line','الزيارات وآخر نشاط للموظفين'],
+    ['feedback','الملاحظات','fa-comments','ملاحظات الموظفين الواردة من جميع الصفحات'],
     ['homepage','الرئيسية','fa-house','تحرير محتوى الصفحة الرئيسية'],
     ['references','مراجع الشركة','fa-link','إدارة روابط وملفات الشركة'],
     ['tools','الأدوات','fa-toolbox','إدارة بطاقات الأدوات'],
@@ -108,7 +111,7 @@
   async function persist(msg='تم الحفظ والمزامنة مع جميع الأجهزة'){data=await API.save(data);renderMetrics();toast(msg);return data}
   function navMarkup(){return views.map(v=>`<button data-go="${v[0]}" class="${v[0]==='overview'?'active':''}"><i class="fa-solid ${v[2]}"></i><span>${v[1]}</span></button>`).join('')}
   $('#nav').innerHTML=navMarkup(); $('#mobileNav').innerHTML=navMarkup();
-  function go(id){$$('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===id));$$('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));const v=views.find(x=>x[0]===id);$('#pageTitle').textContent=v[1];$('#pageDesc').textContent=v[3];if(id==='employees')renderEmployees();if(id==='analytics')loadAnalytics();if(id==='templates')renderTemplates()}
+  function go(id){$$('[data-view]').forEach(x=>x.classList.toggle('active',x.dataset.view===id));$$('[data-go]').forEach(x=>x.classList.toggle('active',x.dataset.go===id));const v=views.find(x=>x[0]===id);$('#pageTitle').textContent=v[1];$('#pageDesc').textContent=v[3];if(id==='employees')renderEmployees();if(id==='analytics')loadAnalytics();if(id==='feedback')loadFeedback();if(id==='templates')renderTemplates()}
   $$('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
   const pageNames={'index.html':'الصفحة الرئيسية','admin.html':'لوحة التحكم','framing-tool.html':'تركيب الإطارات','coupon-tool.html':'الكوبونات','Quotation Generator.html':'عروض الأسعار','n_icons.html':'استديو التصميم','logo-framer-tool.html':'قوالب الشراكات','qr-generator.html':'صانع QR','document-logo-tool.html':'ختم الملفات','profile.html':'الملف الشخصي'};
   const formatVisitTime=value=>value?new Intl.DateTimeFormat('ar-SA',{dateStyle:'medium',timeStyle:'short'}).format(new Date(value)):'لم يزر الموقع بعد';
@@ -139,6 +142,24 @@
     }catch(error){console.error(error);toast('تعذر تحميل سجل الموقع')}finally{if(button){button.disabled=false;button.innerHTML='<i class="fa-solid fa-rotate"></i> تحديث الآن'}}
   }
   $('#refreshAnalytics').onclick=loadAnalytics;
+  let feedbackRecords=[];
+  function renderFeedback(){
+    const filter=$('#feedbackFilter').value,rows=feedbackRecords.filter(item=>filter==='all'||item.status===filter),newCount=feedbackRecords.filter(item=>item.status==='new').length;
+    $('#feedbackMetrics').innerHTML=[['fa-envelope-open-text',feedbackRecords.length,'إجمالي الملاحظات'],['fa-bell',newCount,'ملاحظات جديدة'],['fa-circle-check',feedbackRecords.length-newCount,'تمت مراجعتها']].map(x=>`<div class="metric"><i class="fa-solid ${x[0]}"></i><strong>${x[1]}</strong><span>${x[2]}</span></div>`).join('');
+    $('#feedbackList').innerHTML=rows.map(item=>`<article class="feedback-admin-card ${item.status==='new'?'is-new':''}" data-feedback="${esc(item.id)}"><div class="feedback-admin-top"><div class="feedback-admin-person"><div class="feedback-admin-avatar"><i class="fa-solid fa-user"></i></div><div><strong>${esc(item.user_name||item.user_email||'موظف')}</strong><span>${esc([item.department,item.user_email].filter(Boolean).join(' • '))}</span></div></div><span class="badge ${item.status==='new'?'':'muted'}">${item.status==='new'?'جديدة':'تمت المراجعة'}</span></div><div class="feedback-admin-message">${esc(item.message)}</div><div class="feedback-admin-foot"><div class="feedback-admin-source"><i class="fa-regular fa-file-lines"></i>${esc(pageNames[item.page]||item.page||'صفحة غير معروفة')} • ${esc(formatVisitTime(item.created_at))}</div><div class="feedback-admin-actions"><button class="btn" data-feedback-toggle>${item.status==='new'?'<i class="fa-solid fa-check"></i> تمت المراجعة':'<i class="fa-solid fa-rotate-left"></i> إعادة كجديدة'}</button><button class="btn danger" data-feedback-delete><i class="fa-solid fa-trash"></i></button></div></div></article>`).join('')||'<div class="card empty"><i class="fa-regular fa-comments"></i><br>لا توجد ملاحظات في هذا القسم.</div>';
+  }
+  async function loadFeedback(){
+    const button=$('#refreshFeedback');if(button){button.disabled=true;button.innerHTML='<i class="fa-solid fa-spinner fa-spin"></i> جارٍ التحديث'}
+    try{const {data:rows,error}=await cloud.client.from('site_feedback').select('*').order('created_at',{ascending:false}).limit(500);if(error)throw error;feedbackRecords=rows||[];renderFeedback()}catch(error){console.error(error);toast('تعذر تحميل الملاحظات')}finally{if(button){button.disabled=false;button.innerHTML='<i class="fa-solid fa-rotate"></i> تحديث'}}
+  }
+  $('#refreshFeedback').onclick=loadFeedback;
+  $('#feedbackFilter').onchange=renderFeedback;
+  $('#feedbackList').onclick=async event=>{
+    const card=event.target.closest('[data-feedback]');if(!card)return;const id=card.dataset.feedback,item=feedbackRecords.find(row=>row.id===id);if(!item)return;
+    const toggle=event.target.closest('[data-feedback-toggle]'),remove=event.target.closest('[data-feedback-delete]');
+    if(toggle){toggle.disabled=true;const next=item.status==='new'?'reviewed':'new';const {error}=await cloud.client.from('site_feedback').update({status:next,updated_at:new Date().toISOString()}).eq('id',id);if(error){toast('تعذر تحديث الملاحظة');toggle.disabled=false;return}item.status=next;renderFeedback();toast(next==='reviewed'?'تمت مراجعة الملاحظة':'أعيدت إلى الملاحظات الجديدة')}
+    if(remove&&confirm('هل تريد حذف هذه الملاحظة نهائيًا؟')){remove.disabled=true;const {error}=await cloud.client.from('site_feedback').delete().eq('id',id);if(error){toast('تعذر حذف الملاحظة');remove.disabled=false;return}feedbackRecords=feedbackRecords.filter(row=>row.id!==id);renderFeedback();toast('تم حذف الملاحظة')}
+  };
   function renderMetrics(){const active=data.employees.filter(x=>x.status==='active').length;$('#metrics').innerHTML=[
     ['fa-user-group',data.employees.length,'حسابات الموظفين'],
     ['fa-toolbox',data.tools.filter(x=>x.enabled).length,'أدوات ظاهرة'],
