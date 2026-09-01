@@ -31,15 +31,15 @@
 
 <script>
 (()=>{
-  const canonicalHost='a7medalnahdi.github.io';
+  const canonicalHost='sweatersa.vercel.app';
   if(location.hostname!==canonicalHost){
     const params=new URLSearchParams(location.search);
     params.set('from',location.hostname||'unknown');
-    location.replace('https://'+canonicalHost+'/sweatersa/login.html?'+params.toString());
+    location.replace('https://'+canonicalHost+'/login.html?'+params.toString());
   }
 })();
 </script>
-<script src="./supabase-config.js?v=domainfix3"></script><script src="./supabase-app.js?v=domainfix3"></script>
+<script src="./supabase-config.js?v=vercel1"></script><script src="./supabase-app.js?v=vercel1"></script>
 <script>
 (()=>{
   const $=s=>document.querySelector(s),client=window.SweaterCloud.client;
