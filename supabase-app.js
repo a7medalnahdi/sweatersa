@@ -283,7 +283,16 @@
       return snap.docs.map(item=>({data_key:item.id,...item.data()}));
     });
     let rows=nested;
-    if(!rows.length)rows=byFilters(await getAll('user_data'),[{op:'eq',key:'user_id',value:id}]);
+    if(!rows.length){
+      rows=await run(async({db,dbApi})=>{
+        const legacyQuery=dbApi.query(
+          dbApi.collection(db,'user_data'),
+          dbApi.where('user_id','==',id)
+        );
+        const snap=await dbApi.getDocs(legacyQuery);
+        return snap.docs.map(item=>({id:item.id,...item.data()}));
+      });
+    }
     syncing=true;
     for(const row of rows)rawSet(row.data_key,typeof row.value==='string'?row.value:JSON.stringify(row.value));
     syncing=false;
