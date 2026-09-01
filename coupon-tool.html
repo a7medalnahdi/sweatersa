@@ -141,40 +141,40 @@
   .toast-enter { opacity: 0; transform: translateY(100%) scale(0.95); }
   .toast-show { opacity: 1; transform: translateY(0) scale(1); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
   .toast-hide { opacity: 0; transform: translateY(20px) scale(0.95); transition: all 0.3s ease; }
+  .sw-user-menu, .sw-admin-templates-btn { display: none !important; }
+  .coupon-topbar { min-height: 72px; height: 72px; background: #fff !important; border-bottom: 1px solid #e5e7eb !important; box-shadow: none !important; }
+  .coupon-topbar-title { display: flex; align-items: center; gap: 11px; min-width: 0; }
+  .coupon-topbar-icon { width: 38px; height: 38px; border-radius: 12px; display: grid; place-items: center; background: #fff3eb; color: #f96714; }
+  .coupon-topbar-title strong { display: block; color: #121212; font-size: 14px; font-weight: 900; line-height: 1.2; }
+  .coupon-topbar-title small { display: block; margin-top: 4px; color: #94a3b8; font-size: 9px; font-weight: 700; }
+  .coupon-header-action { height: 40px; padding: 0 14px; border: 1px solid #fed7aa; border-radius: 12px; background: #fff7ed; color: #c2410c; display: inline-flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 900; transition: .2s ease; }
+  .coupon-header-action:hover { background: #f96714; border-color: #f96714; color: #fff; }
+  .coupon-empty-templates { grid-column: 1 / -1; min-height: 92px; border: 1px dashed #cbd5e1; border-radius: 14px; display: grid; place-items: center; padding: 16px; text-align: center; color: #94a3b8; font-size: 10px; font-weight: 800; line-height: 1.8; }
 </style>
 <script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script><script src="./auth-gateway.js?v=google1"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 antialiased selection:bg-sweater-500 selection:text-white transition-colors duration-300 h-screen flex flex-col overflow-hidden">
 
 <!-- ===== TOPBAR ===== -->
-<header class="h-16 glass-header flex items-center justify-between px-4 sm:px-6 z-[100] shrink-0">
-  <div class="flex items-center gap-4">
+<header class="coupon-topbar glass-header flex items-center justify-between px-4 sm:px-6 z-[100] shrink-0">
+  <div class="flex items-center gap-3 min-w-0">
     <a href="./index.html" class="flex items-center gap-2 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white text-sm font-bold transition-colors bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-2 rounded-xl">
       <i class="fa-solid fa-arrow-right"></i>
       <span class="hidden sm:block">العودة للوحة</span>
     </a>
-    <div class="h-6 w-px bg-slate-200 dark:bg-slate-700"></div>
-    
-    <div class="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1 rounded-xl">
-      <button class="w-8 h-8 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none flex items-center justify-center transition-all" id="btnUndo" title="تراجع (Ctrl+Z)" disabled>
-        <i class="fa-solid fa-rotate-left"></i>
-      </button>
-      <button class="w-8 h-8 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-white dark:hover:bg-slate-700 hover:shadow-sm disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:shadow-none flex items-center justify-center transition-all" id="btnRedo" title="إعادة (Ctrl+Y)" disabled>
-        <i class="fa-solid fa-rotate-right"></i>
-      </button>
+    <div class="h-7 w-px bg-slate-200"></div>
+    <div class="coupon-topbar-title">
+      <span class="coupon-topbar-icon"><i class="fa-solid fa-ticket"></i></span>
+      <span class="min-w-0">
+        <strong>أداة تصدير الكوبونات</strong>
+        <small class="hidden sm:block">صمّم وصدّر كوبوناتك بسهولة</small>
+      </span>
     </div>
   </div>
-
-  <div class="flex items-center gap-2 text-sweater-600 dark:text-sweater-400 font-black text-lg tracking-tight absolute left-1/2 -translate-x-1/2">
-    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-sweater-400 to-sweater-600 text-white flex items-center justify-center shadow-inner-glow">
-      <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
-    </div>
-    <span class="hidden sm:inline">صانع الكوبونات <span class="text-xs text-sweater-500/70 font-bold tracking-widest align-top">PRO</span></span>
-  </div>
-
-  <div class="flex items-center gap-4">
-    <button id="themeToggle" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center transition-all focus:outline-none focus:ring-2 focus:ring-sweater-500" title="تبديل المظهر">
-      <i class="fa-solid fa-moon text-lg" id="themeIco"></i>
+  <div class="header-actions flex items-center gap-2">
+    <button id="headerTemplatesBtn" class="coupon-header-action" type="button">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>القوالب الجاهزة</span>
     </button>
   </div>
 </header>
@@ -381,6 +381,10 @@
     <!-- Workspace Toolbar -->
     <div class="h-12 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm flex items-center justify-between px-4 z-20">
       <div class="flex items-center gap-2">
+        <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg ml-1">
+          <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 flex items-center justify-center transition-all" id="btnUndo" title="تراجع (Ctrl+Z)" disabled><i class="fa-solid fa-rotate-left"></i></button>
+          <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 flex items-center justify-center transition-all" id="btnRedo" title="إعادة (Ctrl+Y)" disabled><i class="fa-solid fa-rotate-right"></i></button>
+        </div>
         <button id="addTextBtn" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-sweater-500 hover:border-sweater-500 transition-all shadow-sm flex items-center gap-2">
           <i class="fa-solid fa-t"></i> إضافة نص
         </button>
@@ -411,7 +415,7 @@
           <div class="grid-overlay" id="gridOverlay"></div>
 
           <!-- Base Image -->
-          <img class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" id="bgImg" src="https://i.ibb.co/dG0G2pB/coupon-bg-1.png" crossorigin="anonymous" draggable="false"/>
+          <img class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" id="bgImg" alt="" crossorigin="anonymous" draggable="false"/>
           
           <!-- Elements Container (Used for event delegation of drag & drop) -->
           <div id="elementsContainer" class="absolute inset-0 z-10">
@@ -468,7 +472,7 @@
         </section>
 
         <!-- Templates -->
-        <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <section id="readyTemplatesSection" class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
               <i class="fa-solid fa-border-all"></i> القوالب الجاهزة
@@ -572,24 +576,12 @@
 (() => {
 'use strict';
 
-const TEMPLATES = {
-  landscape: [
-    {id:'l1',url:'https://i.ibb.co/MkCmHfJT/fdsfsd.png'},
-    {id:'l2',url:'https://i.ibb.co/Xz9tGxB/c1.png'},
-    {id:'l3',url:'https://i.ibb.co/7jXkH2B/c2.png'},
-  ],
-  portrait: [
-    {id:'p1',url:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png'},
-    {id:'p2',url:'https://i.ibb.co/dG0G2pB/coupon-bg-1.png'},
-    {id:'p3',url:'https://i.ibb.co/Hpx5QBBq/Artboard-1.png'}, // Fallback
-  ]
-};
+const TEMPLATES = { landscape: [], portrait: [] };
 
 const $ = id => document.getElementById(id);
 const $$ = s => document.querySelectorAll(s);
 
 const D = {
-  themeToggle: $('themeToggle'), themeIco: $('themeIco'),
   btnUndo: $('btnUndo'), btnRedo: $('btnRedo'),
   inspector: $('inspector'), propsPlaceholder: $('propsPlaceholder'),
   dynamicPanel: $('dynamicPanel'), panelIcon: $('panelIcon'), panelIconWrap: $('panelIconWrap'), propName: $('propName'),
@@ -695,20 +687,8 @@ const captureOptions = scale => ({
   logging: false
 });
 
-D.themeToggle.addEventListener('click', () => {
-  document.documentElement.classList.toggle('dark');
-  const dk = document.documentElement.classList.contains('dark');
-  D.themeIco.style.transform = 'rotate(360deg) scale(0)';
-  setTimeout(() => {
-    D.themeIco.className = dk ? 'fa-solid fa-sun text-amber-500' : 'fa-solid fa-moon';
-    D.themeIco.style.transform = 'rotate(0deg) scale(1)';
-  }, 150);
-  localStorage.setItem('swDark', dk ? '1' : '0');
-});
-if (localStorage.getItem('swDark') === '1' || (!('swDark' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-  document.documentElement.classList.add('dark');
-  D.themeIco.className = 'fa-solid fa-sun text-amber-500';
-}
+document.documentElement.classList.remove('dark');
+localStorage.removeItem('swDark');
 
 function toast(type, title, msg) {
   const cfg = {
@@ -1244,6 +1224,10 @@ function setOrientation(o, saveHist = true) {
   const cont = isLs ? D.lsTpls : D.ptTpls;
   if (!cont.querySelector('.tpl-thumb.active')) {
     const t = isLs ? TEMPLATES.landscape[0] : TEMPLATES.portrait[0];
+    if (!t) {
+      if (saveHist) Hist.push();
+      return;
+    }
     applyTemplate(t.url, t.id, false);
   }
   if (saveHist) Hist.push();
@@ -1263,16 +1247,41 @@ function renderTemplates() {
   ['landscape','portrait'].forEach(type => {
     const cont = type === 'landscape' ? D.lsTpls : D.ptTpls;
     cont.innerHTML = '';
+    if (!TEMPLATES[type].length) {
+      cont.innerHTML = '<div class="coupon-empty-templates"><span><i class="fa-regular fa-folder-open text-lg block mb-1"></i>لا توجد قوالب محفوظة حاليًا<br>أي قالب تضيفه من لوحة الإدارة سيظهر هنا.</span></div>';
+      return;
+    }
     TEMPLATES[type].forEach(t => {
       const img = document.createElement('img');
       img.src = t.url; img.dataset.tid = t.id;
       img.className = `tpl-thumb aspect-[${type==='landscape'?'3/2':'2/3'}]`;
-      img.addEventListener('click', () => applyTemplate(t.url, t.id));
+      img.addEventListener('click', () => t.template ? applyReadyCouponTemplate(t.template, false) : applyTemplate(t.url, t.id));
       cont.appendChild(img);
     });
   });
-  applyTemplate(TEMPLATES.landscape[0].url, TEMPLATES.landscape[0].id, false);
 }
+
+function syncManagedCouponTemplates() {
+  if (!window.SweaterAdmin) return;
+  const list = window.SweaterAdmin.getTemplates('coupons').filter(template => template.source !== 'built-in');
+  TEMPLATES.landscape = [];
+  TEMPLATES.portrait = [];
+  list.forEach(template => {
+    const payload = template.payload || {};
+    const url = payload.background || payload.url || template.preview || '';
+    if (!url) return;
+    const type = payload.orientation === 'portrait' || template.category === 'عمودي' ? 'portrait' : 'landscape';
+    TEMPLATES[type].push({ id: template.id, url, template });
+  });
+  renderTemplates();
+  setOrientation(orientation, false);
+}
+
+$('headerTemplatesBtn')?.addEventListener('click', () => {
+  const section = $('readyTemplatesSection');
+  section?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  section?.animate?.([{ boxShadow: '0 0 0 0 rgba(249,103,20,0)' }, { boxShadow: '0 0 0 4px rgba(249,103,20,.22)' }, { boxShadow: '0 0 0 0 rgba(249,103,20,0)' }], { duration: 900 });
+});
 
 D.btnModeDesign.addEventListener('click', () => {
   D.panelDesign.style.display='flex'; D.panelBatch.style.display='none';
@@ -1467,20 +1476,26 @@ async function saveReadyCouponTemplate() {
     selectEl(null);
     const config=window.SweaterAdmin.load();
     const index=config.templates.findIndex(template=>template.id===editingReadyTemplateId);
-    const payload=await buildReadyCouponPayload();
+    let requestedName='';
+    if(index<0){
+      requestedName=prompt('اسم القالب','قالب كوبون جديد')||'';
+      if(!requestedName.trim())return;
+    }
+    const withTimeout=(promise,ms,message)=>Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(new Error(message)),ms))]);
+    const payload=await withTimeout(buildReadyCouponPayload(),25000,'استغرق تجهيز صور القالب وقتًا طويلًا. جرّب صورًا أصغر ثم أعد المحاولة.');
     let preview=index>=0?(config.templates[index].preview||payload.background):payload.background;
     try{
-      const canvas=await html2canvas(D.canvasContainer,captureOptions(2));
+      const canvas=await withTimeout(html2canvas(D.canvasContainer,captureOptions(1.25)),15000,'preview timeout');
       const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('preview')),'image/png',0.94));
-      preview=await window.SweaterAdmin.uploadAsset(new File([blob],`coupon-preview-${Date.now()}.png`,{type:'image/png'}),'templates');
+      preview=await withTimeout(window.SweaterAdmin.uploadAsset(new File([blob],`coupon-preview-${Date.now()}.png`,{type:'image/png'}),'templates'),20000,'preview upload timeout');
     }catch(error){console.warn('تعذر تحديث معاينة القالب',error)}
     if(index<0){
-      const name=prompt('اسم القالب','قالب كوبون جديد');if(!name?.trim())return;
       const category=orientation==='portrait'?'عمودي':'أفقي';
       editingReadyTemplateId=`coupon-${Date.now()}-${crypto.randomUUID()}`;
-      config.templates.unshift({id:editingReadyTemplateId,name:name.trim(),tool:'coupons',category,status:'active',source:'custom',payload,preview,notes:'قالب أنشئ من صانع الكوبونات',updatedAt:new Date().toISOString()});
+      config.templates.unshift({id:editingReadyTemplateId,name:requestedName.trim(),tool:'coupons',category,status:'active',source:'custom',payload,preview,notes:'قالب أنشئ من صانع الكوبونات',updatedAt:new Date().toISOString()});
     }else config.templates[index]={...config.templates[index],payload,preview,status:'active',updatedAt:new Date().toISOString()};
-    await window.SweaterAdmin.save(config);
+    await withTimeout(window.SweaterAdmin.save(config),20000,'تعذر إكمال الحفظ خلال الوقت المتوقع. تحقق من الاتصال ثم حاول مجددًا.');
+    syncManagedCouponTemplates();
     toast('ok','تم حفظ القالب','تم تحديثه في القوالب الجاهزة لجميع الموظفين.');
   }catch(error){
     console.error(error);
@@ -1496,8 +1511,10 @@ window.addEventListener('sweater:edit-ready-template',event=>applyReadyCouponTem
 
 window.addEventListener('load',async()=>{
   const user=await window.SweaterAuthReady?.catch(()=>null);
+  await window.SweaterAdmin?.ready?.catch(()=>null);
+  syncManagedCouponTemplates();
   if(user?.role!=='admin'||!window.SweaterAdmin)return;
-  const actions=document.querySelector('body > header > div:last-child');
+  const actions=document.querySelector('body > header .header-actions');
   if(!actions||$('saveReadyCouponTemplate'))return;
   const button=document.createElement('button');
   button.id='saveReadyCouponTemplate';
