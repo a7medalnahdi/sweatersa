@@ -79,7 +79,7 @@
 <div class="toast" id="toast"></div>
 
 <script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script>
-<script src="./site-config.js?v=feedback1"></script>
+<script src="./site-config.js?v=template-delete2"></script>
 <script>
 (async() => {
   const unlock=()=>document.body.classList.remove('admin-locked');
@@ -213,7 +213,7 @@
   function bindTemplateActions(){
     $$('[data-copy-template]').forEach(b=>b.onclick=()=>{const source=data.templates.find(x=>x.id===b.dataset.copyTemplate);if(!source)return;data.templates.unshift({...JSON.parse(JSON.stringify(source)),id:uid(),name:`نسخة من ${source.name}`,source:'custom'});persist('تم إنشاء نسخة من القالب');renderTemplates()});
     $$('[data-edit-template]').forEach(b=>b.onclick=()=>{const t=data.templates.find(x=>x.id===b.dataset.editTemplate),f=$('#templateForm');Object.keys(t).forEach(k=>{if(f.elements[k])f.elements[k].value=typeof t[k]==='object'?JSON.stringify(t[k],null,2):t[k]});$('#templateModalTitle').textContent='تعديل القالب';openModal('#templateModal')});
-    $$('[data-delete-template]').forEach(b=>b.onclick=()=>{if(!confirm('حذف القالب؟'))return;data.templates=data.templates.filter(x=>x.id!==b.dataset.deleteTemplate);persist('تم حذف القالب');renderTemplates()})
+    $$('[data-delete-template]').forEach(b=>b.onclick=async()=>{if(!confirm('حذف القالب؟'))return;const id=b.dataset.deleteTemplate,backup=JSON.parse(JSON.stringify(data));b.disabled=true;data.templates=data.templates.filter(x=>String(x.id)!==String(id));data.deletedTemplateIds=[...new Set([...(data.deletedTemplateIds||[]),String(id)])];renderTemplates();try{await persist('تم حذف القالب ومزامنة الحذف مع الجميع')}catch(error){data=backup;renderTemplates();toast(error.message||'تعذر حذف القالب')}})
   }
   $('#templateImage').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{toast('جارٍ رفع صورة القالب…');$('#templateForm').preview.value=await API.uploadAsset(f,'templates');toast('تم رفع صورة القالب')}catch(error){toast(error.message||'تعذر رفع الصورة')}};
   $('#templateForm').onsubmit=async e=>{e.preventDefault();const f=e.currentTarget,o=Object.fromEntries(new FormData(f));delete o[''];try{o.payload=o.payload.trim()?JSON.parse(o.payload):{}}catch{toast('صيغة JSON غير صحيحة');return}o.id=o.id||uid();const i=data.templates.findIndex(x=>x.id===o.id);o.source=i>=0?(data.templates[i].source||'custom'):'custom';if(i<0)data.templates.unshift(o);else data.templates[i]=o;try{await persist('تم حفظ القالب ومزامنته');closeModals();renderTemplates()}catch(error){toast(error.message||'تعذر حفظ القالب')}};
