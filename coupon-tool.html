@@ -1458,7 +1458,7 @@ async function buildReadyCouponPayload() {
 }
 
 async function saveReadyCouponTemplate() {
-  if(!editingReadyTemplateId||!window.SweaterAuth?.isAdmin?.())return;
+  if(!window.SweaterAuth?.isAdmin?.())return;
   const button=$('saveReadyCouponTemplate');
   const original=button.innerHTML;
   button.disabled=true;
@@ -1467,18 +1467,20 @@ async function saveReadyCouponTemplate() {
     selectEl(null);
     const config=window.SweaterAdmin.load();
     const index=config.templates.findIndex(template=>template.id===editingReadyTemplateId);
-    if(index<0)throw new Error('تعذر العثور على القالب');
     const payload=await buildReadyCouponPayload();
-    let preview=config.templates[index].preview||payload.background;
+    let preview=index>=0?(config.templates[index].preview||payload.background):payload.background;
     try{
       const canvas=await html2canvas(D.canvasContainer,captureOptions(2));
       const blob=await new Promise((resolve,reject)=>canvas.toBlob(value=>value?resolve(value):reject(new Error('preview')),'image/png',0.94));
       preview=await window.SweaterAdmin.uploadAsset(new File([blob],`coupon-preview-${Date.now()}.png`,{type:'image/png'}),'templates');
     }catch(error){console.warn('تعذر تحديث معاينة القالب',error)}
-    config.templates[index]={...config.templates[index],payload,preview,status:'active',updatedAt:new Date().toISOString()};
+    if(index<0){
+      const name=prompt('اسم القالب','قالب كوبون جديد');if(!name?.trim())return;
+      const category=orientation==='portrait'?'عمودي':'أفقي';
+      editingReadyTemplateId=`coupon-${Date.now()}-${crypto.randomUUID()}`;
+      config.templates.unshift({id:editingReadyTemplateId,name:name.trim(),tool:'coupons',category,status:'active',source:'custom',payload,preview,notes:'قالب أنشئ من صانع الكوبونات',updatedAt:new Date().toISOString()});
+    }else config.templates[index]={...config.templates[index],payload,preview,status:'active',updatedAt:new Date().toISOString()};
     await window.SweaterAdmin.save(config);
-    editingReadyTemplateId='';
-    button.style.display='none';
     toast('ok','تم حفظ القالب','تم تحديثه في القوالب الجاهزة لجميع الموظفين.');
   }catch(error){
     console.error(error);
@@ -1500,7 +1502,8 @@ window.addEventListener('load',async()=>{
   const button=document.createElement('button');
   button.id='saveReadyCouponTemplate';
   button.className='h-10 px-3 rounded-xl bg-sweater-500 hover:bg-sweater-600 text-white items-center gap-2 text-xs font-black transition-all shadow-lg';
-  button.style.display='none';
+  const authorMode=new URLSearchParams(location.search).get('adminTemplate')==='1';
+  button.style.display=authorMode?'inline-flex':'none';
   button.innerHTML='<i class="fa-solid fa-cloud-arrow-up"></i><span>حفظ في القوالب الجاهزة</span>';
   button.addEventListener('click',saveReadyCouponTemplate);
   actions.prepend(button);
@@ -1508,7 +1511,7 @@ window.addEventListener('load',async()=>{
 
 })();
 </script>
-<script src="./site-config.js?v=fb3"></script>
+<script src="./site-config.js?v=templates2"></script>
 <script src="./sweater-ui.js?v=9"></script>
 <script src="./local-studio.js?v=8"></script>
 </body>
