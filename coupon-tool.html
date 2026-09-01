@@ -163,6 +163,27 @@
   .corner-resize-handle[data-corner="tl"], .corner-resize-handle[data-corner="br"] { cursor: nwse-resize; }
   .corner-resize-handle[data-corner="tr"], .corner-resize-handle[data-corner="bl"] { cursor: nesw-resize; }
   #bgImg.selected { outline: 2px solid #f96714; outline-offset: -2px; }
+  .coupon-editor-shell { background:#f5f5f4; }
+  .coupon-side-panel { background:#fff!important; border-color:#e7e5e4!important; box-shadow:none!important; }
+  .coupon-inspector { width:320px!important; }
+  .coupon-assets { width:300px!important; }
+  .coupon-workspace-toolbar { min-height:54px;height:54px;background:#fff!important;border-color:#e7e5e4!important;backdrop-filter:none!important; }
+  .coupon-tool-button { height:36px!important;border:1px solid #e7e5e4!important;border-radius:10px!important;background:#fff!important;color:#292524!important;box-shadow:none!important; }
+  .coupon-tool-button:hover { border-color:#f96714!important;color:#f96714!important;background:#fff7ed!important; }
+  .coupon-workspace { background-color:#eeeae5!important;background-image:radial-gradient(#d6d3d1 1px,transparent 1px)!important;background-size:18px 18px!important; }
+  .coupon-workspace-decoration { display:none!important; }
+  .coupon-canvas-outer { max-width:780px!important; }
+  #canvas-container { background:#fff!important;border-radius:8px!important;box-shadow:0 24px 70px rgba(41,37,36,.16),0 0 0 1px rgba(41,37,36,.08)!important; }
+  .coupon-panel-content { padding:16px!important;gap:14px!important; }
+  .coupon-tool-section { border:1px solid #e7e5e4!important;border-radius:14px!important;background:#fff!important;box-shadow:none!important;padding:14px!important; }
+  .coupon-tool-section>h3,.coupon-tool-section>div>h3 { color:#57534e!important;font-size:10px!important;letter-spacing:0!important; }
+  .coupon-mode-switch { border:0!important;background:#f5f5f4!important;box-shadow:none!important;border-radius:11px!important;padding:4px!important; }
+  .coupon-editor-status { height:34px;display:flex;align-items:center;justify-content:space-between;padding:0 14px;border-top:1px solid #e7e5e4;background:#fff;color:#78716c;font-size:9px;font-weight:800; }
+  .coupon-zoom { display:flex;align-items:center;gap:5px;direction:ltr; }
+  .coupon-zoom button { width:25px;height:25px;border:1px solid #e7e5e4;border-radius:7px;background:#fff;color:#57534e; }
+  .coupon-zoom button:hover { color:#f96714;border-color:#fdba74; }
+  .coupon-zoom strong { min-width:38px;text-align:center;color:#292524; }
+  @media(max-width:1023px){.coupon-inspector,.coupon-assets{width:100%!important}.coupon-canvas-outer{max-width:680px!important}.coupon-editor-status{display:none}}
 </style>
 <script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script><script src="./auth-gateway.js?v=google1"></script>
 </head>
@@ -193,18 +214,18 @@
 </header>
 
 <!-- ===== MAIN LAYOUT ===== -->
-<div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10">
+<div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative z-10 coupon-editor-shell">
 
   <!-- ====== RIGHT PANEL (INSPECTOR) ====== -->
-  <aside class="w-full lg:w-[22rem] border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20">
+  <aside class="w-full lg:w-[22rem] border-b lg:border-b-0 lg:border-l border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20 coupon-side-panel coupon-inspector">
     
     <!-- Empty State -->
     <div id="propsPlaceholder" class="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400 min-h-[300px]">
-      <div class="w-20 h-20 rounded-full bg-slate-50 dark:bg-slate-800/50 flex items-center justify-center mb-4 border-2 border-dashed border-slate-200 dark:border-slate-700">
-        <i class="fa-solid fa-hand-pointer text-3xl opacity-40 text-sweater-500"></i>
+      <div class="w-12 h-12 rounded-xl bg-orange-50 flex items-center justify-center mb-4 border border-orange-100">
+        <i class="fa-solid fa-arrow-pointer text-lg text-sweater-500"></i>
       </div>
-      <h3 class="font-black text-slate-700 dark:text-slate-300 mb-2">لوحة الخصائص</h3>
-      <p class="font-medium text-xs leading-relaxed max-w-[200px]">انقر على أي نص، شعار، أو باركود في مساحة العمل لتعديل خصائصه هنا.</p>
+      <h3 class="font-black text-slate-700 dark:text-slate-300 mb-2">حدد عنصرًا للتعديل</h3>
+      <p class="font-medium text-xs leading-relaxed max-w-[210px]">اضغط على النص أو الصورة داخل التصميم، وستظهر خصائصه هنا.</p>
     </div>
 
     <!-- DYNAMIC INSPECTOR PANEL -->
@@ -395,16 +416,16 @@
   <main class="flex-1 bg-slate-100/50 dark:bg-slate-950/50 flex flex-col overflow-hidden relative">
     
     <!-- Workspace Toolbar -->
-    <div class="h-12 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm flex items-center justify-between px-4 z-20">
+    <div class="h-12 border-b border-slate-200 dark:border-slate-800 bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm flex items-center justify-between px-4 z-20 coupon-workspace-toolbar">
       <div class="flex items-center gap-2">
         <div class="flex items-center gap-1 bg-slate-100 p-1 rounded-lg ml-1">
           <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 flex items-center justify-center transition-all" id="btnUndo" title="تراجع (Ctrl+Z)" disabled><i class="fa-solid fa-rotate-left"></i></button>
           <button class="w-8 h-8 rounded-md text-slate-500 hover:bg-white hover:shadow-sm disabled:opacity-30 flex items-center justify-center transition-all" id="btnRedo" title="إعادة (Ctrl+Y)" disabled><i class="fa-solid fa-rotate-right"></i></button>
         </div>
-        <button id="addTextBtn" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-sweater-500 hover:border-sweater-500 transition-all shadow-sm flex items-center gap-2">
+        <button id="addTextBtn" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-sweater-500 hover:border-sweater-500 transition-all shadow-sm flex items-center gap-2 coupon-tool-button">
           <i class="fa-solid fa-t"></i> إضافة نص
         </button>
-        <button id="addQRBtn" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-sweater-500 hover:border-sweater-500 transition-all shadow-sm flex items-center gap-2">
+        <button id="addQRBtn" class="px-3 py-1.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-sweater-500 hover:border-sweater-500 transition-all shadow-sm flex items-center gap-2 coupon-tool-button">
           <i class="fa-solid fa-qrcode"></i> باركود QR
         </button>
       </div>
@@ -417,14 +438,14 @@
     </div>
 
     <!-- Canvas Area -->
-    <div class="flex-1 overflow-auto p-4 sm:p-8 flex items-center justify-center relative" id="workspace">
+    <div class="flex-1 overflow-auto p-4 sm:p-8 flex items-center justify-center relative coupon-workspace" id="workspace">
       <!-- Decoration -->
-      <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40">
+      <div class="absolute inset-0 overflow-hidden pointer-events-none z-0 opacity-40 coupon-workspace-decoration">
         <div class="absolute top-[20%] left-[20%] w-96 h-96 bg-sweater-500/10 rounded-full mix-blend-multiply filter blur-3xl dark:bg-sweater-500/5 dark:mix-blend-lighten"></div>
       </div>
 
       <!-- Main Canvas -->
-      <div class="w-full max-w-4xl relative z-10 mx-auto transition-all duration-300" id="canvasOuter">
+      <div class="w-full max-w-4xl relative z-10 mx-auto transition-all duration-300 coupon-canvas-outer" id="canvasOuter">
         <div id="canvas-container" class="ring-1 ring-black/5 dark:ring-white/10 shadow-2xl rounded-2xl">
           
           <!-- Grid Overlay -->
@@ -453,15 +474,24 @@
         </div>
       </div>
     </div>
+    <div class="coupon-editor-status">
+      <span id="canvasStatus"><i class="fa-regular fa-object-group"></i> لم يتم تحديد عنصر</span>
+      <div class="coupon-zoom">
+        <button id="zoomOut" type="button" title="تصغير"><i class="fa-solid fa-minus"></i></button>
+        <strong id="zoomValue">100%</strong>
+        <button id="zoomIn" type="button" title="تكبير"><i class="fa-solid fa-plus"></i></button>
+        <button id="zoomFit" type="button" title="الحجم الأصلي"><i class="fa-solid fa-expand"></i></button>
+      </div>
+    </div>
   </main>
 
   <!-- ====== LEFT PANEL (TOOLS) ====== -->
-  <aside class="w-full lg:w-[22rem] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20 bg-slate-50/50 dark:bg-slate-900/50">
-    <div class="p-5 flex flex-col gap-6">
+  <aside class="w-full lg:w-[22rem] border-t lg:border-t-0 lg:border-r border-slate-200 dark:border-slate-800 panel-glass flex flex-col shrink-0 overflow-y-auto z-20 bg-slate-50/50 dark:bg-slate-900/50 coupon-side-panel coupon-assets">
+    <div class="p-5 flex flex-col gap-6 coupon-panel-content">
 
       <!-- Mode Switch -->
       <section>
-        <div class="flex bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
+        <div class="flex bg-white dark:bg-slate-800 p-1.5 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm coupon-mode-switch">
           <button id="btnModeDesign" class="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-bold transition-all bg-sweater-50 dark:bg-sweater-900/40 text-sweater-600 dark:text-sweater-400 shadow-sm ring-1 ring-sweater-500/20">
             <i class="fa-solid fa-pen-ruler"></i> التصميم
           </button>
@@ -475,7 +505,7 @@
       <div id="panelDesign" class="flex flex-col gap-6 animate-slide-up">
         
         <!-- Uploads -->
-        <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <section class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm coupon-tool-section">
           <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
             <i class="fa-solid fa-cloud-arrow-up"></i> إدراج الموارد
           </h3>
@@ -494,7 +524,7 @@
         </section>
 
         <!-- Templates -->
-        <section id="readyTemplatesSection" class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm">
+        <section id="readyTemplatesSection" class="bg-white dark:bg-slate-800 rounded-2xl p-4 border border-slate-200 dark:border-slate-700 shadow-sm coupon-tool-section">
           <div class="flex items-center justify-between mb-3">
             <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 flex items-center gap-2">
               <i class="fa-solid fa-border-all"></i> القوالب الجاهزة
@@ -618,6 +648,7 @@ const D = {
   shadowWrap: $('shadowWrap'), shadowSw: $('shadowSw'), shadowIntWrap: $('shadowIntWrap'), shadowIntSl: $('shadowIntSl'), shadowIntVal: $('shadowIntVal'),
   posX: $('posX'), posY: $('posY'), ctrH: $('ctrH'), ctrV: $('ctrV'), ctrBoth: $('ctrBoth'),
   canvasContainer: $('canvas-container'), elementsContainer: $('elementsContainer'), bgImg: $('bgImg'),
+  canvasOuter: $('canvasOuter'), canvasStatus: $('canvasStatus'), zoomOut: $('zoomOut'), zoomIn: $('zoomIn'), zoomFit: $('zoomFit'), zoomValue: $('zoomValue'),
   gridToggle: $('gridToggle'), gridOverlay: $('gridOverlay'),
   addTextBtn: $('addTextBtn'), addQRBtn: $('addQRBtn'), logoPreview: $('logoPreview'),
   btnModeDesign: $('btnModeDesign'), btnModeBatch: $('btnModeBatch'),
@@ -638,6 +669,19 @@ let orientation = 'landscape';
 const locks = {};
 let suppressSync = false;
 let idCounter = 100;
+let canvasZoom = 1;
+
+function setCanvasZoom(next) {
+  canvasZoom = Math.max(0.5, Math.min(1.5, Math.round(next * 10) / 10));
+  D.canvasOuter.style.transform = `scale(${canvasZoom})`;
+  D.canvasOuter.style.transformOrigin = 'center center';
+  D.zoomValue.textContent = `${Math.round(canvasZoom * 100)}%`;
+  requestAnimationFrame(positionCornerResizeHandle);
+}
+
+D.zoomOut?.addEventListener('click', () => setCanvasZoom(canvasZoom - 0.1));
+D.zoomIn?.addEventListener('click', () => setCanvasZoom(canvasZoom + 0.1));
+D.zoomFit?.addEventListener('click', () => setCanvasZoom(1));
 
 function bindCanvasImages() {
   let logo = $('logoPreview');
@@ -952,12 +996,14 @@ function selectEl(el) {
   if (!el) {
     D.propsPlaceholder.style.display = 'flex';
     activeEl = null;
+    if (D.canvasStatus) D.canvasStatus.innerHTML = '<i class="fa-regular fa-object-group"></i> لم يتم تحديد عنصر';
     return;
   }
   
   activeEl = el;
   el.classList.add('selected');
   D.dynamicPanel.style.display = 'flex';
+  if (D.canvasStatus) D.canvasStatus.innerHTML = `<i class="fa-solid fa-object-ungroup"></i> ${el.dataset.name || 'عنصر محدد'}`;
   
   syncInspector();
   requestAnimationFrame(positionCornerResizeHandle);
