@@ -36,10 +36,14 @@
     }
     const syncMarker=`swCloudSynced:${session.user.id}`;
     if(!sessionStorage.getItem(syncMarker)){
-      const count=await window.SweaterCloud.pull(session.user.id);
-      if(!count)await window.SweaterCloud.pushLocal(session.user.id);
-      sessionStorage.setItem(syncMarker,'1');
-      if(count){location.reload();return null}
+      try{
+        const count=await window.SweaterCloud.pull(session.user.id);
+        if(!count)await window.SweaterCloud.pushLocal(session.user.id);
+        sessionStorage.setItem(syncMarker,'1');
+        if(count){location.reload();return null}
+      }catch(syncError){
+        console.warn('Firebase profile sync skipped; continuing with the signed-in session.',syncError);
+      }
     }
     const authUser={id:session.user.id,name:profile.full_name||session.user.name||session.user.email,username:profile.username||'',email:session.user.email,role:profile.role==='admin'?'admin':'employee',department:profile.department||''};
     window.SweaterAuth={
