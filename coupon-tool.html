@@ -695,6 +695,7 @@ D.zoomIn?.addEventListener('click', () => setCanvasZoom(canvasZoom + 0.1));
 D.zoomFit?.addEventListener('click', () => setCanvasZoom(1));
 
 function bindCanvasImages() {
+  D.elementsContainer.querySelectorAll('.sw-corner-resize').forEach(handle => handle.remove());
   let logo = $('logoPreview');
   if (!logo) {
     logo = document.createElement('img');
@@ -814,10 +815,12 @@ const Hist = (() => {
   let stack = [], idx = -1, timer = null;
 
   function capture() {
+    const cleanElements = D.elementsContainer.cloneNode(true);
+    cleanElements.querySelectorAll('.sw-corner-resize').forEach(handle => handle.remove());
     return {
       bg: D.bgImg.src,
       orientation,
-      html: D.elementsContainer.innerHTML
+      html: cleanElements.innerHTML
     };
   }
 
@@ -1057,7 +1060,7 @@ function syncInspector() {
     D.contentSection.style.display = 'block'; D.sizeSection.style.display = 'block'; D.typoSection.style.display = 'flex';
     D.colorSection.style.display = 'flex'; D.shadowWrap.style.display = 'block'; D.bgColorWrap.style.display = 'block';
     
-    D.textInput.value = activeEl.innerHTML.replace(/<br\s*\/?>/gi, '\n');
+    D.textInput.value = [...activeEl.childNodes].map(node => node.nodeName === 'BR' ? '\n' : (node.textContent || '')).join('');
     D.sizeLabel.textContent = 'حجم الخط';
     D.sizeSl.min = 8; D.sizeSl.max = 200; D.sizeSl.value = parseInt(cs.fontSize, 10); D.sizeNum.min=8; D.sizeNum.max=200; D.sizeNum.value=D.sizeSl.value; D.sizeVal.textContent = D.sizeSl.value + 'px';
     
@@ -1122,7 +1125,12 @@ function syncInspector() {
 D.textInput.addEventListener('input', () => {
   if (!activeEl || suppressSync) return;
   if(activeEl.dataset.type === 'text') {
-    activeEl.innerHTML = D.textInput.value.replace(/\n/g, '<br>');
+    activeEl.replaceChildren();
+    const lines = D.textInput.value.split('\n');
+    lines.forEach((line, index) => {
+      activeEl.append(document.createTextNode(line));
+      if (index < lines.length - 1) activeEl.append(document.createElement('br'));
+    });
   } else if (activeEl.dataset.type === 'qr') {
     activeEl.dataset.val = D.textInput.value;
     renderQR(activeEl);
@@ -1601,6 +1609,7 @@ async function uploadTemplateDataImage(src,name) {
 
 async function buildReadyCouponPayload() {
   const clone=D.elementsContainer.cloneNode(true);
+  clone.querySelectorAll('.sw-corner-resize').forEach(handle=>handle.remove());
   const embeddedImages=[...clone.querySelectorAll('img')].filter(image=>String(image.getAttribute('src')||'').startsWith('data:image/'));
   for(let index=0;index<embeddedImages.length;index++){
     const image=embeddedImages[index];
@@ -1673,8 +1682,17 @@ window.addEventListener('load',async()=>{
 })();
 </script>
 <script src="./brand-palette.js?v=1"></script>
+<script>window.__sweaterEditorResize=true;</script>
 <script src="./site-config.js?v=header-clean3"></script>
 <script src="./sweater-ui.js?v=9"></script>
 <script src="./local-studio.js?v=8"></script>
+<script>
+(() => {
+  const cleanHeader = () => document.querySelectorAll('.coupon-topbar .ls-launcher,.coupon-topbar .sw-focus-btn,.coupon-topbar .sw-power-trigger').forEach(element => element.remove());
+  cleanHeader();
+  new MutationObserver(cleanHeader).observe(document.querySelector('.coupon-topbar'), { childList:true, subtree:true });
+  setTimeout(cleanHeader, 800);
+})();
+</script>
 </body>
 </html>
