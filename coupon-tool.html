@@ -153,7 +153,9 @@
   .coupon-size-control { display: grid; grid-template-columns: minmax(0,1fr) 70px; gap: 9px; align-items: center; }
   .coupon-size-number { width: 70px; height: 38px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; color: #121212; text-align: center; font-size: 11px; font-weight: 900; outline: none; }
   .coupon-size-number:focus { border-color: #f96714; box-shadow: 0 0 0 3px rgba(249,103,20,.12); }
-  #cornerResizeHandle { position: absolute; z-index: 90; width: 23px; height: 23px; padding: 0; border: 3px solid #fff; border-radius: 7px; background: #f96714; box-shadow: 0 0 0 1px #f96714, 0 4px 12px rgba(15,23,42,.22); cursor: nwse-resize; transform: translate(-50%,-50%); touch-action: none; }
+  .corner-resize-handle { position: absolute; z-index: 90; width: 16px; height: 16px; padding: 0; border: 2px solid #fff; border-radius: 5px; background: #f96714; box-shadow: 0 0 0 1px #f96714, 0 3px 9px rgba(15,23,42,.2); transform: translate(-50%,-50%); touch-action: none; }
+  .corner-resize-handle[data-corner="tl"], .corner-resize-handle[data-corner="br"] { cursor: nwse-resize; }
+  .corner-resize-handle[data-corner="tr"], .corner-resize-handle[data-corner="bl"] { cursor: nesw-resize; }
   #bgImg.selected { outline: 2px solid #f96714; outline-offset: -2px; }
 </style>
 <script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script><script src="./auth-gateway.js?v=google1"></script>
@@ -435,7 +437,10 @@
             
             <img id="logoPreview" data-type="logo" data-name="الشعار" class="movable hidden" src="" alt="" style="z-index:14;width:90px;top:15%;left:15%" draggable="false"/>
           </div>
-          <button id="cornerResizeHandle" class="hidden" type="button" aria-label="اسحب لتغيير الحجم" data-html2canvas-ignore="true" title="اسحب لتغيير الحجم"></button>
+          <button class="corner-resize-handle hidden" data-corner="tl" type="button" aria-label="تغيير الحجم من الزاوية العلوية اليمنى" data-html2canvas-ignore="true"></button>
+          <button class="corner-resize-handle hidden" data-corner="tr" type="button" aria-label="تغيير الحجم من الزاوية العلوية اليسرى" data-html2canvas-ignore="true"></button>
+          <button class="corner-resize-handle hidden" data-corner="bl" type="button" aria-label="تغيير الحجم من الزاوية السفلية اليمنى" data-html2canvas-ignore="true"></button>
+          <button class="corner-resize-handle hidden" data-corner="br" type="button" aria-label="تغيير الحجم من الزاوية السفلية اليسرى" data-html2canvas-ignore="true"></button>
 
         </div>
       </div>
@@ -597,7 +602,7 @@ const D = {
   lockBtn: $('lockBtn'), lockIco: $('lockIco'), deleteBtn: $('deleteBtn'),
   btnLayerUp: $('btnLayerUp'), btnLayerDown: $('btnLayerDown'),
   contentSection: $('contentSection'), textInput: $('textInput'),
-  sizeSection: $('sizeSection'), sizeLabel: $('sizeLabel'), sizeSl: $('sizeSl'), sizeNum: $('sizeNum'), sizeVal: $('sizeVal'), cornerResizeHandle: $('cornerResizeHandle'),
+  sizeSection: $('sizeSection'), sizeLabel: $('sizeLabel'), sizeSl: $('sizeSl'), sizeNum: $('sizeNum'), sizeVal: $('sizeVal'),
   typoSection: $('typoSection'), lspaceSl: $('lspaceSl'), lspaceVal: $('lspaceVal'), lhSl: $('lhSl'), lhVal: $('lhVal'),
   opacitySection: $('opacitySection'), opacitySl: $('opacitySl'), opacityVal: $('opacityVal'),
   colorSection: $('colorSection'), colorLabel: $('colorLabel'), fgColSwatches: $('fgColSwatches'), fgColPicker: $('fgColPicker'),
@@ -618,6 +623,7 @@ const D = {
 };
 
 let activeEl = null;
+const cornerResizeHandles=[...document.querySelectorAll('.corner-resize-handle')];
 let couponCodes = [];
 let editingReadyTemplateId = '';
 let orientation = 'landscape';
@@ -931,7 +937,7 @@ D.btnLayerDown.addEventListener('click', () => { if(activeEl) { activeEl.style.z
 function selectEl(el) {
   $$('.movable').forEach(e => e.classList.remove('selected'));
   D.bgImg.classList.remove('selected');
-  D.cornerResizeHandle.classList.add('hidden');
+  cornerResizeHandles.forEach(handle=>handle.classList.add('hidden'));
   D.propsPlaceholder.style.display = 'none';
   D.dynamicPanel.style.display = 'none';
 
@@ -953,9 +959,17 @@ function positionCornerResizeHandle() {
   if(!activeEl)return;
   const canvasRect=D.canvasContainer.getBoundingClientRect();
   const rect=activeEl.getBoundingClientRect();
-  D.cornerResizeHandle.style.left=`${rect.right-canvasRect.left}px`;
-  D.cornerResizeHandle.style.top=`${rect.bottom-canvasRect.top}px`;
-  D.cornerResizeHandle.classList.remove('hidden');
+  const points={
+    tl:[rect.left-canvasRect.left,rect.top-canvasRect.top],
+    tr:[rect.right-canvasRect.left,rect.top-canvasRect.top],
+    bl:[rect.left-canvasRect.left,rect.bottom-canvasRect.top],
+    br:[rect.right-canvasRect.left,rect.bottom-canvasRect.top]
+  };
+  cornerResizeHandles.forEach(handle=>{
+    const point=points[handle.dataset.corner];
+    handle.style.left=`${point[0]}px`;handle.style.top=`${point[1]}px`;
+    handle.classList.remove('hidden');
+  });
 }
 
 function syncInspector() {
@@ -1070,28 +1084,26 @@ D.sizeNum.addEventListener('input',()=>{
   D.sizeSl.value=String(value);D.sizeSl.dispatchEvent(new Event('input',{bubbles:true}));
 });
 
-D.cornerResizeHandle.addEventListener('pointerdown',event=>{
+cornerResizeHandles.forEach(handle=>handle.addEventListener('pointerdown',event=>{
   if(!activeEl)return;
   event.preventDefault();event.stopPropagation();
-  const rect=activeEl.getBoundingClientRect(),centerX=rect.left+rect.width/2,centerY=rect.top+rect.height/2;
-  const startDistance=Math.max(20,Math.hypot(event.clientX-centerX,event.clientY-centerY));
+  const rect=activeEl.getBoundingClientRect(),corner=handle.dataset.corner;
+  const anchors={tl:[rect.right,rect.bottom],tr:[rect.left,rect.bottom],bl:[rect.right,rect.top],br:[rect.left,rect.top]};
+  const anchor=anchors[corner];
+  const startDistance=Math.max(20,Math.hypot(event.clientX-anchor[0],event.clientY-anchor[1]));
   const startValue=Number(D.sizeSl.value);
-  D.cornerResizeHandle.setPointerCapture(event.pointerId);
+  handle.setPointerCapture(event.pointerId);
   const move=moveEvent=>{
-    const ratio=Math.hypot(moveEvent.clientX-centerX,moveEvent.clientY-centerY)/startDistance;
-    const value=Math.max(Number(D.sizeSl.min),Math.min(Number(D.sizeSl.max),Math.round(startValue*ratio)));
+    const distance=Math.hypot(moveEvent.clientX-anchor[0],moveEvent.clientY-anchor[1]);
+    const value=Math.max(Number(D.sizeSl.min),Math.min(Number(D.sizeSl.max),Math.round(startValue*(distance/startDistance))));
     D.sizeSl.value=String(value);D.sizeSl.dispatchEvent(new Event('input',{bubbles:true}));
   };
   const end=()=>{
-    D.cornerResizeHandle.removeEventListener('pointermove',move);
-    D.cornerResizeHandle.removeEventListener('pointerup',end);
-    D.cornerResizeHandle.removeEventListener('pointercancel',end);
+    handle.removeEventListener('pointermove',move);handle.removeEventListener('pointerup',end);handle.removeEventListener('pointercancel',end);
     Hist.push();
   };
-  D.cornerResizeHandle.addEventListener('pointermove',move);
-  D.cornerResizeHandle.addEventListener('pointerup',end);
-  D.cornerResizeHandle.addEventListener('pointercancel',end);
-});
+  handle.addEventListener('pointermove',move);handle.addEventListener('pointerup',end);handle.addEventListener('pointercancel',end);
+}));
 
 $$('.fw-btn').forEach(btn => btn.addEventListener('click', () => {
   if (!activeEl || activeEl.dataset.type !== 'text') return;
