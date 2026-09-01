@@ -6,6 +6,12 @@
     feedbackScript.dataset.sweaterFeedback='';
     document.head.append(feedbackScript);
   }
+  if (!document.querySelector('script[data-sweater-resize]')) {
+    const resizeScript=document.createElement('script');
+    resizeScript.src='./editor-resize.js?v=2';
+    resizeScript.dataset.sweaterResize='';
+    document.head.append(resizeScript);
+  }
 
   const STORAGE='sweaterAdminConfigV2';
   const ROW_ID='global';
