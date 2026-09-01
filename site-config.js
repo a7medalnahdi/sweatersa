@@ -1,5 +1,11 @@
 (() => {
   'use strict';
+  if (!document.querySelector('script[data-sweater-feedback]')) {
+    const feedbackScript=document.createElement('script');
+    feedbackScript.src='./feedback-widget.js?v=1';
+    feedbackScript.dataset.sweaterFeedback='';
+    document.head.append(feedbackScript);
+  }
 
   const STORAGE='sweaterAdminConfigV2';
   const ROW_ID='global';
