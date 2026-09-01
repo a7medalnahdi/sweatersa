@@ -153,7 +153,13 @@
   .coupon-size-control { display: grid; grid-template-columns: minmax(0,1fr) 70px; gap: 9px; align-items: center; }
   .coupon-size-number { width: 70px; height: 38px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; color: #121212; text-align: center; font-size: 11px; font-weight: 900; outline: none; }
   .coupon-size-number:focus { border-color: #f96714; box-shadow: 0 0 0 3px rgba(249,103,20,.12); }
-  .corner-resize-handle { position: absolute; z-index: 90; width: 16px; height: 16px; padding: 0; border: 2px solid #fff; border-radius: 5px; background: #f96714; box-shadow: 0 0 0 1px #f96714, 0 3px 9px rgba(15,23,42,.2); transform: translate(-50%,-50%); touch-action: none; }
+  #resizeSelectionBox { position: absolute; z-index: 89; border: 1.5px solid #f96714; border-radius: 3px; pointer-events: none; box-shadow: 0 0 0 1px rgba(255,255,255,.8) inset; }
+  .corner-resize-handle { position: absolute; z-index: 90; width: 13px; height: 13px; padding: 0; border: 2px solid #f96714; border-radius: 50%; background: #fff; box-shadow: 0 2px 7px rgba(15,23,42,.18); transform: translate(-50%,-50%); touch-action: none; pointer-events: auto; transition: width .15s,height .15s,background .15s; }
+  .corner-resize-handle:hover { width: 16px; height: 16px; background: #fff7ed; }
+  .corner-resize-handle[data-corner="tl"] { left: 0; top: 0; }
+  .corner-resize-handle[data-corner="tr"] { left: 100%; top: 0; }
+  .corner-resize-handle[data-corner="bl"] { left: 0; top: 100%; }
+  .corner-resize-handle[data-corner="br"] { left: 100%; top: 100%; }
   .corner-resize-handle[data-corner="tl"], .corner-resize-handle[data-corner="br"] { cursor: nwse-resize; }
   .corner-resize-handle[data-corner="tr"], .corner-resize-handle[data-corner="bl"] { cursor: nesw-resize; }
   #bgImg.selected { outline: 2px solid #f96714; outline-offset: -2px; }
@@ -437,10 +443,12 @@
             
             <img id="logoPreview" data-type="logo" data-name="الشعار" class="movable hidden" src="" alt="" style="z-index:14;width:90px;top:15%;left:15%" draggable="false"/>
           </div>
-          <button class="corner-resize-handle hidden" data-corner="tl" type="button" aria-label="تغيير الحجم من الزاوية العلوية اليمنى" data-html2canvas-ignore="true"></button>
-          <button class="corner-resize-handle hidden" data-corner="tr" type="button" aria-label="تغيير الحجم من الزاوية العلوية اليسرى" data-html2canvas-ignore="true"></button>
-          <button class="corner-resize-handle hidden" data-corner="bl" type="button" aria-label="تغيير الحجم من الزاوية السفلية اليمنى" data-html2canvas-ignore="true"></button>
-          <button class="corner-resize-handle hidden" data-corner="br" type="button" aria-label="تغيير الحجم من الزاوية السفلية اليسرى" data-html2canvas-ignore="true"></button>
+          <div id="resizeSelectionBox" class="hidden" data-html2canvas-ignore="true">
+            <button class="corner-resize-handle" data-corner="tl" type="button" aria-label="تغيير الحجم من أعلى اليمين"></button>
+            <button class="corner-resize-handle" data-corner="tr" type="button" aria-label="تغيير الحجم من أعلى اليسار"></button>
+            <button class="corner-resize-handle" data-corner="bl" type="button" aria-label="تغيير الحجم من أسفل اليمين"></button>
+            <button class="corner-resize-handle" data-corner="br" type="button" aria-label="تغيير الحجم من أسفل اليسار"></button>
+          </div>
 
         </div>
       </div>
@@ -602,7 +610,7 @@ const D = {
   lockBtn: $('lockBtn'), lockIco: $('lockIco'), deleteBtn: $('deleteBtn'),
   btnLayerUp: $('btnLayerUp'), btnLayerDown: $('btnLayerDown'),
   contentSection: $('contentSection'), textInput: $('textInput'),
-  sizeSection: $('sizeSection'), sizeLabel: $('sizeLabel'), sizeSl: $('sizeSl'), sizeNum: $('sizeNum'), sizeVal: $('sizeVal'),
+  sizeSection: $('sizeSection'), sizeLabel: $('sizeLabel'), sizeSl: $('sizeSl'), sizeNum: $('sizeNum'), sizeVal: $('sizeVal'), resizeSelectionBox: $('resizeSelectionBox'),
   typoSection: $('typoSection'), lspaceSl: $('lspaceSl'), lspaceVal: $('lspaceVal'), lhSl: $('lhSl'), lhVal: $('lhVal'),
   opacitySection: $('opacitySection'), opacitySl: $('opacitySl'), opacityVal: $('opacityVal'),
   colorSection: $('colorSection'), colorLabel: $('colorLabel'), fgColSwatches: $('fgColSwatches'), fgColPicker: $('fgColPicker'),
@@ -937,7 +945,7 @@ D.btnLayerDown.addEventListener('click', () => { if(activeEl) { activeEl.style.z
 function selectEl(el) {
   $$('.movable').forEach(e => e.classList.remove('selected'));
   D.bgImg.classList.remove('selected');
-  cornerResizeHandles.forEach(handle=>handle.classList.add('hidden'));
+  D.resizeSelectionBox.classList.add('hidden');
   D.propsPlaceholder.style.display = 'none';
   D.dynamicPanel.style.display = 'none';
 
@@ -959,17 +967,11 @@ function positionCornerResizeHandle() {
   if(!activeEl)return;
   const canvasRect=D.canvasContainer.getBoundingClientRect();
   const rect=activeEl.getBoundingClientRect();
-  const points={
-    tl:[rect.left-canvasRect.left,rect.top-canvasRect.top],
-    tr:[rect.right-canvasRect.left,rect.top-canvasRect.top],
-    bl:[rect.left-canvasRect.left,rect.bottom-canvasRect.top],
-    br:[rect.right-canvasRect.left,rect.bottom-canvasRect.top]
-  };
-  cornerResizeHandles.forEach(handle=>{
-    const point=points[handle.dataset.corner];
-    handle.style.left=`${point[0]}px`;handle.style.top=`${point[1]}px`;
-    handle.classList.remove('hidden');
-  });
+  D.resizeSelectionBox.style.left=`${rect.left-canvasRect.left}px`;
+  D.resizeSelectionBox.style.top=`${rect.top-canvasRect.top}px`;
+  D.resizeSelectionBox.style.width=`${rect.width}px`;
+  D.resizeSelectionBox.style.height=`${rect.height}px`;
+  D.resizeSelectionBox.classList.remove('hidden');
 }
 
 function syncInspector() {
@@ -1097,6 +1099,15 @@ cornerResizeHandles.forEach(handle=>handle.addEventListener('pointerdown',event=
     const distance=Math.hypot(moveEvent.clientX-anchor[0],moveEvent.clientY-anchor[1]);
     const value=Math.max(Number(D.sizeSl.min),Math.min(Number(D.sizeSl.max),Math.round(startValue*(distance/startDistance))));
     D.sizeSl.value=String(value);D.sizeSl.dispatchEvent(new Event('input',{bubbles:true}));
+    if(activeEl.dataset.type!=='background'){
+      const resizedRect=activeEl.getBoundingClientRect(),canvasRect=D.canvasContainer.getBoundingClientRect();
+      const desiredCenterX=(anchor[0]+moveEvent.clientX)/2,desiredCenterY=(anchor[1]+moveEvent.clientY)/2;
+      const currentCenterX=resizedRect.left+resizedRect.width/2,currentCenterY=resizedRect.top+resizedRect.height/2;
+      const left=(parseFloat(activeEl.style.left)||50)+((desiredCenterX-currentCenterX)/canvasRect.width*100);
+      const top=(parseFloat(activeEl.style.top)||50)+((desiredCenterY-currentCenterY)/canvasRect.height*100);
+      activeEl.style.left=`${left}%`;activeEl.style.top=`${top}%`;
+      positionCornerResizeHandle();
+    }
   };
   const end=()=>{
     handle.removeEventListener('pointermove',move);handle.removeEventListener('pointerup',end);handle.removeEventListener('pointercancel',end);
