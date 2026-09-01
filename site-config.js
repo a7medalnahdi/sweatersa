@@ -78,14 +78,17 @@
       ,{id:'builtin-package-prime-en',name:'Prime English',tool:'package-cards',category:'باقات',status:'active',source:'built-in',preview:'./assets/package-card-tool.svg',payload:{lang:'en',packageName:'Sweater Prime',description:'5 (IN&OUT) washes',validity:'Valid for 2 months',perWash:'29',oldPrice:'299',newPrice:'145',ctaText:'Buy Now'},notes:'PRIME package card in English'}
       ,{id:'builtin-employee-standard',name:'بطاقة الموظف الرسمية',tool:'employee-cards',category:'موظفين',status:'active',source:'built-in',preview:'./assets/employee-card-tool.svg',payload:{firstName:'Sultan',lastName:'Alazzam',jobTitle:'Operations Excellence Lead',department:'Operation Department',employeeNo:'1293',qrUrl:'https://sweater.sa'},notes:'قالب بطاقة الموظف الرسمية بوجهين'}
     ],
+    deletedTemplateIds:[],
     settings:{siteName:'SWEATER Workspace',supportEmail:'Business@sweater.sa',maintenance:false}
   };
 
   const merge=(base,value)=>{
+    const deletedTemplateIds=Array.isArray(value?.deletedTemplateIds)?[...new Set(value.deletedTemplateIds.map(String))]:[];
+    const deletedTemplates=new Set(deletedTemplateIds);
     const templates=Array.isArray(value?.templates)?clone(value.templates):clone(base.templates);
     {
       const known=new Set(templates.map(item=>item.id));
-      base.templates.filter(item=>item.source==='built-in').forEach(item=>{if(!known.has(item.id))templates.push(clone(item))});
+      base.templates.filter(item=>item.source==='built-in').forEach(item=>{if(!known.has(item.id)&&!deletedTemplates.has(item.id))templates.push(clone(item))});
     }
     const tools=Array.isArray(value?.tools)?clone(value.tools):clone(base.tools);
     {
@@ -101,7 +104,8 @@
       tools,
       stats:Array.isArray(value?.stats)?value.stats:clone(base.stats),
       employees:Array.isArray(value?.employees)?value.employees:[],
-      templates
+      templates:templates.filter(item=>!deletedTemplates.has(String(item.id))),
+      deletedTemplateIds
     };
   };
   const cached=()=>{try{return merge(defaults,JSON.parse(localStorage.getItem(STORAGE)||'null'))}catch(_){return clone(defaults)}};
