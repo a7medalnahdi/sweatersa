@@ -29,7 +29,17 @@
     </div>
 </main>
 
-<script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script>
+<script>
+(()=>{
+  const canonicalHost='a7medalnahdi.github.io';
+  if(location.hostname!==canonicalHost){
+    const params=new URLSearchParams(location.search);
+    params.set('from',location.hostname||'unknown');
+    location.replace('https://'+canonicalHost+'/sweatersa/login.html?'+params.toString());
+  }
+})();
+</script>
+<script src="./supabase-config.js?v=domainfix3"></script><script src="./supabase-app.js?v=domainfix3"></script>
 <script>
 (()=>{
   const $=s=>document.querySelector(s),client=window.SweaterCloud.client;
@@ -51,8 +61,19 @@
     const result=await client.auth.signInWithGoogle();
     if(result.error){
       const code=result.error.code||'';
-      const message=code==='auth/popup-closed-by-user'?'تم إغلاق نافذة Google قبل إكمال الدخول.':code==='auth/unauthorized-domain-account'?'الدخول متاح فقط لحسابات @sweater.sa.':result.error.message||'تعذر تسجيل الدخول باستخدام Google.';
-      showError(message);
+      if(code==='auth/unauthorized-domain'){
+        const params=new URLSearchParams(location.search);
+        if(!params.has('authRetry')){
+          params.set('authRetry','1');
+          params.set('refresh',String(Date.now()));
+          location.replace(location.pathname+'?'+params.toString());
+          return;
+        }
+        showError('تعذر تحديث تصريح هذا المتصفح. افتح رابط الدخول الرسمي من جديد أو أغلق التبويب القديم.');
+      }else{
+        const message=code==='auth/popup-closed-by-user'?'تم إغلاق نافذة Google قبل إكمال الدخول.':code==='auth/unauthorized-domain-account'?'الدخول متاح فقط لحسابات @sweater.sa.':code==='auth/account-exists-with-different-credential'?'الحساب مسجل بطريقة قديمة. تواصل مع مدير النظام لربطه بحساب Google.':result.error.message||'تعذر تسجيل الدخول باستخدام Google.';
+        showError(message);
+      }
       button.disabled=false;button.innerHTML='<i class="fa-brands fa-google"></i> المتابعة باستخدام Google';
       return;
     }
