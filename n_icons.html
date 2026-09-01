@@ -123,11 +123,11 @@
 
   <script>
   (()=>{'use strict';
-    const $=id=>document.getElementById(id),colors=['#FFFFFF','#111827','#F96714','#FED7AA','#7C3AED','#0EA5E9','#22C55E'];
+    const $=id=>document.getElementById(id),colors=['#00B67A','#121212','#1389FF','#E5E5E5','#FFF8F3','#FFFFFF','#FFB178','#D92027','#E13C00','#27D97D','#F96714','#00BAB0'];
     let canvas,baseW=1080,baseH=1080,zoom=.5,history=[],historyIndex=-1,historyLock=false,saveTimer;
     const toast=msg=>{const e=$('toast');e.textContent=msg;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),2200)};
     const safeName=()=>($('projectName').value.trim()||'sweater-design').replace(/[\\/:*?"<>|]+/g,'-');
-    const paintColors=(id,handler)=>{$(id).innerHTML=colors.map(c=>`<button class="swatch" style="background:${c}" data-color="${c}" aria-label="${c}"></button>`).join('')+`<input class="color-input" type="color" value="#F96714">`;$(id).querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>handler(b.dataset.color));$(id).querySelector('input').oninput=e=>handler(e.target.value)};
+    const paintColors=(id,handler)=>{$(id).innerHTML=colors.map(c=>`<button class="swatch" style="background:${c}" data-color="${c}" aria-label="${c}" title="${c}"></button>`).join('');$(id).querySelectorAll('[data-color]').forEach(b=>b.onclick=()=>handler(b.dataset.color))};
     function fit(){
       const area=$('workspace'),maxW=Math.max(280,area.clientWidth-70),maxH=Math.max(350,window.innerHeight-210);zoom=Math.min(.72,maxW/baseW,maxH/baseH);zoom=Math.max(.12,zoom);applyZoom();
     }
@@ -193,6 +193,7 @@
     init();
   })();
   </script>
+  <script src="./brand-palette.js?v=1"></script>
   <script src="./site-config.js?v=unified1"></script>
   <script src="./sweater-ui.js?v=9"></script>
   <script src="./local-studio.js?v=8"></script>
