@@ -110,6 +110,10 @@
   const escape=s=>String(s??'').replace(/[&<>'"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
   const safeLink=value=>{try{const url=new URL(value);return ['http:','https:'].includes(url.protocol)?url.href:''}catch(_){return ''}};
   const page=decodeURIComponent(location.pathname.split('/').pop()||'index.html');
+  if(page!=='index.html'){
+    document.documentElement.classList.add('sw-unified-ui');
+    if(!document.querySelector('link[data-sweater-theme]')){const theme=document.createElement('link');theme.rel='stylesheet';theme.href='./workspace-theme.css?v=1';theme.dataset.sweaterTheme='true';document.head.append(theme)}
+  }
   const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards','employee-card-tool.html':'employee-cards','top50-tool.html':'top50','affiliate-code-tool.html':'affiliate-codes','content-writer.html':'content-writer','bilingual-pdf-tool.html':'bilingual-pdf','html-editor-tool.html':'html-pages'}[page];
   const adapters={};
   let authenticatedUser=null,authResolved=false;
