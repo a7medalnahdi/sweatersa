@@ -5,7 +5,7 @@
   const base=`https://www.gstatic.com/firebasejs/${VERSION}`;
   const CLOUD_KEYS=new Set([
     'sweaterQuoteStudioV3','sweaterQuotationAutosaveV2','sweaterQuotationAutosaveV3','sweaterQuoteSequenceV3',
-    'sweaterDesignProjectsV3','sweaterDesignAutosaveV3','sweaterCouponAutosaveV2','sweaterQrHistoryV1'
+    'sweaterDesignProjectsV3','sweaterDesignAutosaveV3','sweaterCouponAutosaveV2','sweaterQrHistoryV1','sweaterAffiliatePosterV1'
   ]);
   const downloadUrls=new Map();
   let userId=null,syncing=false,api=null;
