@@ -150,6 +150,11 @@
   .coupon-header-action { height: 40px; padding: 0 14px; border: 1px solid #fed7aa; border-radius: 12px; background: #fff7ed; color: #c2410c; display: inline-flex; align-items: center; gap: 8px; font-size: 10px; font-weight: 900; transition: .2s ease; }
   .coupon-header-action:hover { background: #f96714; border-color: #f96714; color: #fff; }
   .coupon-empty-templates { grid-column: 1 / -1; min-height: 92px; border: 1px dashed #cbd5e1; border-radius: 14px; display: grid; place-items: center; padding: 16px; text-align: center; color: #94a3b8; font-size: 10px; font-weight: 800; line-height: 1.8; }
+  .coupon-size-control { display: grid; grid-template-columns: minmax(0,1fr) 70px; gap: 9px; align-items: center; }
+  .coupon-size-number { width: 70px; height: 38px; border: 1px solid #e2e8f0; border-radius: 10px; background: #fff; color: #121212; text-align: center; font-size: 11px; font-weight: 900; outline: none; }
+  .coupon-size-number:focus { border-color: #f96714; box-shadow: 0 0 0 3px rgba(249,103,20,.12); }
+  #cornerResizeHandle { position: absolute; z-index: 90; width: 23px; height: 23px; padding: 0; border: 3px solid #fff; border-radius: 7px; background: #f96714; box-shadow: 0 0 0 1px #f96714, 0 4px 12px rgba(15,23,42,.22); cursor: nwse-resize; transform: translate(-50%,-50%); touch-action: none; }
+  #bgImg.selected { outline: 2px solid #f96714; outline-offset: -2px; }
 </style>
 <script src="./supabase-config.js?v=google1"></script><script src="./supabase-app.js?v=google1"></script><script src="./auth-gateway.js?v=google1"></script>
 </head>
@@ -244,7 +249,10 @@
             <label class="text-xs font-bold text-slate-700 dark:text-slate-300" id="sizeLabel">حجم الخط</label>
             <span class="bg-sweater-50 dark:bg-sweater-900/30 text-sweater-600 dark:text-sweater-400 border border-sweater-100 dark:border-sweater-800/50 text-[10px] font-black px-2 py-0.5 rounded-md" id="sizeVal">24</span>
           </div>
-          <input type="range" id="sizeSl" min="8" max="400" value="24">
+          <div class="coupon-size-control">
+            <input type="range" id="sizeSl" min="8" max="400" value="24">
+            <input type="number" id="sizeNum" class="coupon-size-number" min="8" max="400" value="24" aria-label="قيمة الحجم">
+          </div>
         </section>
 
         <!-- Section: Typography -->
@@ -415,7 +423,7 @@
           <div class="grid-overlay" id="gridOverlay"></div>
 
           <!-- Base Image -->
-          <img class="absolute inset-0 w-full h-full object-cover z-0 pointer-events-none select-none" id="bgImg" alt="" crossorigin="anonymous" draggable="false"/>
+          <img class="absolute w-full h-full object-cover z-0 select-none cursor-pointer" id="bgImg" data-type="background" data-name="صورة الخلفية" alt="" crossorigin="anonymous" draggable="false" style="top:50%;left:50%;transform:translate(-50%,-50%)"/>
           
           <!-- Elements Container (Used for event delegation of drag & drop) -->
           <div id="elementsContainer" class="absolute inset-0 z-10">
@@ -427,6 +435,7 @@
             
             <img id="logoPreview" data-type="logo" data-name="الشعار" class="movable hidden" src="" alt="" style="z-index:14;width:90px;top:15%;left:15%" draggable="false"/>
           </div>
+          <button id="cornerResizeHandle" class="hidden" type="button" aria-label="اسحب لتغيير الحجم" data-html2canvas-ignore="true" title="اسحب لتغيير الحجم"></button>
 
         </div>
       </div>
@@ -588,7 +597,7 @@ const D = {
   lockBtn: $('lockBtn'), lockIco: $('lockIco'), deleteBtn: $('deleteBtn'),
   btnLayerUp: $('btnLayerUp'), btnLayerDown: $('btnLayerDown'),
   contentSection: $('contentSection'), textInput: $('textInput'),
-  sizeSection: $('sizeSection'), sizeLabel: $('sizeLabel'), sizeSl: $('sizeSl'), sizeVal: $('sizeVal'),
+  sizeSection: $('sizeSection'), sizeLabel: $('sizeLabel'), sizeSl: $('sizeSl'), sizeNum: $('sizeNum'), sizeVal: $('sizeVal'), cornerResizeHandle: $('cornerResizeHandle'),
   typoSection: $('typoSection'), lspaceSl: $('lspaceSl'), lspaceVal: $('lspaceVal'), lhSl: $('lhSl'), lhVal: $('lhVal'),
   opacitySection: $('opacitySection'), opacitySl: $('opacitySl'), opacityVal: $('opacityVal'),
   colorSection: $('colorSection'), colorLabel: $('colorLabel'), fgColSwatches: $('fgColSwatches'), fgColPicker: $('fgColPicker'),
@@ -796,6 +805,7 @@ let dragHasMoved = false;
 // Event delegation on the container handles all movable elements dynamically
 D.elementsContainer.addEventListener('mousedown', dragStart);
 D.elementsContainer.addEventListener('touchstart', dragStart, {passive: false});
+D.bgImg.addEventListener('click', event => { event.stopPropagation(); selectEl(D.bgImg); });
 
 function dragStart(e) {
   const target = e.target.closest('.movable');
@@ -920,6 +930,8 @@ D.btnLayerDown.addEventListener('click', () => { if(activeEl) { activeEl.style.z
 
 function selectEl(el) {
   $$('.movable').forEach(e => e.classList.remove('selected'));
+  D.bgImg.classList.remove('selected');
+  D.cornerResizeHandle.classList.add('hidden');
   D.propsPlaceholder.style.display = 'none';
   D.dynamicPanel.style.display = 'none';
 
@@ -934,6 +946,16 @@ function selectEl(el) {
   D.dynamicPanel.style.display = 'flex';
   
   syncInspector();
+  requestAnimationFrame(positionCornerResizeHandle);
+}
+
+function positionCornerResizeHandle() {
+  if(!activeEl)return;
+  const canvasRect=D.canvasContainer.getBoundingClientRect();
+  const rect=activeEl.getBoundingClientRect();
+  D.cornerResizeHandle.style.left=`${rect.right-canvasRect.left}px`;
+  D.cornerResizeHandle.style.top=`${rect.bottom-canvasRect.top}px`;
+  D.cornerResizeHandle.classList.remove('hidden');
 }
 
 function syncInspector() {
@@ -960,7 +982,7 @@ function syncInspector() {
     
     D.textInput.value = activeEl.innerHTML.replace(/<br\s*\/?>/gi, '\n');
     D.sizeLabel.textContent = 'حجم الخط';
-    D.sizeSl.max = 200; D.sizeSl.value = parseInt(cs.fontSize, 10); D.sizeVal.textContent = D.sizeSl.value + 'px';
+    D.sizeSl.min = 8; D.sizeSl.max = 200; D.sizeSl.value = parseInt(cs.fontSize, 10); D.sizeNum.min=8; D.sizeNum.max=200; D.sizeNum.value=D.sizeSl.value; D.sizeVal.textContent = D.sizeSl.value + 'px';
     
     const fw = cs.fontWeight;
     $$('.fw-btn').forEach(b => b.classList.toggle('active', b.dataset.fw === fw || (b.dataset.fw === '400' && parseInt(fw)<500) || (b.dataset.fw === '600' && parseInt(fw)>=500 && parseInt(fw)<750) || (b.dataset.fw === '900' && parseInt(fw)>=750)));
@@ -988,19 +1010,26 @@ function syncInspector() {
   } else if (type === 'logo') {
     D.sizeSection.style.display = 'block'; D.opacitySection.style.display = 'block';
     D.sizeLabel.textContent = 'العرض';
-    D.sizeSl.max = 400; D.sizeSl.value = parseInt(activeEl.style.width, 10) || 90; D.sizeVal.textContent = D.sizeSl.value + 'px';
+    D.sizeSl.min = 10; D.sizeSl.max = 400; D.sizeSl.value = parseInt(activeEl.style.width, 10) || 90; D.sizeNum.min=10; D.sizeNum.max=400; D.sizeNum.value=D.sizeSl.value; D.sizeVal.textContent = D.sizeSl.value + 'px';
     D.opacitySl.value = Math.round((parseFloat(activeEl.style.opacity) || 1) * 100); D.opacityVal.textContent = D.opacitySl.value + '%';
     
   } else if (type === 'qr') {
     D.contentSection.style.display = 'block'; D.sizeSection.style.display = 'block'; D.colorSection.style.display = 'flex'; D.bgColorWrap.style.display = 'block';
     D.textInput.value = activeEl.dataset.val || '';
     D.sizeLabel.textContent = 'حجم الرمز';
-    D.sizeSl.max = 300; D.sizeSl.value = parseInt(activeEl.style.width, 10) || 100; D.sizeVal.textContent = D.sizeSl.value + 'px';
+    D.sizeSl.min = 20; D.sizeSl.max = 300; D.sizeSl.value = parseInt(activeEl.style.width, 10) || 100; D.sizeNum.min=20; D.sizeNum.max=300; D.sizeNum.value=D.sizeSl.value; D.sizeVal.textContent = D.sizeSl.value + 'px';
     
     D.colorLabel.textContent = 'لون الرمز';
     const fg = activeEl.dataset.color || '#000000';
     $$('.fg-swatch').forEach(s => s.classList.toggle('active', s.dataset.color === fg));
     D.fgColPicker.value = fg;
+  } else if (type === 'background') {
+    D.sizeSection.style.display = 'block';
+    D.sizeLabel.textContent = 'حجم صورة الخلفية';
+    const value=parseInt(activeEl.dataset.scale||'100',10);
+    D.sizeSl.min=50;D.sizeSl.max=250;D.sizeSl.value=value;
+    D.sizeNum.min=50;D.sizeNum.max=250;D.sizeNum.value=value;
+    D.sizeVal.textContent=value+'%';
   }
 
   const locked = locks[activeEl.id] || false;
@@ -1027,10 +1056,41 @@ D.textInput.addEventListener('input', () => {
 D.sizeSl.addEventListener('input', () => {
   if (!activeEl) return;
   const v = D.sizeSl.value;
-  D.sizeVal.textContent = v + 'px';
+  D.sizeNum.value=v;
+  D.sizeVal.textContent = v + (activeEl.dataset.type==='background'?'%':'px');
   if(activeEl.dataset.type === 'text') activeEl.style.fontSize = v + 'px';
+  else if(activeEl.dataset.type === 'background') { activeEl.dataset.scale=v; activeEl.style.width=v+'%'; activeEl.style.height=v+'%'; }
   else { activeEl.style.width = v + 'px'; activeEl.style.height = activeEl.dataset.type==='qr' ? v + 'px' : 'auto'; }
+  positionCornerResizeHandle();
   Hist.pushLazy(300);
+});
+D.sizeNum.addEventListener('input',()=>{
+  let value=Number(D.sizeNum.value);if(!Number.isFinite(value))return;
+  value=Math.max(Number(D.sizeSl.min),Math.min(Number(D.sizeSl.max),value));
+  D.sizeSl.value=String(value);D.sizeSl.dispatchEvent(new Event('input',{bubbles:true}));
+});
+
+D.cornerResizeHandle.addEventListener('pointerdown',event=>{
+  if(!activeEl)return;
+  event.preventDefault();event.stopPropagation();
+  const rect=activeEl.getBoundingClientRect(),centerX=rect.left+rect.width/2,centerY=rect.top+rect.height/2;
+  const startDistance=Math.max(20,Math.hypot(event.clientX-centerX,event.clientY-centerY));
+  const startValue=Number(D.sizeSl.value);
+  D.cornerResizeHandle.setPointerCapture(event.pointerId);
+  const move=moveEvent=>{
+    const ratio=Math.hypot(moveEvent.clientX-centerX,moveEvent.clientY-centerY)/startDistance;
+    const value=Math.max(Number(D.sizeSl.min),Math.min(Number(D.sizeSl.max),Math.round(startValue*ratio)));
+    D.sizeSl.value=String(value);D.sizeSl.dispatchEvent(new Event('input',{bubbles:true}));
+  };
+  const end=()=>{
+    D.cornerResizeHandle.removeEventListener('pointermove',move);
+    D.cornerResizeHandle.removeEventListener('pointerup',end);
+    D.cornerResizeHandle.removeEventListener('pointercancel',end);
+    Hist.push();
+  };
+  D.cornerResizeHandle.addEventListener('pointermove',move);
+  D.cornerResizeHandle.addEventListener('pointerup',end);
+  D.cornerResizeHandle.addEventListener('pointercancel',end);
 });
 
 $$('.fw-btn').forEach(btn => btn.addEventListener('click', () => {
