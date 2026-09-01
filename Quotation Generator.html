@@ -304,7 +304,7 @@
     try{const draft=JSON.parse(localStorage.getItem(DRAFT)||'null');if(draft?.quoteNumber)applyState(draft);else applyState({...state,quoteNumber:nextNumber(),quoteDate:today(),expiryDate:plusDays(today(),15),clientName:'',clientDetails:'',items:[newItem()]})}catch(_){applyState({...state,quoteNumber:nextNumber(),quoteDate:today(),expiryDate:plusDays(today(),15),clientName:'',clientDetails:'',items:[newItem()]})}renderQuoteDashboard();showDashboard()
   })();
   </script>
-  <script src="./site-config.js?v=fb3"></script>
+  <script src="./site-config.js?v=unified1"></script>
   <script src="./sweater-ui.js?v=9"></script>
 </body>
 </html>
