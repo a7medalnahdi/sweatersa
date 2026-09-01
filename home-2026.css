@@ -75,3 +75,18 @@ footer{width:min(1180px,calc(100% - 32px));margin-top:70px;padding:26px 0 32px}
 .v4-hero-copy>p{color:rgba(255,255,255,.86)}
 .resume-link{border-color:rgba(255,255,255,.42);color:#fff}
 .resume-link i{color:#fff}
+
+/* Clean white surfaces — orange is reserved for actions and small accents. */
+.v4-hero{border-color:#e8e4df;background:#fff;color:var(--ink)}
+.v4-hero:before{border-color:var(--orange);opacity:.07}
+.v4-eyebrow,.v4-eyebrow i{color:var(--orange)}
+.v4-hero h1 em{color:var(--ink)}
+.v4-hero-copy>p{color:var(--muted)}
+.resume-link{border-color:#ddd9d4;background:#fff;color:var(--ink)}
+.resume-link i{color:var(--orange)}
+.tool-card-simple:nth-child(6n+1){border-color:#e8e4df;background:#fff;color:var(--ink)}
+.tool-card-simple:nth-child(6n+1) h3,.tool-card-simple:nth-child(6n+1) .simple-open{color:var(--ink)}
+.tool-card-simple:nth-child(6n+1) p{color:#777b82}
+.admin-zone{border-color:#e8e4df;background:#fff;color:var(--ink)}
+.admin-zone .v4-section-head>p{color:var(--muted)}
+.numbers-head{background:#fff;color:var(--ink)}
