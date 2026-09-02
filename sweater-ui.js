@@ -155,6 +155,7 @@
     ['لوحة الأدوات','كل الأدوات في مكان واحد','./index.html','fa-grid-2'],
     ['تركيب الإطارات','صور فردية ومجموعات','./framing-tool.html','fa-images'],
     ['صانع الكوبونات','كوبونات وبيانات Excel','./coupon-tool.html','fa-ticket'],
+    ['شهادات الشكر','شهادات الموظفين كصورة أو PDF','./thank-you-certificate-tool.html','fa-award'],
     ['عروض الأسعار','إنشاء وحفظ عروض رسمية','./Quotation Generator.html','fa-file-invoice-dollar'],
     ['استوديو التصميم','تصميم حر وقوالب','./n_icons.html','fa-pen-nib'],
     ['قوالب الشراكات','تركيب شعارات الشركاء','./logo-framer-tool.html','fa-handshake']
