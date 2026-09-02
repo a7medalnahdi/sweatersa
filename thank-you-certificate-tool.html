@@ -59,20 +59,21 @@
     logo.src='./assets/sweater-logo.png';
     const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
     const wrap=(text,maxWidth)=>{const words=String(text).trim().split(/\s+/),lines=[];let line='';for(const word of words){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines};
+    const wrapPreserve=(text,maxWidth)=>String(text).replace(/\r\n?/g,'\n').split('\n').flatMap(paragraph=>paragraph.trim()?wrap(paragraph,maxWidth):['']);
     const copy=()=>({title:title.value.trim()||'شهادة شكر وتقدير',recipient:recipientLabel.value.trim()||'تُقدَّم بكل فخر إلى',name:name.value.trim()||'اسم الموظف',body:message.value.trim()||'تقديرًا لجهودك وعطائك المميز، نتقدم لك بخالص الشكر والامتنان، ونتمنى لك مزيدًا من النجاح والتقدم.',issuerLabel:issuerLabel.value.trim()||'صدرت من',issuer:issuer.value.trim()||'الجهة المصدرة'});
     const drawLogo=(x,y,w)=>{if(logo.complete&&logo.naturalWidth){const h=w/(logo.naturalWidth/logo.naturalHeight);ctx.drawImage(logo,x-w/2,y,w,h)}};
     function drawMinimal(){
       const c=copy();ctx.fillStyle='#fff';ctx.fillRect(0,0,1600,1131);ctx.fillStyle='#f96714';ctx.fillRect(0,0,1600,14);drawLogo(800,92,205);
       ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#a8a29e';ctx.font='700 26px LamaSans,Arial';ctx.fillText(c.title,800,270);
       ctx.fillStyle='#121212';ctx.font='700 21px LamaSans,Arial';ctx.fillText(c.recipient,800,355);ctx.font='900 72px LamaSans,Arial';ctx.fillText(c.name,800,455);
-      ctx.fillStyle='#f96714';rounded(735,492,130,5,3);ctx.fill();ctx.fillStyle='#57534e';ctx.font='400 30px LamaSans,Arial';const lines=wrap(c.body,1040).slice(0,5),lh=52,start=640-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
+      ctx.fillStyle='#f96714';rounded(735,492,130,5,3);ctx.fill();ctx.fillStyle='#57534e';ctx.font='400 30px LamaSans,Arial';const lines=wrapPreserve(c.body,1040).slice(0,5),lh=52,start=640-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
       ctx.strokeStyle='#e7e5e4';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(615,875);ctx.lineTo(985,875);ctx.stroke();ctx.fillStyle='#a8a29e';ctx.font='700 19px LamaSans,Arial';ctx.fillText(c.issuerLabel,800,925);ctx.fillStyle='#121212';ctx.font='900 30px LamaSans,Arial';ctx.fillText(c.issuer,800,974);
       ctx.fillStyle='#f96714';ctx.fillRect(0,1098,1600,33);
     }
     function drawBrand(){
       const c=copy();ctx.fillStyle='#fff';ctx.fillRect(0,0,1600,1131);ctx.fillStyle='#f96714';ctx.fillRect(0,0,420,1131);ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(420,0);ctx.lineTo(560,0);ctx.quadraticCurveTo(430,290,570,565);ctx.quadraticCurveTo(430,850,550,1131);ctx.lineTo(420,1131);ctx.closePath();ctx.fill();
       drawLogo(1010,78,190);ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#f96714';ctx.font='700 27px LamaSans,Arial';ctx.fillText(c.title,1010,225);ctx.fillStyle='#78716c';ctx.font='700 21px LamaSans,Arial';ctx.fillText(c.recipient,1010,330);ctx.fillStyle='#121212';ctx.font='900 70px LamaSans,Arial';ctx.fillText(c.name,1010,430);ctx.fillStyle='#f96714';rounded(935,465,150,5,3);ctx.fill();
-      ctx.fillStyle='#44403c';ctx.font='400 29px LamaSans,Arial';const lines=wrap(c.body,770).slice(0,5),lh=50,start=620-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,1010,start+i*lh));ctx.fillStyle='#a8a29e';ctx.font='700 19px LamaSans,Arial';ctx.fillText(c.issuerLabel,1010,880);ctx.fillStyle='#121212';ctx.font='900 30px LamaSans,Arial';ctx.fillText(c.issuer,1010,930);ctx.fillStyle='#f96714';rounded(910,965,200,3,2);ctx.fill();
+      ctx.fillStyle='#44403c';ctx.font='400 29px LamaSans,Arial';const lines=wrapPreserve(c.body,770).slice(0,5),lh=50,start=620-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,1010,start+i*lh));ctx.fillStyle='#a8a29e';ctx.font='700 19px LamaSans,Arial';ctx.fillText(c.issuerLabel,1010,880);ctx.fillStyle='#121212';ctx.font='900 30px LamaSans,Arial';ctx.fillText(c.issuer,1010,930);ctx.fillStyle='#f96714';rounded(910,965,200,3,2);ctx.fill();
     }
     function draw(){
       if(templateStyle.value==='minimal'){drawMinimal();return}
@@ -103,7 +104,7 @@
       const body=message.value.trim()||'تقديرًا لجهودك وعطائك المميز، نتقدم لك بخالص الشكر والامتنان، ونتمنى لك مزيدًا من النجاح والتقدم.';
       ctx.fillStyle='#fff';rounded(245,545,1110,235,22);ctx.fill();ctx.strokeStyle='#f3e8df';ctx.lineWidth=2;ctx.stroke();
       ctx.fillStyle='#f96714';rounded(1316,585,6,155,3);ctx.fill();
-      ctx.fillStyle='#44403c';ctx.font='400 30px LamaSans, Arial';const lines=wrap(body,960).slice(0,4),lh=51,start=650-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
+      ctx.fillStyle='#44403c';ctx.font='400 30px LamaSans, Arial';const lines=wrapPreserve(body,960).slice(0,4),lh=51,start=650-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
 
       /* التوقيع */
       ctx.fillStyle='#a8a29e';ctx.font='700 20px LamaSans, Arial';ctx.fillText(issuerLabel.value.trim()||'صدرت من',800,865);
