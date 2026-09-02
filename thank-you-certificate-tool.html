@@ -18,7 +18,7 @@
     *{box-sizing:border-box}body{margin:0;background:#f5f5f4;color:var(--ink);font-family:LamaSans,Arial,sans-serif;min-height:100vh}
     button,input,textarea{font:inherit}.topbar{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20}
     .brand,.back{display:flex;align-items:center;gap:11px}.brand-mark{width:39px;height:39px;border-radius:12px;background:#fff2e8;color:var(--orange);display:grid;place-items:center}.brand strong{display:block;font-size:15px}.brand small{display:block;color:#a8a29e;font-size:10px;margin-top:3px}.back{color:#57534e;text-decoration:none;font-size:12px;font-weight:800;background:#f5f5f4;padding:10px 13px;border-radius:11px}
-    .layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;max-width:1500px;margin:auto;padding:22px;direction:ltr}.panel,.workspace{direction:rtl;background:#fff;border:1px solid var(--line);border-radius:18px}.panel{padding:20px;align-self:start;position:sticky;top:94px}.panel h1{font-size:20px;margin:0 0 5px}.panel>p{font-size:11px;color:var(--muted);line-height:1.8;margin:0 0 20px}.field{margin-bottom:15px}.field label{display:block;font-size:11px;font-weight:900;margin-bottom:7px}.field input,.field textarea{width:100%;border:1px solid #d6d3d1;border-radius:11px;background:#fafaf9;padding:12px 13px;outline:0;color:var(--ink)}.field textarea{resize:vertical;min-height:118px;line-height:1.8}.field input:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px #f9671420;background:#fff}.counter{display:block;text-align:left;color:#a8a29e;font-size:9px;margin-top:4px;direction:ltr}
+    .layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;max-width:1500px;margin:auto;padding:22px;direction:ltr}.panel,.workspace{direction:rtl;background:#fff;border:1px solid var(--line);border-radius:18px}.panel{padding:20px;align-self:start;position:sticky;top:94px}.panel h1{font-size:20px;margin:0 0 5px}.panel>p{font-size:11px;color:var(--muted);line-height:1.8;margin:0 0 20px}.field{margin-bottom:15px}.field label{display:block;font-size:11px;font-weight:900;margin-bottom:7px}.field input,.field textarea,.field select{width:100%;border:1px solid #d6d3d1;border-radius:11px;background:#fafaf9;padding:12px 13px;outline:0;color:var(--ink)}.field textarea{resize:vertical;min-height:118px;line-height:1.8}.field input:focus,.field textarea:focus,.field select:focus{border-color:var(--orange);box-shadow:0 0 0 3px #f9671420;background:#fff}.counter{display:block;text-align:left;color:#a8a29e;font-size:9px;margin-top:4px;direction:ltr}
     .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px}.btn{height:46px;border:0;border-radius:11px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:var(--orange);color:#fff}.btn-secondary{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}.btn:disabled{opacity:.55;cursor:wait}
     .workspace{min-width:0;overflow:hidden}.workspace-head{height:55px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px}.workspace-head strong{font-size:12px}.workspace-head span{font-size:10px;color:#a8a29e}.stage{padding:28px;background-color:#eeeae5;background-image:radial-gradient(#d6d3d1 1px,transparent 1px);background-size:18px 18px;display:grid;place-items:center;min-height:650px;overflow:auto}
     #certificate{display:block;width:min(100%,1050px);height:auto;background:#fff;box-shadow:0 22px 65px #29252425}.hint{font-size:10px;color:#a8a29e;display:flex;align-items:center;gap:6px}.toast{position:fixed;left:22px;bottom:22px;background:#121212;color:#fff;padding:12px 17px;border-radius:11px;font-size:11px;font-weight:800;opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:none}
@@ -34,6 +34,7 @@
     <aside class="panel">
       <h1>بيانات الشهادة</h1>
       <p>أدخل البيانات وستتحدث المعاينة مباشرة. لا تُحفظ البيانات بعد إغلاق الصفحة.</p>
+      <div class="field"><label for="templateStyle">تصميم الشهادة</label><select id="templateStyle"><option value="minimal">نظيف وبسيط</option><option value="brand">هوية سويتر</option><option value="formal">إطار رسمي</option></select></div>
       <div class="field"><label for="certificateTitle">عنوان الشهادة</label><input id="certificateTitle" maxlength="70" value="شهادة شكر وتقدير" autocomplete="off"></div>
       <div class="field"><label for="recipientLabel">العبارة قبل اسم الموظف</label><input id="recipientLabel" maxlength="70" value="تُقدَّم بكل فخر إلى" autocomplete="off"></div>
       <div class="field"><label for="employeeName">اسم الموظف</label><input id="employeeName" maxlength="70" placeholder="مثال: أحمد محمد" autocomplete="off"></div>
@@ -54,11 +55,28 @@
   <script>
   (()=>{
     const $=id=>document.getElementById(id),canvas=$('certificate'),ctx=canvas.getContext('2d');
-    const title=$('certificateTitle'),recipientLabel=$('recipientLabel'),name=$('employeeName'),message=$('message'),issuerLabel=$('issuerLabel'),issuer=$('issuer'),messageCount=$('messageCount'),logo=new Image();
+    const templateStyle=$('templateStyle'),title=$('certificateTitle'),recipientLabel=$('recipientLabel'),name=$('employeeName'),message=$('message'),issuerLabel=$('issuerLabel'),issuer=$('issuer'),messageCount=$('messageCount'),logo=new Image();
     logo.src='./assets/sweater-logo.png';
     const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
     const wrap=(text,maxWidth)=>{const words=String(text).trim().split(/\s+/),lines=[];let line='';for(const word of words){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines};
+    const copy=()=>({title:title.value.trim()||'شهادة شكر وتقدير',recipient:recipientLabel.value.trim()||'تُقدَّم بكل فخر إلى',name:name.value.trim()||'اسم الموظف',body:message.value.trim()||'تقديرًا لجهودك وعطائك المميز، نتقدم لك بخالص الشكر والامتنان، ونتمنى لك مزيدًا من النجاح والتقدم.',issuerLabel:issuerLabel.value.trim()||'صدرت من',issuer:issuer.value.trim()||'الجهة المصدرة'});
+    const drawLogo=(x,y,w)=>{if(logo.complete&&logo.naturalWidth){const h=w/(logo.naturalWidth/logo.naturalHeight);ctx.drawImage(logo,x-w/2,y,w,h)}};
+    function drawMinimal(){
+      const c=copy();ctx.fillStyle='#fff';ctx.fillRect(0,0,1600,1131);ctx.fillStyle='#f96714';ctx.fillRect(0,0,1600,14);drawLogo(800,92,205);
+      ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#a8a29e';ctx.font='700 26px LamaSans,Arial';ctx.fillText(c.title,800,270);
+      ctx.fillStyle='#121212';ctx.font='700 21px LamaSans,Arial';ctx.fillText(c.recipient,800,355);ctx.font='900 72px LamaSans,Arial';ctx.fillText(c.name,800,455);
+      ctx.fillStyle='#f96714';rounded(735,492,130,5,3);ctx.fill();ctx.fillStyle='#57534e';ctx.font='400 30px LamaSans,Arial';const lines=wrap(c.body,1040).slice(0,5),lh=52,start=640-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
+      ctx.strokeStyle='#e7e5e4';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(615,875);ctx.lineTo(985,875);ctx.stroke();ctx.fillStyle='#a8a29e';ctx.font='700 19px LamaSans,Arial';ctx.fillText(c.issuerLabel,800,925);ctx.fillStyle='#121212';ctx.font='900 30px LamaSans,Arial';ctx.fillText(c.issuer,800,974);
+      ctx.fillStyle='#f96714';ctx.fillRect(0,1098,1600,33);
+    }
+    function drawBrand(){
+      const c=copy();ctx.fillStyle='#fff';ctx.fillRect(0,0,1600,1131);ctx.fillStyle='#f96714';ctx.fillRect(0,0,420,1131);ctx.fillStyle='#fff';ctx.beginPath();ctx.moveTo(420,0);ctx.lineTo(560,0);ctx.quadraticCurveTo(430,290,570,565);ctx.quadraticCurveTo(430,850,550,1131);ctx.lineTo(420,1131);ctx.closePath();ctx.fill();
+      drawLogo(1010,78,190);ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#f96714';ctx.font='700 27px LamaSans,Arial';ctx.fillText(c.title,1010,225);ctx.fillStyle='#78716c';ctx.font='700 21px LamaSans,Arial';ctx.fillText(c.recipient,1010,330);ctx.fillStyle='#121212';ctx.font='900 70px LamaSans,Arial';ctx.fillText(c.name,1010,430);ctx.fillStyle='#f96714';rounded(935,465,150,5,3);ctx.fill();
+      ctx.fillStyle='#44403c';ctx.font='400 29px LamaSans,Arial';const lines=wrap(c.body,770).slice(0,5),lh=50,start=620-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,1010,start+i*lh));ctx.fillStyle='#a8a29e';ctx.font='700 19px LamaSans,Arial';ctx.fillText(c.issuerLabel,1010,880);ctx.fillStyle='#121212';ctx.font='900 30px LamaSans,Arial';ctx.fillText(c.issuer,1010,930);ctx.fillStyle='#f96714';rounded(910,965,200,3,2);ctx.fill();
+    }
     function draw(){
+      if(templateStyle.value==='minimal'){drawMinimal();return}
+      if(templateStyle.value==='brand'){drawBrand();return}
       ctx.clearRect(0,0,1600,1131);ctx.fillStyle='#fffdfa';ctx.fillRect(0,0,1600,1131);
 
       /* هوية هندسية هادئة في الزوايا */
@@ -98,7 +116,8 @@
       ctx.fillStyle='#fff';ctx.font='900 31px Arial';ctx.fillText('★',184,941);
     }
     const update=()=>{messageCount.textContent=message.value.length;draw()};
-    [title,recipientLabel,name,message,issuerLabel,issuer].forEach(input=>input.addEventListener('input',update));
+    [templateStyle,title,recipientLabel,name,message,issuerLabel,issuer].forEach(input=>input.addEventListener('input',update));
+    templateStyle.addEventListener('change',draw);
     logo.onload=draw;document.fonts.ready.then(draw);draw();
     function notify(text){const el=$('toast');el.textContent=text;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
     function valid(){if(!name.value.trim()){name.focus();notify('اكتب اسم الموظف أولًا');return false}return true}
