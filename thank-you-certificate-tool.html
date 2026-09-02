@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>تصدير شهادات شكر — SWEATER</title>
+  <meta name="theme-color" content="#f96714">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="./supabase-config.js?v=google1"></script>
+  <script src="./supabase-app.js?v=syncfix1"></script>
+  <script src="./auth-gateway.js?v=syncfix1"></script>
+  <style>
+    @font-face{font-family:LamaSans;src:url('./fonts/LamaSans-Regular.woff2') format('woff2');font-weight:400}
+    @font-face{font-family:LamaSans;src:url('./fonts/LamaSans-Bold.woff2') format('woff2');font-weight:700}
+    @font-face{font-family:LamaSans;src:url('./fonts/LamaSans-Black.woff2') format('woff2');font-weight:900}
+    :root{--orange:#f96714;--ink:#121212;--muted:#78716c;--line:#e7e5e4;--soft:#f7f6f4}
+    *{box-sizing:border-box}body{margin:0;background:#f5f5f4;color:var(--ink);font-family:LamaSans,Arial,sans-serif;min-height:100vh}
+    button,input,textarea{font:inherit}.topbar{height:72px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:20}
+    .brand,.back{display:flex;align-items:center;gap:11px}.brand-mark{width:39px;height:39px;border-radius:12px;background:#fff2e8;color:var(--orange);display:grid;place-items:center}.brand strong{display:block;font-size:15px}.brand small{display:block;color:#a8a29e;font-size:10px;margin-top:3px}.back{color:#57534e;text-decoration:none;font-size:12px;font-weight:800;background:#f5f5f4;padding:10px 13px;border-radius:11px}
+    .layout{display:grid;grid-template-columns:330px minmax(0,1fr);gap:20px;max-width:1500px;margin:auto;padding:22px;direction:ltr}.panel,.workspace{direction:rtl;background:#fff;border:1px solid var(--line);border-radius:18px}.panel{padding:20px;align-self:start;position:sticky;top:94px}.panel h1{font-size:20px;margin:0 0 5px}.panel>p{font-size:11px;color:var(--muted);line-height:1.8;margin:0 0 20px}.field{margin-bottom:15px}.field label{display:block;font-size:11px;font-weight:900;margin-bottom:7px}.field input,.field textarea{width:100%;border:1px solid #d6d3d1;border-radius:11px;background:#fafaf9;padding:12px 13px;outline:0;color:var(--ink)}.field textarea{resize:vertical;min-height:118px;line-height:1.8}.field input:focus,.field textarea:focus{border-color:var(--orange);box-shadow:0 0 0 3px #f9671420;background:#fff}.counter{display:block;text-align:left;color:#a8a29e;font-size:9px;margin-top:4px;direction:ltr}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:20px}.btn{height:46px;border:0;border-radius:11px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px}.btn-primary{background:var(--orange);color:#fff}.btn-secondary{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}.btn:disabled{opacity:.55;cursor:wait}
+    .workspace{min-width:0;overflow:hidden}.workspace-head{height:55px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 18px}.workspace-head strong{font-size:12px}.workspace-head span{font-size:10px;color:#a8a29e}.stage{padding:28px;background-color:#eeeae5;background-image:radial-gradient(#d6d3d1 1px,transparent 1px);background-size:18px 18px;display:grid;place-items:center;min-height:650px;overflow:auto}
+    #certificate{display:block;width:min(100%,1050px);height:auto;background:#fff;box-shadow:0 22px 65px #29252425}.hint{font-size:10px;color:#a8a29e;display:flex;align-items:center;gap:6px}.toast{position:fixed;left:22px;bottom:22px;background:#121212;color:#fff;padding:12px 17px;border-radius:11px;font-size:11px;font-weight:800;opacity:0;transform:translateY(12px);pointer-events:none;transition:.2s;z-index:50}.toast.show{opacity:1;transform:none}
+    @media(max-width:900px){.topbar{padding:0 15px}.brand small{display:none}.layout{grid-template-columns:1fr;padding:12px}.panel{position:static}.workspace{grid-row:1}.stage{padding:12px;min-height:350px}.actions{position:sticky;bottom:8px}.back span{display:none}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark"><i class="fa-solid fa-award"></i></span><span><strong>تصدير شهادات شكر</strong><small>شهادات الموظفين</small></span></div>
+    <a class="back" href="./index.html"><i class="fa-solid fa-arrow-right"></i><span>العودة للوحة</span></a>
+  </header>
+  <main class="layout">
+    <aside class="panel">
+      <h1>بيانات الشهادة</h1>
+      <p>أدخل البيانات وستتحدث المعاينة مباشرة. لا تُحفظ البيانات بعد إغلاق الصفحة.</p>
+      <div class="field"><label for="employeeName">اسم الموظف</label><input id="employeeName" maxlength="70" placeholder="مثال: أحمد محمد" autocomplete="off"></div>
+      <div class="field"><label for="message">رسالة الشكر</label><textarea id="message" maxlength="420" placeholder="اكتب رسالة الشكر والتقدير هنا…"></textarea><span class="counter"><b id="messageCount">0</b> / 420</span></div>
+      <div class="field"><label for="issuer">صدرت من</label><input id="issuer" maxlength="90" placeholder="مثال: إدارة العمليات" autocomplete="off"></div>
+      <div class="actions">
+        <button class="btn btn-primary" id="downloadPng"><i class="fa-regular fa-image"></i>تصدير صورة</button>
+        <button class="btn btn-secondary" id="downloadPdf"><i class="fa-regular fa-file-pdf"></i>تصدير PDF</button>
+      </div>
+    </aside>
+    <section class="workspace">
+      <div class="workspace-head"><strong>معاينة الشهادة</strong><span class="hint"><i class="fa-solid fa-rotate"></i>تتحدث تلقائيًا</span></div>
+      <div class="stage"><canvas id="certificate" width="1600" height="1131" aria-label="معاينة شهادة الشكر"></canvas></div>
+    </section>
+  </main>
+  <div class="toast" id="toast"></div>
+  <script>
+  (()=>{
+    const $=id=>document.getElementById(id),canvas=$('certificate'),ctx=canvas.getContext('2d');
+    const name=$('employeeName'),message=$('message'),issuer=$('issuer'),messageCount=$('messageCount'),logo=new Image();
+    logo.src='./assets/sweater-logo.png';
+    const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
+    const wrap=(text,maxWidth)=>{const words=String(text).trim().split(/\s+/),lines=[];let line='';for(const word of words){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines};
+    function draw(){
+      ctx.clearRect(0,0,1600,1131);ctx.fillStyle='#fff';ctx.fillRect(0,0,1600,1131);
+      ctx.fillStyle='#f96714';ctx.fillRect(0,0,28,1131);ctx.fillRect(0,0,1600,18);
+      ctx.fillStyle='#fff5ef';rounded(72,70,1456,991,30);ctx.fill();ctx.strokeStyle='#fed7aa';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle='#f96714';rounded(116,114,1368,10,5);ctx.fill();
+      if(logo.complete&&logo.naturalWidth){const ratio=logo.naturalWidth/logo.naturalHeight,w=230,h=w/ratio;ctx.drawImage(logo,685,160,w,h)}
+      ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#a8a29e';ctx.font='700 27px LamaSans, Arial';ctx.fillText('شهادة شكر وتقدير',800,300);
+      ctx.fillStyle='#121212';ctx.font='900 61px LamaSans, Arial';ctx.fillText(name.value.trim()||'اسم الموظف',800,405);
+      ctx.fillStyle='#f96714';rounded(690,443,220,6,3);ctx.fill();
+      const body=message.value.trim()||'تقديرًا لجهودك وعطائك المميز، نتقدم لك بخالص الشكر والامتنان، ونتمنى لك مزيدًا من النجاح والتقدم.';
+      ctx.fillStyle='#44403c';ctx.font='400 31px LamaSans, Arial';const lines=wrap(body,1050).slice(0,6),lh=55,start=555-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
+      ctx.fillStyle='#78716c';ctx.font='700 23px LamaSans, Arial';ctx.fillText('صدرت من',800,865);
+      ctx.fillStyle='#121212';ctx.font='900 31px LamaSans, Arial';ctx.fillText(issuer.value.trim()||'الجهة المصدرة',800,915);
+      ctx.fillStyle='#f96714';ctx.beginPath();ctx.arc(800,985,6,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#a8a29e';ctx.font='400 18px LamaSans, Arial';ctx.fillText('SWEATER • تقدير نصنعه معًا',800,1025);
+    }
+    const update=()=>{messageCount.textContent=message.value.length;draw()};
+    [name,message,issuer].forEach(input=>input.addEventListener('input',update));
+    logo.onload=draw;document.fonts.ready.then(draw);draw();
+    function notify(text){const el=$('toast');el.textContent=text;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
+    function valid(){if(!name.value.trim()){name.focus();notify('اكتب اسم الموظف أولًا');return false}return true}
+    function fileName(){return `شهادة-شكر-${name.value.trim().replace(/\s+/g,'-')}`}
+    $('downloadPng').onclick=()=>{if(!valid())return;draw();const a=document.createElement('a');a.download=fileName()+'.png';a.href=canvas.toDataURL('image/png');a.click();notify('تم تصدير الشهادة كصورة')};
+    $('downloadPdf').onclick=()=>{if(!valid())return;draw();const {jsPDF}=window.jspdf,pdf=new jsPDF({orientation:'landscape',unit:'px',format:[1600,1131],hotfixes:['px_scaling']});pdf.addImage(canvas.toDataURL('image/jpeg',.96),'JPEG',0,0,1600,1131);pdf.save(fileName()+'.pdf');notify('تم تصدير الشهادة بصيغة PDF')};
+  })();
+  </script>
+  <script src="./brand-palette.js?v=1"></script>
+  <script src="./site-config.js?v=header-clean3"></script>
+  <script src="./feedback-widget.js?v=1"></script>
+</body>
+</html>
