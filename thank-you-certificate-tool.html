@@ -35,6 +35,7 @@
       <h1>بيانات الشهادة</h1>
       <p>أدخل البيانات وستتحدث المعاينة مباشرة. لا تُحفظ البيانات بعد إغلاق الصفحة.</p>
       <div class="field"><label for="certificateTitle">عنوان الشهادة</label><input id="certificateTitle" maxlength="70" value="شهادة شكر وتقدير" autocomplete="off"></div>
+      <div class="field"><label for="recipientLabel">العبارة قبل اسم الموظف</label><input id="recipientLabel" maxlength="70" value="تُقدَّم بكل فخر إلى" autocomplete="off"></div>
       <div class="field"><label for="employeeName">اسم الموظف</label><input id="employeeName" maxlength="70" placeholder="مثال: أحمد محمد" autocomplete="off"></div>
       <div class="field"><label for="message">رسالة الشكر</label><textarea id="message" maxlength="420" placeholder="اكتب رسالة الشكر والتقدير هنا…"></textarea><span class="counter"><b id="messageCount">0</b> / 420</span></div>
       <div class="field"><label for="issuerLabel">عنوان الجهة المصدرة</label><input id="issuerLabel" maxlength="40" value="صدرت من" autocomplete="off"></div>
@@ -53,26 +54,51 @@
   <script>
   (()=>{
     const $=id=>document.getElementById(id),canvas=$('certificate'),ctx=canvas.getContext('2d');
-    const title=$('certificateTitle'),name=$('employeeName'),message=$('message'),issuerLabel=$('issuerLabel'),issuer=$('issuer'),messageCount=$('messageCount'),logo=new Image();
+    const title=$('certificateTitle'),recipientLabel=$('recipientLabel'),name=$('employeeName'),message=$('message'),issuerLabel=$('issuerLabel'),issuer=$('issuer'),messageCount=$('messageCount'),logo=new Image();
     logo.src='./assets/sweater-logo.png';
     const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
     const wrap=(text,maxWidth)=>{const words=String(text).trim().split(/\s+/),lines=[];let line='';for(const word of words){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines};
     function draw(){
-      ctx.clearRect(0,0,1600,1131);ctx.fillStyle='#fff';ctx.fillRect(0,0,1600,1131);
-      ctx.fillStyle='#f96714';ctx.fillRect(0,0,28,1131);ctx.fillRect(0,0,1600,18);
-      ctx.fillStyle='#fff5ef';rounded(72,70,1456,991,30);ctx.fill();ctx.strokeStyle='#fed7aa';ctx.lineWidth=2;ctx.stroke();
-      ctx.fillStyle='#f96714';rounded(116,114,1368,10,5);ctx.fill();
-      if(logo.complete&&logo.naturalWidth){const ratio=logo.naturalWidth/logo.naturalHeight,w=230,h=w/ratio;ctx.drawImage(logo,685,160,w,h)}
-      ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#a8a29e';ctx.font='700 27px LamaSans, Arial';ctx.fillText(title.value.trim()||'شهادة شكر وتقدير',800,300);
-      ctx.fillStyle='#121212';ctx.font='900 61px LamaSans, Arial';ctx.fillText(name.value.trim()||'اسم الموظف',800,405);
-      ctx.fillStyle='#f96714';rounded(690,443,220,6,3);ctx.fill();
+      ctx.clearRect(0,0,1600,1131);ctx.fillStyle='#fffdfa';ctx.fillRect(0,0,1600,1131);
+
+      /* هوية هندسية هادئة في الزوايا */
+      ctx.fillStyle='#f96714';ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(390,0);ctx.quadraticCurveTo(210,115,140,300);ctx.lineTo(0,390);ctx.closePath();ctx.fill();
+      ctx.fillStyle='#fff1e8';ctx.beginPath();ctx.moveTo(1600,1131);ctx.lineTo(1200,1131);ctx.quadraticCurveTo(1385,1015,1455,830);ctx.lineTo(1600,745);ctx.closePath();ctx.fill();
+      ctx.globalAlpha=.07;ctx.strokeStyle='#f96714';ctx.lineWidth=34;ctx.beginPath();ctx.arc(800,570,420,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
+
+      /* إطار مزدوج رسمي */
+      ctx.strokeStyle='#f96714';ctx.lineWidth=3;rounded(48,48,1504,1035,24);ctx.stroke();
+      ctx.strokeStyle='#fed7aa';ctx.lineWidth=1.5;rounded(68,68,1464,995,18);ctx.stroke();
+      ctx.fillStyle='#f96714';rounded(715,74,170,7,4);ctx.fill();
+
+      /* الشعار والعنوان */
+      if(logo.complete&&logo.naturalWidth){const ratio=logo.naturalWidth/logo.naturalHeight,w=210,h=w/ratio;ctx.drawImage(logo,695,112,w,h)}
+      ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#57534e';ctx.font='700 28px LamaSans, Arial';ctx.fillText(title.value.trim()||'شهادة شكر وتقدير',800,280);
+      ctx.fillStyle='#d6d3d1';rounded(620,312,360,2,1);ctx.fill();
+
+      /* اسم الموظف */
+      ctx.fillStyle='#a8a29e';ctx.font='700 21px LamaSans, Arial';ctx.fillText(recipientLabel.value.trim()||'تُقدَّم بكل فخر إلى',800,370);
+      ctx.fillStyle='#f96714';ctx.font='900 70px LamaSans, Arial';ctx.fillText(name.value.trim()||'اسم الموظف',800,465);
+      ctx.fillStyle='#f96714';rounded(720,493,160,5,3);ctx.fill();
+
+      /* نص الشكر */
       const body=message.value.trim()||'تقديرًا لجهودك وعطائك المميز، نتقدم لك بخالص الشكر والامتنان، ونتمنى لك مزيدًا من النجاح والتقدم.';
-      ctx.fillStyle='#44403c';ctx.font='400 31px LamaSans, Arial';const lines=wrap(body,1050).slice(0,6),lh=55,start=555-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
-      ctx.fillStyle='#78716c';ctx.font='700 23px LamaSans, Arial';ctx.fillText(issuerLabel.value.trim()||'صدرت من',800,865);
-      ctx.fillStyle='#121212';ctx.font='900 31px LamaSans, Arial';ctx.fillText(issuer.value.trim()||'الجهة المصدرة',800,915);
+      ctx.fillStyle='#fff';rounded(245,545,1110,235,22);ctx.fill();ctx.strokeStyle='#f3e8df';ctx.lineWidth=2;ctx.stroke();
+      ctx.fillStyle='#f96714';rounded(1316,585,6,155,3);ctx.fill();
+      ctx.fillStyle='#44403c';ctx.font='400 30px LamaSans, Arial';const lines=wrap(body,960).slice(0,4),lh=51,start=650-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
+
+      /* التوقيع */
+      ctx.fillStyle='#a8a29e';ctx.font='700 20px LamaSans, Arial';ctx.fillText(issuerLabel.value.trim()||'صدرت من',800,865);
+      ctx.fillStyle='#121212';ctx.font='900 32px LamaSans, Arial';ctx.fillText(issuer.value.trim()||'الجهة المصدرة',800,916);
+      ctx.fillStyle='#f96714';rounded(690,946,220,3,2);ctx.fill();
+
+      /* ختم تقدير بصري بدون نص ثابت */
+      ctx.fillStyle='#fff';ctx.strokeStyle='#f96714';ctx.lineWidth=3;ctx.beginPath();ctx.arc(184,930,54,0,Math.PI*2);ctx.fill();ctx.stroke();
+      ctx.fillStyle='#f96714';ctx.beginPath();ctx.arc(184,930,37,0,Math.PI*2);ctx.fill();
+      ctx.fillStyle='#fff';ctx.font='900 31px Arial';ctx.fillText('★',184,941);
     }
     const update=()=>{messageCount.textContent=message.value.length;draw()};
-    [title,name,message,issuerLabel,issuer].forEach(input=>input.addEventListener('input',update));
+    [title,recipientLabel,name,message,issuerLabel,issuer].forEach(input=>input.addEventListener('input',update));
     logo.onload=draw;document.fonts.ready.then(draw);draw();
     function notify(text){const el=$('toast');el.textContent=text;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
     function valid(){if(!name.value.trim()){name.focus();notify('اكتب اسم الموظف أولًا');return false}return true}
