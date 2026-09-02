@@ -8,7 +8,7 @@
   }
   if (!document.querySelector('script[data-sweater-resize]')) {
     const resizeScript=document.createElement('script');
-    resizeScript.src='./editor-resize.js?v=2';
+    resizeScript.src='./editor-resize.js?v=1';
     resizeScript.dataset.sweaterResize='';
     document.head.append(resizeScript);
   }
@@ -50,6 +50,7 @@
       ,{id:'bilingual-pdf',href:'./bilingual-pdf-tool.html?v=26',name:'بوابة الملفات ثنائية اللغة',description:'ارفع نسختين عربية وإنجليزية وانشرهما في رابط عام واحد قابل للتحديث.',image:'./assets/bilingual-pdf-tool.svg',enabled:true,adminOnly:true}
       ,{id:'html-pages',href:'./html-editor-tool.html',name:'مستعرض صفحات HTML',description:'أنشئ صفحات HTML داخلية واحفظها أو انشرها بروابط مستقلة.',image:'./assets/html-pages-tool.svg',enabled:true,adminOnly:true}
       ,{id:'affiliate-codes',href:'./affiliate-code-tool.html',name:'أكواد المسوّقين',description:'أنشئ قوالب أكواد التسويق بالعمولة.',image:'./assets/affiliate/marketing-code-template.png',enabled:true}
+      ,{id:'thank-you-certificates',href:'./thank-you-certificate-tool.html',name:'تصدير شهادات شكر',description:'أنشئ شهادات شكر للموظفين وصدّرها كصورة أو PDF.',image:'',enabled:true}
     ],
     stats:[
       {id:'washes',value:'3M',label:'غسلة'},
@@ -131,7 +132,7 @@
     if(!document.querySelector('link[data-sweater-theme]')){const theme=document.createElement('link');theme.rel='stylesheet';theme.href='./workspace-theme.css?v=clean2';theme.dataset.sweaterTheme='true';document.head.append(theme)}
     if(!document.querySelector('script[data-sweater-palette]')){const palette=document.createElement('script');palette.src='./brand-palette.js?v=1';palette.dataset.sweaterPalette='true';document.head.append(palette)}
   }
-  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards','employee-card-tool.html':'employee-cards','top50-tool.html':'top50','affiliate-code-tool.html':'affiliate-codes','content-writer.html':'content-writer','bilingual-pdf-tool.html':'bilingual-pdf','html-editor-tool.html':'html-pages'}[page];
+  const toolId={'framing-tool.html':'framing','coupon-tool.html':'coupons','Quotation Generator.html':'quotes','n_icons.html':'design','logo-framer-tool.html':'partners','qr-generator.html':'qrcode','document-logo-tool.html':'document-logo','package-card-tool.html':'package-cards','employee-card-tool.html':'employee-cards','top50-tool.html':'top50','affiliate-code-tool.html':'affiliate-codes','thank-you-certificate-tool.html':'thank-you-certificates','content-writer.html':'content-writer','bilingual-pdf-tool.html':'bilingual-pdf','html-editor-tool.html':'html-pages'}[page];
   const adapters={};
   let authenticatedUser=null,authResolved=false;
 
