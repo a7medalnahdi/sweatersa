@@ -34,9 +34,11 @@
     <aside class="panel">
       <h1>بيانات الشهادة</h1>
       <p>أدخل البيانات وستتحدث المعاينة مباشرة. لا تُحفظ البيانات بعد إغلاق الصفحة.</p>
+      <div class="field"><label for="certificateTitle">عنوان الشهادة</label><input id="certificateTitle" maxlength="70" value="شهادة شكر وتقدير" autocomplete="off"></div>
       <div class="field"><label for="employeeName">اسم الموظف</label><input id="employeeName" maxlength="70" placeholder="مثال: أحمد محمد" autocomplete="off"></div>
       <div class="field"><label for="message">رسالة الشكر</label><textarea id="message" maxlength="420" placeholder="اكتب رسالة الشكر والتقدير هنا…"></textarea><span class="counter"><b id="messageCount">0</b> / 420</span></div>
-      <div class="field"><label for="issuer">صدرت من</label><input id="issuer" maxlength="90" placeholder="مثال: إدارة العمليات" autocomplete="off"></div>
+      <div class="field"><label for="issuerLabel">عنوان الجهة المصدرة</label><input id="issuerLabel" maxlength="40" value="صدرت من" autocomplete="off"></div>
+      <div class="field"><label for="issuer">اسم الجهة المصدرة</label><input id="issuer" maxlength="90" placeholder="مثال: إدارة العمليات" autocomplete="off"></div>
       <div class="actions">
         <button class="btn btn-primary" id="downloadPng"><i class="fa-regular fa-image"></i>تصدير صورة</button>
         <button class="btn btn-secondary" id="downloadPdf"><i class="fa-regular fa-file-pdf"></i>تصدير PDF</button>
@@ -51,7 +53,7 @@
   <script>
   (()=>{
     const $=id=>document.getElementById(id),canvas=$('certificate'),ctx=canvas.getContext('2d');
-    const name=$('employeeName'),message=$('message'),issuer=$('issuer'),messageCount=$('messageCount'),logo=new Image();
+    const title=$('certificateTitle'),name=$('employeeName'),message=$('message'),issuerLabel=$('issuerLabel'),issuer=$('issuer'),messageCount=$('messageCount'),logo=new Image();
     logo.src='./assets/sweater-logo.png';
     const rounded=(x,y,w,h,r)=>{ctx.beginPath();ctx.roundRect(x,y,w,h,r)};
     const wrap=(text,maxWidth)=>{const words=String(text).trim().split(/\s+/),lines=[];let line='';for(const word of words){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>maxWidth&&line){lines.push(line);line=word}else line=test}if(line)lines.push(line);return lines};
@@ -61,18 +63,16 @@
       ctx.fillStyle='#fff5ef';rounded(72,70,1456,991,30);ctx.fill();ctx.strokeStyle='#fed7aa';ctx.lineWidth=2;ctx.stroke();
       ctx.fillStyle='#f96714';rounded(116,114,1368,10,5);ctx.fill();
       if(logo.complete&&logo.naturalWidth){const ratio=logo.naturalWidth/logo.naturalHeight,w=230,h=w/ratio;ctx.drawImage(logo,685,160,w,h)}
-      ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#a8a29e';ctx.font='700 27px LamaSans, Arial';ctx.fillText('شهادة شكر وتقدير',800,300);
+      ctx.textAlign='center';ctx.direction='rtl';ctx.fillStyle='#a8a29e';ctx.font='700 27px LamaSans, Arial';ctx.fillText(title.value.trim()||'شهادة شكر وتقدير',800,300);
       ctx.fillStyle='#121212';ctx.font='900 61px LamaSans, Arial';ctx.fillText(name.value.trim()||'اسم الموظف',800,405);
       ctx.fillStyle='#f96714';rounded(690,443,220,6,3);ctx.fill();
       const body=message.value.trim()||'تقديرًا لجهودك وعطائك المميز، نتقدم لك بخالص الشكر والامتنان، ونتمنى لك مزيدًا من النجاح والتقدم.';
       ctx.fillStyle='#44403c';ctx.font='400 31px LamaSans, Arial';const lines=wrap(body,1050).slice(0,6),lh=55,start=555-(lines.length-1)*lh/2;lines.forEach((line,i)=>ctx.fillText(line,800,start+i*lh));
-      ctx.fillStyle='#78716c';ctx.font='700 23px LamaSans, Arial';ctx.fillText('صدرت من',800,865);
+      ctx.fillStyle='#78716c';ctx.font='700 23px LamaSans, Arial';ctx.fillText(issuerLabel.value.trim()||'صدرت من',800,865);
       ctx.fillStyle='#121212';ctx.font='900 31px LamaSans, Arial';ctx.fillText(issuer.value.trim()||'الجهة المصدرة',800,915);
-      ctx.fillStyle='#f96714';ctx.beginPath();ctx.arc(800,985,6,0,Math.PI*2);ctx.fill();
-      ctx.fillStyle='#a8a29e';ctx.font='400 18px LamaSans, Arial';ctx.fillText('SWEATER • تقدير نصنعه معًا',800,1025);
     }
     const update=()=>{messageCount.textContent=message.value.length;draw()};
-    [name,message,issuer].forEach(input=>input.addEventListener('input',update));
+    [title,name,message,issuerLabel,issuer].forEach(input=>input.addEventListener('input',update));
     logo.onload=draw;document.fonts.ready.then(draw);draw();
     function notify(text){const el=$('toast');el.textContent=text;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2300)}
     function valid(){if(!name.value.trim()){name.focus();notify('اكتب اسم الموظف أولًا');return false}return true}
