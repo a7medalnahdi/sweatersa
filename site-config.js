@@ -314,7 +314,7 @@
       payload.showPayments=document.getElementById('showPayments')?.checked!==false;return payload;
     },
     'employee-cards':()=>{const payload={};['firstName','lastName','jobTitle','department','employeeNo','qrUrl'].forEach(key=>{const input=document.getElementById(key);if(input)payload[key]=input.value});return payload},
-    'affiliate-codes':()=>{try{return {layers:JSON.parse(localStorage.getItem('sweaterAffiliatePosterV1')||'{}').layers||[]}}catch(_){return {layers:[]}}}
+    'affiliate-codes':()=>{try{const background=localStorage.getItem('sweaterAffiliateTemplateBackground')||'';return {layers:JSON.parse(localStorage.getItem('sweaterAffiliatePosterV1')||'{}').layers||[],background,url:background}}catch(_){return {layers:[],background:''}}}
   };
 
   function templateAuthoring(){
